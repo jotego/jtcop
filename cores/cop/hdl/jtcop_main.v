@@ -17,6 +17,8 @@
     Date: 24-9-2021 */
 
 module jtcop_main(
+    input              rst,
+    input              clk,
 
     // external interrupts
     input              LVBL,
@@ -24,6 +26,7 @@ module jtcop_main(
 
     // Palette
     output reg [2:0]   prisel,
+    output reg [1:0]   pal_Cs,
 
     // cabinet I/O
     input       [ 7:0] joystick1,
@@ -75,6 +78,30 @@ always @(*) begin
 end
 
 always @(*) begin
+    rom_cs     = 0;
+    eep_cs     = 0;
+    fmode      = 0;
+    fsft       = 0;
+    fmap       = 0;
+    bmode      = 0;
+    bsft       = 0;
+    bmap       = 0;
+    nexrm0     = 0;
+    nexrm1     = 0;
+    prisel_cs  = 0;
+    dm_cs      = 0;
+    snreq      = 0;
+    sec        = 0;
+    vint_clr   = 0;
+    mixpsel_cs = 0;
+    cblk       = 0;
+    nexout     = 0;
+    read_cs    = 0;
+    nexin_cs   = 0;
+    pal_cs       = 0;
+    sysram     = 0;
+    mix        = 0;
+
     if( !ASn ) begin
         case( A[21:20] )
             0: rom_cs = A[19:16]<6 && RnW;
@@ -103,7 +130,7 @@ always @(*) begin
                                 3: sec[0]     = 1;
                                 4: vint_clr   = 1;
                                 5: mixpsel_cs = 1;
-                                6: cblk       = 1;
+                                6: cblk       = 1; // coin block, unused
                                 7: nexout     = 1;
                             endcase
                         end else begin
@@ -117,11 +144,10 @@ always @(*) begin
                             endcase
                         end
                     end
-                    4: psel[0] = 1;
-                    5: psel[1] = 1;
+                    4: pal_cs[0] = 1; // called PSEL in the schematics
+                    5: pal_cs[1] = 1;
                     6: sysram  = 1;
                     7: mix     = 1; // sprites
-
                 endcase
             end
         endcase
@@ -153,6 +179,26 @@ always @(posedge clk, posedge rst) begin
 
     end
 end
+
+// Cabinet inputs
+reg  [15:0] cab_dout;
+
+always @(posedge clk) begin
+    cab_dout <= 16'hffff;
+    if( read_cs[0] )
+        cab_dout <= { joystick2[7:0], joystick1[7:0] };
+    if( read_cs[1] )
+        cab_dout <= { 8'hff,
+                        ~LVBL,
+                        service,
+                        coin_input,
+                        start_button,
+                        joystick2[8],
+                        joystick1[8] };
+    if( read_cs[2] )
+        cab_dout <= { dipsw_b, dipsw_a };
+end
+
 
 jtframe_m68k u_cpu(
     .clk        ( clk         ),

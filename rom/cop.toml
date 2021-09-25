@@ -1,0 +1,37 @@
+[global]
+mraauthor=["jotego"]
+
+[features]
+beta = true
+
+[parse]
+sourcefile="dec0.cpp"
+
+[buttons]
+core=5
+
+[rbf]
+name="jtcop"
+
+[dipsw]
+delete = [ "Unused", "Unknown" ]
+
+[ROM]
+regions = [
+    { name="maincpu",       width=16, reverse=true },
+    { name="audiocpu",      start=$BA1_START },
+    { name="sub",           start=$MCU_START },
+    { name="mcu",           start=$MCU_START },
+    { name="oki",           start=$PCM_START },
+    { name="gfx1",          start=$BA2_START },
+    { name="gfx2"                            },
+    { name="gfx3"                            },
+    { name="gfx4",          start=$BA3_START },
+    { name="proms",         start=$PROM_START },
+    { name="plds",          skip=true         }
+]
+
+order = [
+    "maincpu", "audiocpu", "sub", "mcu", "oki",
+    "gfx1", "gfx2", "gfx3", "gfx4", "proms"
+]
