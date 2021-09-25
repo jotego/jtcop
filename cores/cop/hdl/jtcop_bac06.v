@@ -31,7 +31,7 @@ module jtcop_bac06(
     inout       pxl_cen,    //  6 MHz
 
     input       mode_cs,
-    input       sft_cs,     // scroll
+    input       sift_cs,     // scroll
     input       map_cs,     // memory
 
     // CPU interface
@@ -54,36 +54,47 @@ module jtcop_bac06(
     output         rom_cs,
     output  [16:0] rom_addr,    // MSB = bank selection
     input   [31:0] rom_data,
-    input          rom_ok
+    input          rom_ok,
+
+    output  [ 7:0] pxl          // pixel output
 );
 
 parameter RAM_AW=11,    // normally 4kB (AW=11, 16 bits), it can be 8kB too
           MASTER=0      // One BAC06 chip will be the timing master
 
-reg  [ 7:0] mmr_mode[0:3];
-reg  [15:0] mmr_sft [0:3];
+reg  [ 7:0] mode[0:3];
+reg  [15:0] hscr;
+reg  [15:0] vscr;
+reg  [ 3:0] colscr_sh;
+reg  [ 3:0] rowscr_sh;
 
 reg  [15:0] mmr_mux;
 wire [15:0] cpu_ram;
 
-assign cpu_din <= (mode_cs | sft_cs ) ? mmr_mux : cpu_ram;
+assign cpu_din = cpu_ram;
+
+function [15:0] combine( input [15:0] din );
+    combine = { cpu_dsn[1] ? din[15:8] : cpu_dout[15:8],
+                cpu_dsn[0] ? din[ 7:0] : cpu_dout[ 7:0]  };
+endfunction
+
 
 always @(posedge clk) begin
     if( rst ) begin
-        mmr_mode[0] <= 0; mmr_mode[1] <= 0; mmr_mode[2] <= 0; mmr_mode[3] <= 0;
-        mmr_sft [0] <= 0; mmr_sft [1] <= 0; mmr_sft [2] <= 0; mmr_sft [3] <= 0;
+        mode[0] <= 0; mode[1] <= 0; mode[2] <= 0; mode[3] <= 0;
+        mode[4] <= 0; mode[5] <= 0; mode[6] <= 0; mode[7] <= 0;
     end else begin
-        if( sft_cs )
-            mmr_mux <= mmr_sft[cpu_addr[2:1]];
-        else
-            mmr_mux <= { 8'hff, mmr_mode[cpu_addr[2:1]] };
-        if( cpu_we ) begin
-            if( mode_cs && !cpu_dsn[0] )
-                mmr_mode <= cpu_dout[7:0];
-            if( sft_cs && !cpu_dsn[0] )
-                mmr_sft[ 7:0] <= cpu_dout[7:0];
-            if( sft_cs && !cpu_dsn[1] )
-                mmr_sft[15:8] <= cpu_dout[15:8];
+        if( cpu_we && mode_cs ) begin
+            if( !cpu_addr[4] ) begin
+                if( !cpu_dsn[0] ) mode[cpu_addr[2:1]] <= cpu_dout[7:0];
+            else begin
+                case( cpu_addr[2:1] )
+                    0: hscr <= combine( hscr );
+                    1: vscr <= combine( vscr );
+                    2: if( !cpu_dsn[0] ) colscr_sh <= cpu_dout[3:0];
+                    3: if( !cpu_dsn[1] ) rowscr_sh <= cpu_dout[3:0];
+                endcase
+            end
         end
     end
 end

@@ -23,20 +23,25 @@ module jtcop_video(
     output             pxl_cen,   // pixel clock enable
 
     // CPU interface
-    input              char_cs,
-    input              pal_cs,
-    input              objram_cs,
     input      [12:1]  cpu_addr,
     input      [15:0]  cpu_dout,
     input      [ 1:0]  dsn,
 
+    input      [ 1:0]  pal_cs,
+    input              objram_cs,
     input              fmode_cs,
     input              fsft_cs,
     input              fmap_cs,
     input              bmode_cs,
     input              bsft_cs,
     input              bmap_cs,
-    input              nexrm0_cs,
+    input              nexrm0_cs,   // ba3 chip selection
+    input      [2:0]   prisel,
+
+    // priority PROM
+    input      [9:0]   prog_addr,
+    input      [1:0]   prom_din,
+    input              prio_we,
 
     // Background 0
     output             bac0_cs,
@@ -70,6 +75,22 @@ module jtcop_video(
 );
 
 wire   [8:0]  vdump, vrender, hdump;
+wire   [7:0]  ba0_pxl, ba1_pxl, ba2_pxl, obj_pxl;
+reg           gmode_cs, gsft_cs, gmap_cs;
+
+always @(*) begin
+    gmode_cs  = 0;
+    gsft_cs   = 0;
+    gmap_cs   = 0;
+    if( nexrm0_cs )  begin
+        case( cpu_addr[10:9])
+            0: gmode_cs = 1; // these signals could go
+            1: gsft_cs  = 1; // in a different order
+            2: gmap_cs  = 1;
+            default:;
+        endcase
+    end
+end
 
 jtcop_bac06 #(.MASTER(1),.RAM_AW(12)) u_ba0(
     .rst        ( rst           ),
@@ -79,7 +100,7 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(12)) u_ba0(
     .pxl_cen    ( pxl_cen       ),
 
     .mode_cs    ( fmode_cs      ),
-    .sft_cs     ( fsft_cs       ),
+    .sift_cs    ( fsft_cs       ),
     .map_cs     ( fmap_cs       ),
 
     // CPU interface
@@ -102,7 +123,8 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(12)) u_ba0(
     .rom_cs     ( bac0_cs       ),
     .rom_addr   ( bac0_addr     ),
     .rom_data   ( bac0_data     ),
-    .rom_ok     ( bac0_ok       )
+    .rom_ok     ( bac0_ok       ),
+    .pxl        ( ba0_pxl       )
 );
 
 jtcop_bac06 u_ba1(
@@ -113,7 +135,7 @@ jtcop_bac06 u_ba1(
     .pxl_cen    ( pxl_cen       ),
 
     .mode_cs    ( bmode_cs      ),
-    .sft_cs     ( bsft_cs       ),
+    .sift_cs    ( bsft_cs       ),
     .map_cs     ( bmap_cs       ),
 
     // CPU interface
@@ -147,7 +169,7 @@ jtcop_bac06 u_ba2(
     .pxl_cen    ( pxl_cen       ),
 
     .mode_cs    ( fmode_cs      ),
-    .sft_cs     ( fsft_cs       ),
+    .sift_cs    ( fsft_cs       ),
     .map_cs     ( fmap_cs       ),
 
     // CPU interface
@@ -171,6 +193,43 @@ jtcop_bac06 u_ba2(
     .rom_addr   ( bac2_addr     ),
     .rom_data   ( bac2_data     ),
     .rom_ok     ( bac2_ok       )
+);
+
+jtcop_colmix u_colmix(
+    .rst        ( rst           ),
+    .clk        ( clk           ),
+    .clk_cpu    ( clk_cpu       ),
+    .pxl_cen    ( pxl_cen       ),
+
+    .LHBL       ( LHBL          ),
+    .LVBL       ( LVBL          ),
+
+    // CPU interface
+    .pal_cs     ( pal_cs        ),
+    .cpu_addr   ( cpu_addr      ),
+    .cpu_dout   ( cpu_dout      ),
+    .dsn        ( dsn           ),
+    .cpu_din    ( cpu_din       ),
+
+    .prisel     ( prisel        ),
+
+    // priority PROM
+    .prog_addr  ( prog_addr     ),
+    .prom_din   ( prom_din      ),
+    .prom_we    ( prio_we       ),
+
+    .ba0_pxl    ( ba0_pxl       ),
+    .ba1_pxl    ( ba1_pxl       ),
+    .ba2_pxl    ( ba2_pxl       ),
+    .obj_pxl    ( obj_pxl       ),
+
+    .red        ( red           ),
+    .green      ( green         ),
+    .blue       ( blue          ),
+    .LVBL_dly   ( LVBL_dly      ),
+    .LHBL_dly   ( LHBL_dly      ),
+
+    .gfx_en     ( gfx_en        )
 );
 
 endmodule

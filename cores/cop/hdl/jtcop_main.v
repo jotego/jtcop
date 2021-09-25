@@ -114,23 +114,32 @@ always @(*) begin
         case( A[21:20] )
             0: rom_cs = A[19:16]<6 && RnW;
             1: eep_cs = ~A[19]; // connects to an EEPROM, but it isn't on the PCB
-            2: if( A[19:18]==2'b01 ) begin // DPS - display (?)
+            2: if( A[19:18]==2'b01 ) begin // 0x24'???? DPS - display (?)
                 case( A[15:13] )
-                    0: fmode_cs  = 1;
-                    1: fsft_cs   = 1;
-                    2: fmap_cs   = 1;
-                    3: bmode_cs  = 1;
-                    4: bsft_cs   = 1;
-                    5: bmap_cs   = 1;
-                    6: nexrm0_cs = 1;
+                    0: fmode_cs  = 1; // 0x24'0000, cfg registers
+                    1: fsft_cs   = 1; // 0x24'2000, col/row scroll
+                    2: fmap_cs   = 1; // 0x24'4000, rest of VRAM
+                    3: bmode_cs  = 1; // 0x24'6000, cfg registers
+                    4: bsft_cs   = 1; // 0x24'8000, col/row scroll
+                    5: bmap_cs   = 1; // 0x24'a000, rest of VRAM
+                    6: nexrm0_cs = 1; // BAC06 chip on second PCB
                     default:;
                 endcase
             end
             3: begin // RAMIO
-                case( A[16:14] )
+                case( A[16:14] ) // 0x3?'????
                     0: nexrm1 = 1;
-                    3: begin
-                        if( !RnW && A[4] ) begin
+                    3: begin // 0x30'C0?0
+                        if( RnW && !A[4] ) begin // 0x30'C000
+                            case( A[3:1] )
+                                0: read_cs[0] = 1; // cabinet IO
+                                1: read_cs[1] = 1;
+                                2: read_cs[2] = 1;
+                                3: nexin_cs   = 1;
+                                4: sec[1]     = 1;
+                            endcase
+                        end
+                        if( !RnW && A[4] ) begin // 0x30'C010
                             case( A[3:1] )
                                 0: prisel_cs  = 1;
                                 1: dm_cs      = 1;
@@ -142,20 +151,11 @@ always @(*) begin
                                 7: nexout     = 1;
                             endcase
                         end else begin
-                        if( RnW && !A[4] ) begin
-                            case( A[3:1] )
-                                0: read_cs[0] = 1; // cabinet IO
-                                1: read_cs[1] = 1;
-                                2: read_cs[2] = 1;
-                                3: nexin_cs   = 1;
-                                4: sec[1]     = 1;
-                            endcase
-                        end
                     end
-                    4: pal_cs[0] = 1; // called PSEL in the schematics
-                    5: pal_cs[1] = 1;
-                    6: sysram  = 1;
-                    7: mix     = 1; // sprites
+                    4: pal_cs[0] = 1; // 0x31'0000 called PSEL in the schematics
+                    5: pal_cs[1] = 1; // 0x31'4000
+                    6: sysram  = 1;   // 0x31'8000
+                    7: mix     = 1;   // 0x31'C000 sprites
                 endcase
             end
         endcase

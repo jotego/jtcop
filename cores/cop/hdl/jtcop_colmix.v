@@ -39,9 +39,9 @@ module jtcop_colmix(
     input      [1:0]   prom_din,
     input              prom_we,
 
-    input      [7:0]   b0_pxl,
-    input      [7:0]   b1_pxl,
-    input      [7:0]   b2_pxl,
+    input      [7:0]   ba0_pxl,
+    input      [7:0]   ba1_pxl,
+    input      [7:0]   ba2_pxl,
     input      [7:0]   obj_pxl, // called "MCOL" in the schematics
 
     output reg [7:0]   red,
@@ -68,21 +68,21 @@ assign cpu_din = pal_cs[0] ? cpu_gr : {8'hff, cpu_b};
 always @(posedge clk) begin
     if( pxl_cen ) begin
         seladdr <= { prisel,
-                   ~|b0_pxl[3:0],
+                   ~|ba0_pxl[3:0],
                    obj_pxl[7],
                    ~|obj_pxl[3:0],
-                   b1_pxl[7],
+                   ba1_pxl[7],
                    obj_pxl[3],
-                   ~|b1_pxl[2:0],
-                   ~|{b2_pxl[7],b2_pxl[2:0]}
+                   ~|ba1_pxl[2:0],
+                   ~|{ba2_pxl[7],ba2_pxl[2:0]}
                 };
     end
     pal_addr[9:8] <= selbus;
     case( selbus )
-        0: pal_addr[7:0] <= b0_pxl;
+        0: pal_addr[7:0] <= ba0_pxl;
         1: pal_addr[7:0] <= obj_pxl;
-        2: pal_addr[7:0] <= b1_pxl;
-        3: pal_addr[7:0] <= b2_pxl;
+        2: pal_addr[7:0] <= ba1_pxl;
+        3: pal_addr[7:0] <= ba2_pxl;
     endcase
 end
 
@@ -140,7 +140,7 @@ jtframe_dual_ram #(
     .q1     ( pal_b     )
 );
 
-jtframe_prom #(.aw(10),.dw(2)/*,.simfile(PALETTE_PRIOR)*/) u_selbus(
+jtframe_prom #(.aw(10),.dw(2),.simfile("../../../rom/robocop/mb7122e.17e")) u_selbus(
     .clk    ( clk           ),
     .cen    ( 1'b1          ),
     .data   ( prom_din      ),
