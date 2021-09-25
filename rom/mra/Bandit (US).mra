@@ -1,0 +1,117 @@
+<!--          FPGA compatible core for Data East USA arcade hardware by Jotego
+
+              This core is available for hardware compatible with MiST and MiSTer
+              Other FPGA systems may be supported by the time you read this.
+              This work is not mantained by the MiSTer project. Please contact the
+              core author for issues and updates.
+
+              (c) Jose Tejada, 2021. Please support the author
+              Patreon: https://patreon.com/topapate
+              Paypal:  https://paypal.me/topapate
+
+              The author does not endorse or participate in illegal distribution
+              of copyrighted material. This work can be used with legally
+              obtained ROM dumps or with compatible homebrew software.
+
+              This file license is GNU GPLv2.
+              You can read the whole license file in
+              https://opensource.org/licenses/gpl-2.0.php
+
+-->
+
+<misterromdescription>
+    <about author="jotego" webpage="https://patreon.com/topapate" source="https://github.com/jotego" twitter="@topapate"/>
+    <name>Bandit (US)</name>
+    <setname>bandit</setname>
+    <rbf>jtcop</rbf>
+    <mameversion>0232</mameversion>
+    <year>1989</year>
+    <manufacturer>Data East USA</manufacturer>
+    <players>2</players>
+    <joystick>8</joystick>
+    <rotation>vertical</rotation>
+    <region>World</region>
+    <mraauthor>jotego</mraauthor>
+    <rom index="0" zip="bandit.zip" md5="None">
+        <!-- maincpu - starts at 0x0 -->
+        <interleave output="16">
+            <part name="1.1" crc="dc61b11f" map="01"/>
+            <part name="4.4" crc="01a29133" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="2.2" crc="3e81e138" map="01"/>
+            <part name="5.5" crc="7dbfa088" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="3.3" crc="30bf52cf" map="01"/>
+            <part name="6.6" crc="b12e33cc" map="10"/>
+        </interleave>
+        <part repeat="0x20000"> FF</part>
+        <!-- audiocpu - starts at 0x80000 -->
+        <part name="7.7" crc="69259ca4"/>
+        <part repeat="0x8000"> FF</part>
+        <!-- mcu - starts at 0x90000 -->
+        <part name="hb31.9a" crc="239d726f"/>
+        <part repeat="0xF000"> FF</part>
+        <!-- oki - starts at 0xA0000 -->
+        <part name="8.8" crc="b0e79b9f"/>
+        <part repeat="0x10000"> FF</part>
+        <!-- gfx1 - starts at 0xC0000 -->
+        <part name="25.25" crc="4047ff81"/>
+        <part name="26.26" crc="3a0a2f1e"/>
+        <!-- gfx2 - starts at 0xE0000 -->
+        <part name="18.18" crc="ac38e585"/>
+        <part repeat="0x10000"> FF</part>
+        <part name="20.20" crc="2194f737"/>
+        <part repeat="0x10000"> FF</part>
+        <part name="22.22" crc="fcc6cb4d"/>
+        <part repeat="0x10000"> FF</part>
+        <part name="24.24" crc="aa3c33b6"/>
+        <!-- gfx3 - starts at 0x150000 -->
+        <part name="29.29" crc="32218c8a"/>
+        <part name="30.30" crc="6a5fe9a9"/>
+        <part name="27.27" crc="62970304"/>
+        <part name="28.28" crc="e018459f"/>
+        <part repeat="0x18000"> FF</part>
+        <!-- gfx4 - starts at 0x1A8000 -->
+        <part name="15.15" crc="84c03235"/>
+        <part name="16.16" crc="eaa35477"/>
+        <part name="11.11" crc="c9e6b57f"/>
+        <part name="12.12" crc="317f7e4a"/>
+        <part name="13.13" crc="0c063bec"/>
+        <part name="14.14" crc="2ebf06d3"/>
+        <part name="9.9" crc="046f9d58"/>
+        <part name="10.10" crc="3d2d704e"/>
+        <!-- proms - starts at 0x228000 -->
+        <part name="mb7116e_a-1.12c" crc="86e775f8"/>
+        <part name="mb7122e_a-2.17e" crc="a5cda23e"/>
+        <!-- Total 0x228600 bytes - 2209 kBytes -->
+    </rom>
+    <rom index="17" zip="jtbeta.zip" md5="None">
+        <part name="beta.bin"/>
+    </rom>
+    <!-- Vertical game -->
+    <rom index="1">
+        <part>01</part>
+    </rom>
+    <switches base="16" default="77">
+        <!-- DSW -->
+        <dip name="Analog controls?" bits="0" ids="On,Off"/>
+        <dip name="L/R control related (keep off)" bits="1" ids="On,Off"/>
+        <dip name="DSUNK_2" bits="2" ids="On,Off"/>
+        <dip name="Road select (debug)" bits="3" ids="Off,On"/>
+        <dip name="Flip Screen" bits="4" ids="On,Off"/>
+        <dip name="DSUNK_5" bits="5" ids="On,Off"/>
+        <dip name="DSUNK_6" bits="6" ids="On,Off"/>
+        <dip name="Enable enemies" bits="7" ids="On,Off"/>
+        <dip name="DSUNK_8" bits="8" ids="On,Off"/>
+        <dip name="DSUNK_9" bits="9" ids="On,Off"/>
+        <dip name="DSUNK_A" bits="10" ids="On,Off"/>
+        <dip name="DSUNK_B" bits="11" ids="On,Off"/>
+        <dip name="DSUNK_C" bits="12" ids="On,Off"/>
+        <dip name="DSUNK_D" bits="13" ids="On,Off"/>
+        <dip name="DSUNK_E" bits="14" ids="On,Off"/>
+        <dip name="DSUNK_F" bits="15" ids="On,Off"/>
+    </switches>
+    <buttons names="Shot,Jump,-,-,-,Start,Coin,Core credits" default="Y,X,B,A,R,Start,Select,-" count="2"/>
+</misterromdescription>

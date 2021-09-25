@@ -18,8 +18,8 @@ delete = [ "Unused", "Unknown" ]
 
 [ROM]
 regions = [
-    { name="maincpu",       width=16, reverse=true },
-    { name="audiocpu",      start=$BA1_START },
+    { name="maincpu",       width=16, reverse=true, No_offset=true },
+    { name="audiocpu",      start=$BA1_START, No_offset=true  },
     { name="sub",           start=$MCU_START },
     { name="mcu",           start=$MCU_START },
     { name="oki",           start=$PCM_START },
