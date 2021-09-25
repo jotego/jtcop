@@ -57,32 +57,54 @@
         <part name="heavy_barrel_08.2c" crc="645c5b68"/>
         <part repeat="0x10000"> FF</part>
         <!-- gfx1 - starts at 0xC0000 -->
-        <part name="heavy_barrel_25.15h" crc="8649762c"/>
-        <part name="heavy_barrel_26.16h" crc="f8189bbd"/>
-        <!-- gfx2 - starts at 0xE0000 -->
-        <part name="heavy_barrel_18.14d" crc="ef664373"/>
-        <part name="heavy_barrel_17.12d" crc="a4f186ac"/>
-        <part name="heavy_barrel_20.17d" crc="2fc13be0"/>
-        <part name="heavy_barrel_19.15d" crc="d6b47869"/>
-        <part name="heavy_barrel_22.14f" crc="50d6a1ad"/>
-        <part name="heavy_barrel_21.12f" crc="f01d75c5"/>
-        <part name="heavy_barrel_24.17f" crc="ae377361"/>
-        <part name="heavy_barrel_23.15f" crc="bbdaf771"/>
-        <!-- gfx3 - starts at 0x160000 -->
-        <part name="heavy_barrel_29.8h" crc="5514b296"/>
-        <part name="heavy_barrel_30.9h" crc="5855e8ef"/>
-        <part name="heavy_barrel_27.8f" crc="99db7b9c"/>
-        <part name="heavy_barrel_28.9f" crc="33ce2b1a"/>
+        <interleave output="16">
+            <part name="heavy_barrel_25.15h" crc="8649762c" map="01"/>
+            <part name="heavy_barrel_26.16h" crc="f8189bbd" map="10"/>
+        </interleave>
         <part repeat="0x8000"> FF</part>
+        <!-- gfx2 - starts at 0xE8000 -->
+        <interleave output="16">
+            <part name="heavy_barrel_18.14d" crc="ef664373" map="01"/>
+            <part name="heavy_barrel_17.12d" crc="a4f186ac" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="heavy_barrel_20.17d" crc="2fc13be0" map="01"/>
+            <part name="heavy_barrel_19.15d" crc="d6b47869" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="heavy_barrel_22.14f" crc="50d6a1ad" map="01"/>
+            <part name="heavy_barrel_21.12f" crc="f01d75c5" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="heavy_barrel_24.17f" crc="ae377361" map="01"/>
+            <part name="heavy_barrel_23.15f" crc="bbdaf771" map="10"/>
+        </interleave>
+        <!-- gfx3 - starts at 0x168000 -->
+        <interleave output="16">
+            <part name="heavy_barrel_29.8h" crc="5514b296" map="01"/>
+            <part name="heavy_barrel_30.9h" crc="5855e8ef" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="heavy_barrel_27.8f" crc="99db7b9c" map="01"/>
+            <part name="heavy_barrel_28.9f" crc="33ce2b1a" map="10"/>
+        </interleave>
         <!-- gfx4 - starts at 0x1A8000 -->
-        <part name="heavy_barrel_15.16c" crc="21816707"/>
-        <part name="heavy_barrel_16.17c" crc="a5684574"/>
-        <part name="heavy_barrel_11.16a" crc="5c768315"/>
-        <part name="heavy_barrel_12.17a" crc="8b64d7a4"/>
-        <part name="heavy_barrel_13.13c" crc="56e3ed65"/>
-        <part name="heavy_barrel_14.14c" crc="bedfe7f3"/>
-        <part name="heavy_barrel_09.13a" crc="26240ea0"/>
-        <part name="heavy_barrel_10.14a" crc="47d95447"/>
+        <interleave output="16">
+            <part name="heavy_barrel_15.16c" crc="21816707" map="01"/>
+            <part name="heavy_barrel_16.17c" crc="a5684574" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="heavy_barrel_11.16a" crc="5c768315" map="01"/>
+            <part name="heavy_barrel_12.17a" crc="8b64d7a4" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="heavy_barrel_13.13c" crc="56e3ed65" map="01"/>
+            <part name="heavy_barrel_14.14c" crc="bedfe7f3" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="heavy_barrel_09.13a" crc="26240ea0" map="01"/>
+            <part name="heavy_barrel_10.14a" crc="47d95447" map="10"/>
+        </interleave>
         <!-- proms - starts at 0x228000 -->
         <part name="mb7116e.12c" crc="86e775f8"/>
         <part name="mb7122e.17e" crc="a5cda23e"/>

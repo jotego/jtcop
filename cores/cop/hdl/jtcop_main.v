@@ -26,7 +26,15 @@ module jtcop_main(
 
     // Palette
     output reg [2:0]   prisel,
-    output reg [1:0]   pal_Cs,
+    output reg [1:0]   pal_cs,
+
+    output reg         fmode_cs,
+    output reg         fsft_cs,
+    output reg         fmap_cs,
+    output reg         bmode_cs,
+    output reg         bsft_cs,
+    output reg         bmap_cs,
+    output reg         nexrm0_cs,
 
     // cabinet I/O
     input       [ 7:0] joystick1,
@@ -80,13 +88,13 @@ end
 always @(*) begin
     rom_cs     = 0;
     eep_cs     = 0;
-    fmode      = 0;
-    fsft       = 0;
-    fmap       = 0;
-    bmode      = 0;
-    bsft       = 0;
-    bmap       = 0;
-    nexrm0     = 0;
+    fmode_cs   = 0;
+    fsft_cs    = 0;
+    fmap_cs    = 0;
+    bmode_cs   = 0;
+    bsft_cs    = 0;
+    bmap_cs    = 0;
+    nexrm0_cs  = 0;
     nexrm1     = 0;
     prisel_cs  = 0;
     dm_cs      = 0;
@@ -98,7 +106,7 @@ always @(*) begin
     nexout     = 0;
     read_cs    = 0;
     nexin_cs   = 0;
-    pal_cs       = 0;
+    pal_cs     = 0;
     sysram     = 0;
     mix        = 0;
 
@@ -108,13 +116,13 @@ always @(*) begin
             1: eep_cs = ~A[19]; // connects to an EEPROM, but it isn't on the PCB
             2: if( A[19:18]==2'b01 ) begin // DPS - display (?)
                 case( A[15:13] )
-                    0: fmode  = 1;
-                    1: fsft   = 1;
-                    2: fmap   = 1;
-                    3: bmode  = 1;
-                    4: bsft   = 1;
-                    5: bmap   = 1;
-                    6: nexrm0 = 1;
+                    0: fmode_cs  = 1;
+                    1: fsft_cs   = 1;
+                    2: fmap_cs   = 1;
+                    3: bmode_cs  = 1;
+                    4: bsft_cs   = 1;
+                    5: bmap_cs   = 1;
+                    6: nexrm0_cs = 1;
                     default:;
                 endcase
             end

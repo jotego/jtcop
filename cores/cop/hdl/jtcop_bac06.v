@@ -16,6 +16,13 @@
     Version: 1.0
     Date: 24-9-2021 */
 
+// Largest ROM seen
+// As   | Size
+// -----|------------------
+// gfx1 | 0x20000 =  64 kB
+// gfx2 | 0x40000 = 128 kB
+// gfx3 | 0x40000 = 256 kB  (midres)
+
 module jtcop_bac06(
     input       rst,
     input       clk,        // 12MHz original
@@ -38,15 +45,15 @@ module jtcop_bac06(
     inout   [8:0]  vdump,
     inout   [8:0]  vrender,
     inout   [8:0]  hdump,
-    inout   [8:0]  LHBL,
-    inout   [8:0]  LVBL,
-    inout   [8:0]  HS,
-    inout   [8:0]  VS,
+    inout          LHBL,
+    inout          LVBL,
+    inout          HS,
+    inout          VS,
 
     // ROMs
-    input          rom_cs,
+    output         rom_cs,
     output  [16:0] rom_addr,    // MSB = bank selection
-    input   [15:0] rom_data,
+    input   [31:0] rom_data,
     input          rom_ok
 );
 

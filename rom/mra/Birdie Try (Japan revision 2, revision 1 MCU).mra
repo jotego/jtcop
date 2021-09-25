@@ -57,30 +57,49 @@
         <part name="ek-08.2c" crc="be3db6cb"/>
         <part repeat="0x10000"> FF</part>
         <!-- gfx1 - starts at 0xC0000 -->
-        <part name="ek-25.15h" crc="4df134ad"/>
-        <part name="ek-26.16h" crc="a00d3e8e"/>
-        <!-- gfx2 - starts at 0xD0000 -->
-        <part name="ek-18.14d" crc="9886fb70"/>
-        <part name="ek-17.12d" crc="bed91bf7"/>
-        <part name="ek-20.17d" crc="45d53965"/>
-        <part name="ek-19.15d" crc="c2949dd2"/>
-        <part name="ek-22.14f" crc="7f2cc80a"/>
-        <part name="ek-21.12f" crc="281bc793"/>
-        <part name="ek-24.17f" crc="2244cc75"/>
-        <part name="ek-23.15f" crc="d0ed0116"/>
-        <part repeat="0x58000"> FF</part>
+        <interleave output="16">
+            <part name="ek-25.15h" crc="4df134ad" map="01"/>
+            <part name="ek-26.16h" crc="a00d3e8e" map="10"/>
+        </interleave>
+        <part repeat="0x18000"> FF</part>
+        <!-- gfx2 - starts at 0xE8000 -->
+        <interleave output="16">
+            <part name="ek-18.14d" crc="9886fb70" map="01"/>
+            <part name="ek-17.12d" crc="bed91bf7" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="ek-20.17d" crc="45d53965" map="01"/>
+            <part name="ek-19.15d" crc="c2949dd2" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="ek-22.14f" crc="7f2cc80a" map="01"/>
+            <part name="ek-21.12f" crc="281bc793" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="ek-24.17f" crc="2244cc75" map="01"/>
+            <part name="ek-23.15f" crc="d0ed0116" map="10"/>
+        </interleave>
+        <part repeat="0x40000"> FF</part>
         <!-- gfx4 - starts at 0x1A8000 -->
-        <part name="ek-15.16c" crc="a6a041a3"/>
-        <part name="ek-16.17c" crc="784f62b0"/>
+        <interleave output="16">
+            <part name="ek-15.16c" crc="a6a041a3" map="01"/>
+            <part name="ek-16.17c" crc="784f62b0" map="10"/>
+        </interleave>
         <part repeat="0x8000"> FF</part>
-        <part name="ek-11.16a" crc="9224a6b9"/>
-        <part name="ek-12.17a" crc="12deecfa"/>
+        <interleave output="16">
+            <part name="ek-11.16a" crc="9224a6b9" map="01"/>
+            <part name="ek-12.17a" crc="12deecfa" map="10"/>
+        </interleave>
         <part repeat="0x8000"> FF</part>
-        <part name="ek-13.13c" crc="1f023459"/>
-        <part name="ek-14.14c" crc="57d54943"/>
+        <interleave output="16">
+            <part name="ek-13.13c" crc="1f023459" map="01"/>
+            <part name="ek-14.14c" crc="57d54943" map="10"/>
+        </interleave>
         <part repeat="0x8000"> FF</part>
-        <part name="ek-09.13a" crc="6d2d488a"/>
-        <part name="ek-10.14a" crc="580ba206"/>
+        <interleave output="16">
+            <part name="ek-09.13a" crc="6d2d488a" map="01"/>
+            <part name="ek-10.14a" crc="580ba206" map="10"/>
+        </interleave>
         <part repeat="0x8000"> FF</part>
         <!-- proms - starts at 0x228000 -->
         <part name="mb7116e.12c" crc="86e775f8"/>

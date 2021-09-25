@@ -23,10 +23,10 @@ regions = [
     { name="sub",           start=$MCU_START },
     { name="mcu",           start=$MCU_START },
     { name="oki",           start=$PCM_START },
-    { name="gfx1",          start=$BA2_START },
-    { name="gfx2"                            },
-    { name="gfx3"                            },
-    { name="gfx4",          start=$BA3_START },
+    { name="gfx1",          start=$BA2_START, width=16 },
+    { name="gfx2",          width=16, start=$GFX2_START},
+    { name="gfx3",          width=16, start=$GFX3_START},
+    { name="gfx4",          start=$BA3_START, width=16 },
     { name="proms",         start=$PROM_START },
     { name="plds",          skip=true         }
 ]
