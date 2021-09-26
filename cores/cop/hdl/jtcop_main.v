@@ -24,6 +24,10 @@ module jtcop_main(
     input              LVBL,
     input              sec2,
 
+    // sound
+    output             snd_irqn,
+    output reg [7:0]   snd_latch,
+
     // Palette
     output reg [2:0]   prisel,
     output reg [1:0]   pal_cs,
@@ -68,12 +72,14 @@ wire        ASn, UDSn, LDSn, BUSn, VPAn;
 wire [23:0] A_full = {A,1'b0};
 `endif
 
+reg         snreq, eep_cs;
+
 assign UDSWn = RnW | UDSn;
 assign LDSWn = RnW | LDSn;
 assign BUSn  = ASn | (LDSn & UDSn);
 assign VPAn  = ~&{ FC, ~ASn };
 
-reg eep_cs;
+assign snd_irqn = ~snreq;
 
 always @(*) begin
     IPLn = 7;
@@ -173,6 +179,7 @@ always @(posedge clk, posedge rst) begin
         secirq  <= 0;
         LVBL_l  <= 0;
         sec2_l  <= 0;
+        snd_latch <= 0;
     end else begin
 
         LVBL_l <= LVBL;
@@ -185,6 +192,8 @@ always @(posedge clk, posedge rst) begin
             secirq <= 0;
         else if( !sec2_l && sec2 ) secirq <= 1;
 
+        if( snreq )
+            snd_latch <= cpu_dout[7:0];
     end
 end
 

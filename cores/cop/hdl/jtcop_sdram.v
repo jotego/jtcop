@@ -44,12 +44,10 @@ module jtcop_sdram(
     output    [ 7:0] snd_data,
 
     // ADPCM ROM
-    output  reg      dec_en,
-    output  reg      dec_type,
-    input     [16:0] pcm_addr,
-    input            pcm_cs,
-    output    [ 7:0] pcm_data,
-    output           pcm_ok,
+    input     [17:0] adpcm_addr,
+    input            adpcm_cs,
+    output    [ 7:0] adpcm_data,
+    output           adpcm_ok,
 
     // Scroll 0
     output           scr0_ok,
@@ -108,7 +106,7 @@ module jtcop_sdram(
 /* verilator lint_off WIDTH */
 localparam [24:0] BA1_START   = `BA1_START,
                   MCU_START   = `MCU_START,
-                  PCM_START   = `PCM_START,
+                  PCM_OFFSET  = (`PCM_START-BA1_START)>>1,
                   BA2_START   = `BA2_START,
                   GFX2_START  = `GFX2_START,
                   GFX3_START  = `GFX3_START,
@@ -136,6 +134,40 @@ jtframe_dwnld #(
     .prom_we      ( prom_we        ),
     .header       (                ),
     .sdram_ack    ( prog_ack       )
+);
+
+
+
+// Sound
+jtframe_rom_2slots #(
+    .SLOT0_DW(   8),
+    .SLOT0_AW(  16),
+
+    .SLOT1_DW(   8),
+    .SLOT1_AW(  18),
+
+    .SLOT1_OFFSET( PCM_OFFSET )
+) u_bank1(
+    .rst        ( rst       ),
+    .clk        ( clk       ),
+
+    .slot0_addr ( snd_addr  ),
+    .slot0_dout ( snd_data  ),
+    .slot0_cs   ( snd_cs    ),
+    .slot0_ok   ( snd_ok    ),
+
+    .slot1_addr ( pcm_addr  ),
+    .slot1_dout ( pcm_data  ),
+    .slot1_cs   ( pcm_cs    ),
+    .slot1_ok   ( pcm_ok    ),
+
+    // SDRAM controller interface
+    .sdram_addr ( ba1_addr  ),
+    .sdram_req  ( ba_rd[1]  ),
+    .sdram_ack  ( ba_ack[1] ),
+    .data_dst   ( ba_dst[1] ),
+    .data_rdy   ( ba_rdy[1] ),
+    .data_read  ( data_read )
 );
 
 

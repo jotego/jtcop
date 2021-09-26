@@ -26,7 +26,7 @@ module jtcop_snd(
     input         [ 7:0] latch,
 
     // ROM
-    output        [14:0] rom_addr,
+    output        [15:0] rom_addr,
     output    reg        rom_cs,
     input         [ 7:0] rom_data,
     input                rom_ok,
@@ -35,8 +35,17 @@ module jtcop_snd(
     output        [17:0] adpcm_addr,
     output               adpcm_cs,
     input         [ 7:0] adpcm_data,
-    input                adpcm_ok
+    input                adpcm_ok,
+
+    output signed [15:0] snd,
+    output               sample,
+    output               peak
 );
+
+localparam [7:0] OPN_GAIN = 8'h04;
+                 OPL_GAIN = 8'h04;
+                 PCM_GAIN = 8'h04;
+                 PSG_GAIN = 8'h04;
 
 wire        cen, cen_opl;
 wire [15:0] cpu_addr;
@@ -45,17 +54,20 @@ reg  [ 7:0] cpu_din, dev_mux;
 reg         nmin, opl_cs, opn_cs, ram_cs,
             nmi_clr, oki_cs, dev_cs, cen_oki;
 wire        irqn, ram_we, cpu_rnw, oki_wrn,
-            oki_sample;
+            oki_sample, rdy;
 reg  [ 2:0] cen_sh=1;
 
 wire signed [15:0] opl_snd, opn_snd;
 wire signed [15:0] adpcm_snd;
 wire signed [13:0] oki_pre;
-wire        [ 9:0] psg_snd;
+wire        [ 9:0] psg_snd, psgac_snd;
 
-assign irqn   = opn_irqn & opl_irqn;
-assign ram_we = ram_cs & ~cpu_rnw;
-assign oki_wrn= ~(oki_cs & ~cpu_rnw);
+assign irqn     = opn_irqn & opl_irqn;
+assign ram_we   = ram_cs & ~cpu_rnw;
+assign oki_wrn  = ~(oki_cs & ~cpu_rnw);
+assign sample   = cen;
+assign rom_addr = { 1'b0, cpu_addr[14:0] };
+assign rdy      = ~rom_cs | rom_ok;
 
 always @(*) begin
     ram_cs  = 0;
@@ -204,6 +216,32 @@ jtframe_uprate2_fir u_fir1(
     .r_in       (     16'd0      ),
     .l_out      ( adpcm_snd      ),
     .r_out      (                )
+);
+
+jtframe_dcrm #(.SW(10)) u_dcrm(
+    .rst    ( rst       ),
+    .clk    ( clk       ),
+    .sample ( cen       ),
+    .din    ( psg_snd   ),
+    .dout   ( psgac_snd )
+);
+
+jtframe_mixer #(.W3(10),.WOUT(16)) u_mixer(
+    .rst    ( rst       ),
+    .clk    ( clk       ),
+    .cen    ( cen       ),
+    // input signals
+    .ch0    ( opn_snd   ),
+    .ch1    ( opl_snd   ),
+    .ch2    ( adpcm_snd ),
+    .ch3    ( psgac_snd ),
+    // gain for each channel in 4.4 fixed point format
+    .gain0  ( OPN_GAIN  ),
+    .gain1  ( OPL_GAIN  ),
+    .gain2  ( PCM_GAIN  ),
+    .gain3  ( PSG_GAIN  ),
+    .mixed  ( snd       ),
+    .peak   ( peak      )
 );
 
 endmodule

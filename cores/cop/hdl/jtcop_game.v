@@ -132,19 +132,18 @@ wire        UDSWn, LDSWn, main_rnw;
 wire        char_cs, scr1_cs, pal_cs, objram_cs;
 
 // Sound CPU
-wire [SNDW-1:0] snd_addr;
+wire [15:0] snd_addr;
 wire [ 7:0] snd_data;
 wire        snd_cs, snd_ok;
 
-// PCM
-wire [16:0] pcm_addr;
-wire        pcm_cs;
-wire [ 7:0] pcm_data;
-wire        pcm_ok;
-wire        n7751_prom;
-
 wire [ 7:0] snd_latch;
-wire        snd_irqn, snd_ack;
+wire        snd_irqn;
+
+// PCM
+wire [17:0] adpcm_addr;
+wire        adpcm_cs;
+wire [ 7:0] adpcm_data;
+wire        adpcm_ok;
 
 wire        flip, video_en, sound_en;
 
@@ -206,8 +205,6 @@ jtcop_main u_main(
     // Sound communication
     .snd_latch   ( snd_latch  ),
     .snd_irqn    ( snd_irqn   ),
-    .snd_ack     ( snd_ack    ),
-    .sound_en    ( sound_en   ),
     // DIP switches
     .dip_pause   ( dip_pause  ),
     .dip_test    ( dip_test   ),
@@ -262,47 +259,6 @@ jtcop_main u_main(
         end
         assign tile_bank = sim_def[0][5:0];
     `endif
-`endif
-
-`ifndef NOSOUND
-jtcop_snd u_sound(
-    .rst        ( rst24     ),
-    .clk        ( clk24     ),
-
-    .fxlevel    (dip_fxlevel),
-    .enable_fm  ( enable_fm ),
-    .enable_psg ( enable_psg),
-
-    .latch      ( snd_latch ),
-    .irqn       ( snd_irqn  ),
-    .ack        ( snd_ack   ),
-    // MCU PROM
-    .prom_we    ( n7751_prom     ),
-    .prog_addr  ( prog_addr[9:0] ),
-    .prog_data  ( prog_data[7:0] ),
-
-    // ADPCM ROM
-    .pcm_addr   ( pcm_addr  ),
-    .pcm_cs     ( pcm_cs    ),
-    .pcm_data   ( pcm_data  ),
-    .pcm_ok     ( pcm_ok    ),
-
-    // ROM
-    .rom_addr   ( snd_addr  ),
-    .rom_cs     ( snd_cs    ),
-    .rom_data   ( snd_data  ),
-    .rom_ok     ( snd_ok    ),
-
-    // Sound output
-    .snd        ( snd       ),
-    .sample     ( sample    ),
-    .peak       ( game_led  )
-);
-`else
-    assign snd_cs=0;
-    assign snd_addr=0;
-    //assign pcm_cs=0;
-    //assign pcm_addr=0;
 `endif
 
 jtcop_video u_video(
@@ -365,6 +321,37 @@ jtcop_video u_video(
     //.st_dout    ( st_video  )
 );
 
+`ifndef NOSOUND
+    jtcop_snd u_snd(
+        .rst        ( rst       ),
+        .clk        ( clk       ),
+
+        // From main CPU
+        .snreq      ( snd_irqn  ),
+        .latch      ( snd_latch ),
+
+        // ROM
+        .rom_addr   ( snd_addr  ),
+        .rom_cs     ( snd_cs    ),
+        .rom_data   ( snd_data  ),
+        .rom_ok     ( snd_ok    ),
+
+        // ADPCM ROM
+        .adpcm_addr ( adpcm_addr),
+        .adpcm_cs   ( adpcm_cs  ),
+        .adpcm_data ( adpcm_data),
+        .adpcm_ok   ( adpcm_ok  ),
+
+        .snd        ( snd       ),
+        .sample     ( sample    ),
+        .peak       ( peak      )
+    );
+`else
+    assign snd_cs = 0;
+    assign adpcm_cs = 0;
+    assign snd = 0;
+`endif
+
 jtcop_sdram u_sdram(
     .rst        ( rst       ),
     .clk        ( clk       ),
@@ -400,10 +387,10 @@ jtcop_sdram u_sdram(
     .snd_ok     ( snd_ok    ),
 
     // ADPCM ROM
-    .pcm_addr   ( pcm_addr  ),
-    .pcm_cs     ( pcm_cs    ),
-    .pcm_data   ( pcm_data  ),
-    .pcm_ok     ( pcm_ok    ),
+    .adpcm_addr (adpcm_addr ),
+    .adpcm_cs   (adpcm_cs   ),
+    .adpcm_data (adpcm_data ),
+    .adpcm_ok   (adpcm_ok   ),
 
     // BG 0
     .scr0_ok    ( scr0_ok   ),
