@@ -20,6 +20,8 @@
 module jtcop_snd(
     input                rst,
     input                clk,
+    input                cen_opn,
+    input                cen_opl,
 
     // From main CPU
     input                snreq,  // sound interrupt from main CPU
@@ -47,7 +49,6 @@ localparam [7:0] OPN_GAIN = 8'h04;
                  PCM_GAIN = 8'h04;
                  PSG_GAIN = 8'h04;
 
-wire        cen, cen_opl;
 wire [15:0] cpu_addr;
 wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout;
 reg  [ 7:0] cpu_din, dev_mux;
@@ -65,7 +66,7 @@ wire        [ 9:0] psg_snd, psgac_snd;
 assign irqn     = opn_irqn & opl_irqn;
 assign ram_we   = ram_cs & ~cpu_rnw;
 assign oki_wrn  = ~(oki_cs & ~cpu_rnw);
-assign sample   = cen;
+assign sample   = cen_opn;
 assign rom_addr = { 1'b0, cpu_addr[14:0] };
 assign rdy      = ~rom_cs | rom_ok;
 
@@ -118,20 +119,10 @@ always @(posedge clk) begin
     end
 end
 
-jtframe_cen48 u_cen(
-    .clk    ( clk       ),
-    .cen3   ( cen_opl   ),
-    .cen1p5 ( cen       ),
-    // unused
-    .cen12(), .cen16(), .cen8(), .cen6(), .cen4(), .cen4_12(), 
-    .cen3q(), .cen16b(), .cen12b(), .cen6b(), 
-    .cen3b(), .cen3qb(), .cen1p5b()
-);
-
 MC6502 u_cpu(
     .rstn   ( ~rst      ),
     .clk    ( clk       ),
-    .cen    ( cen       ),
+    .cen    ( cen_opn   ),
     .i_rdy  ( rdy       ),
     .i_irqn ( irqn      ),
     .i_nmin ( nmin      ),
@@ -168,7 +159,7 @@ jtopl u_opl(
 jt03 u_2203(
     .rst    ( rst       ),   
     .clk    ( clk       ),   
-    .cen    ( cen       ),   
+    .cen    ( cen_opn   ),
     .din    ( cpu_dout  ),
     .addr   (cpu_addr[0]),
     .cs_n   ( ~opn_cs   ),
@@ -221,7 +212,7 @@ jtframe_uprate2_fir u_fir1(
 jtframe_dcrm #(.SW(10)) u_dcrm(
     .rst    ( rst       ),
     .clk    ( clk       ),
-    .sample ( cen       ),
+    .sample ( cen_opn   ),
     .din    ( psg_snd   ),
     .dout   ( psgac_snd )
 );
@@ -229,7 +220,7 @@ jtframe_dcrm #(.SW(10)) u_dcrm(
 jtframe_mixer #(.W3(10),.WOUT(16)) u_mixer(
     .rst    ( rst       ),
     .clk    ( clk       ),
-    .cen    ( cen       ),
+    .cen    ( cen_opn   ),
     // input signals
     .ch0    ( opn_snd   ),
     .ch1    ( opl_snd   ),

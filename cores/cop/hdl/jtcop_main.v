@@ -24,6 +24,11 @@ module jtcop_main(
     input              LVBL,
     input              sec2,
 
+    // main
+    input       [15:0] mcu_dout,
+    output reg  [15:0] mcu_din,
+    output reg  [ 5:0] mcu_sel,
+
     // sound
     output             snd_irqn,
     output reg [7:0]   snd_latch,

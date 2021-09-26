@@ -19,8 +19,8 @@
 module jtcop_game(
     input           rst,
     input           clk,
-    // input           rst24,
-    // input           clk24,
+    input           rst24,
+    input           clk24,
     output          pxl2_cen,   // 12   MHz
     output          pxl_cen,    //  6   MHz
     output   [7:0]  red,
@@ -146,6 +146,16 @@ wire [ 7:0] adpcm_data;
 wire        adpcm_ok;
 
 wire        flip, video_en, sound_en;
+wire        cen_opl, cen_opn, cen_mcu;
+
+reg  [15:0] mcu_dout;
+wire [15:0] mcu_din;
+wire [ 5:0] mcu_sel;
+
+// ROM banks
+wire [1:0] sndflag, b1flg, mixflg;
+wire [2:0] crback;
+wire       b0flg;
 
 // Cabinet inputs
 wire [ 7:0] dipsw_a, dipsw_b;
@@ -157,6 +167,17 @@ wire [7:0] st_video, st_main;
 assign { dipsw_b, dipsw_a } = dipsw[15:0];
 assign dsn = { UDSWn, LDSWn };
 
+jtframe_cen24 u_cen(
+    .clk    ( clk24     ),
+    .cen3   ( cen_opl   ),
+    .cen1p5 ( cen_opn   ),
+    .cen8   ( cen_mcu   ),
+    // unused
+    .cen12(), .cen6(), .cen4(),
+    .cen3q(), .cen12b(), .cen6b(),
+    .cen3b(), .cen3qb(), .cen1p5b()
+);
+
 
 `ifndef NOMAIN
 jtcop_main u_main(
@@ -166,6 +187,10 @@ jtcop_main u_main(
     .cpu_cen    ( cpu_cen   ),
     .cpu_cenb   ( cpu_cenb  ),
 //    .game_id    ( game_id   ),
+    // MCU
+    .mcu_din    ( mcu_din   ),
+    .mcu_dout   ( mcu_dout  ),
+    .mcu_sel    ( mcu_sel   ),
     // Video
     .vint       ( vint      ),
     .video_en   ( video_en  ),
@@ -224,41 +249,6 @@ jtcop_main u_main(
     assign LDSWn     = 1;
     assign main_rnw  = 1;
     assign main_dout = 0;
-    assign video_en  = 1;
-    assign sound_en  = 0; // active low (?)
-    `ifdef S16B
-        reg aux_obf = 0;
-        reg [7:0] aux_dout=0;
-        assign sndmap_dout = aux_dout;
-        assign sndmap_pbf  = aux_obf;
-        integer framecnt=0, last_fcnt=0;
-
-        always @(negedge LVBL) begin
-            framecnt <= framecnt+1;
-        end
-        always @(negedge LHBL_dly) begin
-            last_fcnt <= framecnt;
-            aux_obf <= last_fcnt != framecnt && (framecnt==10
-                || framecnt==12
-                // || framecnt==32
-                // || framecnt==72
-                // || framecnt==112
-            );
-            if( framecnt == 11 ) aux_dout <= 8'h4b; //8'h48 Ok; 4c
-            //if( framecnt == 31 ) aux_dout <= 8'h42;
-            //if( framecnt == 71 ) aux_dout <= 8'h41;
-            //if( framecnt ==111 ) aux_dout <= 8'h40;
-        end
-    `endif
-    `ifdef SIMULATION
-        reg [7:0] sim_def[0:1];
-
-        initial begin
-            $readmemh("tilebank.hex",sim_def);
-            $display("Tile bank set to %X",sim_def[0]);
-        end
-        assign tile_bank = sim_def[0][5:0];
-    `endif
 `endif
 
 jtcop_video u_video(
@@ -323,8 +313,10 @@ jtcop_video u_video(
 
 `ifndef NOSOUND
     jtcop_snd u_snd(
-        .rst        ( rst       ),
-        .clk        ( clk       ),
+        .rst        ( rst24     ),
+        .clk        ( clk24     ),
+        .cen_opn    ( cen_opn   ),
+        .cen_opl    ( cen_opl   ),
 
         // From main CPU
         .snreq      ( snd_irqn  ),
@@ -350,6 +342,79 @@ jtcop_video u_video(
     assign snd_cs = 0;
     assign adpcm_cs = 0;
     assign snd = 0;
+`endif
+
+`ifdef MCU
+    wire [7:0] mcu_p0o, mcu_p1o, mcu_p2o, mcu_p3o, mcu_p3i;
+    reg  [7:0] p2l, mcu_p0i;
+    reg        mcu_intn, mcu_sel0l;
+
+    assign mcu_p3i = { sel[5:3], mcu_p3o[4:0] };
+    assign { sndflag, b1flg, b0flg, mixflg } = mcu_p1o[6:0];
+    assign crback = mcu_p3o[2:0];
+
+    always @(posedge clk24) begin
+        p2l <= mcu_p2o;
+        mcu_sel0l <= mcu_sel[0];
+
+        if( !mcu_p2o[3] )
+            mcu_intn <= 1;
+        else if( mcu_sel[0] & ~mcu_sel0l )
+            mcu_intn <= 0;
+
+        // MCU reads
+        if( mcu_p2o[4] & ~p2l[4] )
+            mcu_p0i <= mcu_din[15:8];
+        if( mcu_p2o[5] & ~p2l[5] )
+            mcu_p0i <= mcu_din[7:0];
+
+        // MCU writes
+        if( mcu_p2o[6] & ~p2l[6] )
+            mcu_dout[7:0] <= mcu_p0o;
+        if( mcu_p2o[7] & ~p2l[7] )
+            mcu_dout[15:8] <= mcu_p0o;
+    end
+
+    jtframe_8751mcu #(
+        .DIVCEN     ( 1             ),
+        .SYNC_XDATA ( 1             ),
+        //.SYNC_P1    ( 1             ),
+        .SYNC_INT   ( 1             )
+    ) u_mcu(
+        .rst        ( rst24         ),
+        .clk        ( clk24         ),
+        .cen        ( cen_mcu       ),
+
+        .int0n      ( 1'b1          ),
+        .int1n      ( mcu_intn      ),
+
+        .p0_i       ( mcu_p0i       ),
+        .p1_i       ( mcu_p1o       ), // used as outputs only
+        .p2_i       ( mcu_p2o       ), // used as outputs only
+        .p3_i       ( mcu_p3i       ),
+
+        .p0_o       ( mcu_p0o       ),
+        .p1_o       ( mcu_p1o       ),
+        .p2_o       ( mcu_p2o       ),
+        .p3_o       ( mcu_p3o       ),
+
+        // external memory
+        .x_din      ( 8'h0          ),
+        .x_dout     (               ),
+        .x_addr     (               ),
+        .x_wr       (               ),
+        .x_acc      (               ),
+
+        // ROM programming
+        .clk_rom    ( clk           ),
+        .prog_addr  ( prog_addr[11:0] ),
+        .prom_din   ( prog_data     ),
+        .prom_we    ( mcu_we        )
+    );
+`else
+    assign { sndflag, b1flg, b0flg, mixflg } = 0;
+    assign crback = 0;
+    initial mcu_dout = 0;
 `endif
 
 jtcop_sdram u_sdram(
