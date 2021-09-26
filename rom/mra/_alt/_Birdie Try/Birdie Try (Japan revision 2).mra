@@ -50,19 +50,16 @@
         <!-- audiocpu - starts at 0x80000 -->
         <part name="ek-07.8a" crc="236549bc"/>
         <part repeat="0x8000"> FF</part>
-        <!-- mcu - starts at 0x90000 -->
-        <part name="ek-31.9a" crc="68831ae9"/>
-        <part repeat="0xF000"> FF</part>
-        <!-- oki - starts at 0xA0000 -->
+        <!-- oki - starts at 0x90000 -->
         <part name="ek-08.2c" crc="be3db6cb"/>
         <part repeat="0x10000"> FF</part>
-        <!-- gfx1 - starts at 0xC0000 -->
+        <!-- gfx1 - starts at 0xB0000 -->
         <interleave output="16">
             <part name="ek-25.15h" crc="4df134ad" map="01"/>
             <part name="ek-26.16h" crc="a00d3e8e" map="10"/>
         </interleave>
         <part repeat="0x18000"> FF</part>
-        <!-- gfx2 - starts at 0xE8000 -->
+        <!-- gfx2 - starts at 0xD8000 -->
         <interleave output="16">
             <part name="ek-18.14d" crc="9886fb70" map="01"/>
             <part name="ek-17.12d" crc="bed91bf7" map="10"/>
@@ -80,7 +77,7 @@
             <part name="ek-23.15f" crc="d0ed0116" map="10"/>
         </interleave>
         <part repeat="0x40000"> FF</part>
-        <!-- gfx4 - starts at 0x1A8000 -->
+        <!-- gfx4 - starts at 0x198000 -->
         <interleave output="16">
             <part name="ek-15.16c" crc="a6a041a3" map="01"/>
             <part name="ek-16.17c" crc="784f62b0" map="10"/>
@@ -101,10 +98,13 @@
             <part name="ek-10.14a" crc="580ba206" map="10"/>
         </interleave>
         <part repeat="0x8000"> FF</part>
-        <!-- proms - starts at 0x228000 -->
+        <!-- mcu - starts at 0x218000 -->
+        <part name="ek-31.9a" crc="68831ae9"/>
+        <part repeat="0x17000"> FF</part>
+        <!-- proms - starts at 0x230000 -->
         <part name="mb7116e.12c" crc="86e775f8"/>
         <part name="mb7122e.17e" crc="a5cda23e"/>
-        <!-- Total 0x228600 bytes - 2209 kBytes -->
+        <!-- Total 0x230600 bytes - 2241 kBytes -->
     </rom>
     <rom index="17" zip="jtbeta.zip" md5="None">
         <part name="beta.bin"/>
