@@ -16,7 +16,6 @@
     Version: 1.0
     Date: 26-9-2021 */
 
-
 module jtcop_snd(
     input                rst,
     input                clk,
@@ -32,6 +31,7 @@ module jtcop_snd(
     output    reg        rom_cs,
     input         [ 7:0] rom_data,
     input                rom_ok,
+    output    reg        snd_bank,
 
     // ADPCM ROM
     output        [17:0] adpcm_addr,
@@ -44,6 +44,8 @@ module jtcop_snd(
     output               peak
 );
 
+parameter BANKS=0;
+
 localparam [7:0] OPN_GAIN = 8'h04;
                  OPL_GAIN = 8'h04;
                  PCM_GAIN = 8'h04;
@@ -52,7 +54,7 @@ localparam [7:0] OPN_GAIN = 8'h04;
 wire [15:0] cpu_addr;
 wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout;
 reg  [ 7:0] cpu_din, dev_mux;
-reg         nmin, opl_cs, opn_cs, ram_cs,
+reg         nmin, opl_cs, opn_cs, ram_cs, bank_cs,
             nmi_clr, oki_cs, dev_cs, cen_oki;
 wire        irqn, ram_we, cpu_rnw, oki_wrn,
             oki_sample, rdy;
@@ -74,8 +76,9 @@ always @(*) begin
     ram_cs  = 0;
     opn_cs  = 0;
     opl_cs  = 0;
+    bank_cs = BANKS && cpu_addr[15] && !cpu_rnw;
     nmi_clr = 0;
-    rom_cs  = cpu_addr[15];
+    rom_cs  = |cpu_addr[15:14]; // some games only use bit 15
     oki_cs  = 1;
     if(cpu_addr[15:14]==0) begin
         case( cpu_addr[13:11] )
@@ -116,6 +119,15 @@ always @(posedge clk) begin
         snreq_l <= snreq;
         if( nmi_clr ) nmin <= 1;
         else if( snreq & ~snreq_l ) nmin <= 0;
+    end
+end
+
+// system registers
+always @(posedge clk) begin
+    if( rst ) begin
+        snd_bank <= 0;
+    end else begin
+        if( bank_cs ) snd_bank <= cpu_dout[0];
     end
 end
 

@@ -33,6 +33,14 @@ module jtcop_sdram(
     input     [15:0] main_dout,
     input            main_rnw,
 
+    // ROM banks
+    input     [ 2:1] sndflag,
+    input     [ 2:1] b1flg,
+    input     [ 2:1] mixflg,
+    input     [ 2:0] crback,
+    input            b0flg,
+    input            sndbank,
+
     // PROM
     output           mcu_we,
     output           prio_we,
@@ -61,7 +69,7 @@ module jtcop_sdram(
 
     // Scroll 2
     output           scr2_ok,
-    input    [16:0]  scr2_addr, 
+    input    [15:0]  scr2_addr,
     output   [31:0]  scr2_data,        
 
     // Obj
@@ -103,6 +111,8 @@ module jtcop_sdram(
     input            prog_rdy
 );
 
+parameter BANKS=0;
+
 /* verilator lint_off WIDTH */
 localparam [24:0] BA1_START   = `BA1_START,
                   MCU_START   = `MCU_START,
@@ -139,6 +149,18 @@ jtframe_dwnld #(
 
 
 // Sound
+// adpcm_addr[16] is used as an /OE signal on the board
+// I'm ignoring that connection here as it isn't relevant
+wire [15:0] adpcm_eff;
+wire [15:0] snd_eff;
+
+assign adpcm_eff = { adpcm_addr[15] | sndflag[2], adpcm_addr[14:0] };
+assign snd_eff = BANKS ? { sndflag[1] | snd_addr[15],
+                           (sndbank | snd_addr[15]) & snd_addr[14]
+                           snd_addr[13:0] } :
+                        { 1'b0, snd_addr[14:0] };
+
+
 jtframe_rom_2slots #(
     .SLOT0_DW(   8),
     .SLOT0_AW(  16),
@@ -156,10 +178,10 @@ jtframe_rom_2slots #(
     .slot0_cs   ( snd_cs    ),
     .slot0_ok   ( snd_ok    ),
 
-    .slot1_addr ( pcm_addr  ),
-    .slot1_dout ( pcm_data  ),
-    .slot1_cs   ( pcm_cs    ),
-    .slot1_ok   ( pcm_ok    ),
+    .slot1_addr (adpcm_eff  ),
+    .slot1_dout (adpcm_data ),
+    .slot1_cs   (adpcm_cs   ),
+    .slot1_ok   (adpcm_ok   ),
 
     // SDRAM controller interface
     .sdram_addr ( ba1_addr  ),
@@ -170,5 +192,11 @@ jtframe_rom_2slots #(
     .data_read  ( data_read )
 );
 
+// Backgrounds
+wire [15:0] scr2_eff;
+
+assign scr2_eff = BANKS ? :
+            { }
+            { ~b2cgsel[0], scr2_addr[14:0] };
 
 endmodule

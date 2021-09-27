@@ -94,6 +94,11 @@ module jtcop_game(
     // output reg [ 7:0]  st_dout
 );
 
+`ifdef MCU
+    localparam BANKS=1;
+`else
+    localparam BANKS=0;
+`endif
 
 // clock enable signals
 wire    cpu_cen, cpu_cenb,
@@ -153,7 +158,7 @@ wire [15:0] mcu_din;
 wire [ 5:0] mcu_sel;
 
 // ROM banks
-wire [1:0] sndflag, b1flg, mixflg;
+wire [2:1] sndflag, b1flg, mixflg;  // 2:1 to match schematics labels
 wire [2:0] crback;
 wire       b0flg;
 
@@ -417,10 +422,17 @@ jtcop_video u_video(
     initial mcu_dout = 0;
 `endif
 
-jtcop_sdram u_sdram(
+jtcop_sdram #(.BANKS(BANKS)) u_sdram(
     .rst        ( rst       ),
     .clk        ( clk       ),
     .ioctl_ram  ( ioctl_ram ),
+
+    // Banks
+    .sndflag    ( sndflag   ),
+    .b1flg      ( b1flg     ),
+    .mixflg     ( mixflg    ),
+    .crback     ( crback    ),
+    .b0flg      ( b0flg     ),
 
     .vrender    ( vrender   ),
     .LVBL       ( LVBL      ),

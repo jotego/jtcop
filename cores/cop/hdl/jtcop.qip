@@ -1,0 +1,33 @@
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_bac06.v  ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_colmix.v ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_game.v   ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_main.v   ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_sdram.v  ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_snd.v    ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_video.v  ]
+
+# SDRAM
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../modules/jtframe/hdl/sdram/jtframe_dwnld.v         ]
+
+# RAM
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../modules/jtframe/hdl/ram/jtframe_dual_ram16.v      ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../modules/jtframe/hdl/ram/jtframe_ram.v             ]
+
+# Video
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../modules/jtframe/hdl/video/jtframe_vtimer.v        ]
+# set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../modules/jtframe/hdl/ram/jtframe_obj_buffer.v        ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../modules/jtframe/hdl/video/jtframe_blank.v        ]
+# set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../modules/jtframe/hdl/video/jtframe_linebuf.v        ]
+
+# 68000
+set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) ../../modules/jtframe/hdl/cpu/jtframe_m68k.qip   ]
+
+# i8051
+set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/8051/mc8051.qip   ]
+
+# Sound
+set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/mc6502/mc6502.qip ]
+set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jt12/hdl/jt03.qip                 ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/sound/jtframe_mixer.v ]
+set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jtopl/hdl/jtopl.qip               ]
+set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jt6295/hdl/jt6295.qip             ]
