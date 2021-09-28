@@ -45,6 +45,10 @@ module jtcop_main(
     output reg         bmap_cs,
     output reg         nexrm0_cs,
 
+    // MCU/SUB CPU
+    output reg [5:0]   sec,         // bit 2 is unused
+    input              sec2,        // this is the bit2!
+
     // cabinet I/O
     input       [ 7:0] joystick1,
     input       [ 7:0] joystick2,
@@ -72,6 +76,7 @@ wire [ 2:0] FC;
 reg  [ 2:0] IPLn;
 wire        BRn, BGACKn, BGn, RnW;
 wire        ASn, UDSn, LDSn, BUSn, VPAn;
+reg  [15:0] cpu_din;
 
 `ifdef SIMULATION
 wire [23:0] A_full = {A,1'b0};
@@ -110,7 +115,6 @@ always @(*) begin
     prisel_cs  = 0;
     dm_cs      = 0;
     snreq      = 0;
-    sec        = 0;
     vint_clr   = 0;
     mixpsel_cs = 0;
     cblk       = 0;
@@ -120,6 +124,9 @@ always @(*) begin
     pal_cs     = 0;
     sysram     = 0;
     mix        = 0;
+    sec[5:3]   = { service, coin_input };
+    sec[2]     = sec2;
+    sec[1:0]   = 0;
 
     if( !ASn ) begin
         case( A[21:20] )
@@ -185,6 +192,7 @@ always @(posedge clk, posedge rst) begin
         LVBL_l  <= 0;
         sec2_l  <= 0;
         snd_latch <= 0;
+        mcu_din <= 0;
     end else begin
 
         LVBL_l <= LVBL;
@@ -192,13 +200,19 @@ always @(posedge clk, posedge rst) begin
             vint <= 0;
         else if( !LVBL && LVBL_l ) vint <= 1;
 
-        sec2_l <= sec2;
-        if( sec[1] )
-            secirq <= 0;
-        else if( !sec2_l && sec2 ) secirq <= 1;
-
         if( snreq )
             snd_latch <= cpu_dout[7:0];
+
+        // MCU
+        if( sec[0] )    // CPU writes
+            mcu_din <= cpu_dout;
+
+        sec2_l <= sec2; // CPU reads
+        if( sec[1] ) // clear interrupt
+            secirq <= 0;
+        else if( !sec2_l && sec2 )
+            secirq  <= 1;
+
     end
 end
 
@@ -221,6 +235,13 @@ always @(posedge clk) begin
         cab_dout <= { dipsw_b, dipsw_a };
 end
 
+// input multiplexer
+
+always @(posedge clk) begin
+    cpu_din <=  ram_cs ? ram_data :
+                rom_cs ? rom_data :
+                sec[1] ? mcu_dout : 16'hffff;
+end
 
 jtframe_m68k u_cpu(
     .clk        ( clk         ),

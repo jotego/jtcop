@@ -52,7 +52,7 @@ module jtcop_bac06(
 
     // ROMs
     output         rom_cs,
-    output  [16:0] rom_addr,    // MSB = bank selection
+    output  [18:0] rom_addr,    // top 2 bits are NCGSEL[1:0]
     input   [31:0] rom_data,
     input          rom_ok,
 
@@ -70,6 +70,8 @@ reg  [ 3:0] rowscr_sh;
 
 reg  [15:0] mmr_mux;
 wire [15:0] cpu_ram;
+wire [ 1:0] ncgsel;
+
 
 assign cpu_din = cpu_ram;
 
