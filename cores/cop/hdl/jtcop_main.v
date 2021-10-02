@@ -22,6 +22,7 @@ module jtcop_main(
 
     // external interrupts
     input              LVBL,
+    input              LHBL,
     input              sec2,
 
     // main
@@ -77,6 +78,7 @@ reg  [ 2:0] IPLn;
 wire        BRn, BGACKn, BGn, RnW;
 wire        ASn, UDSn, LDSn, BUSn, VPAn;
 reg  [15:0] cpu_din;
+reg         disp_cs;
 
 `ifdef SIMULATION
 wire [23:0] A_full = {A,1'b0};
@@ -127,22 +129,26 @@ always @(*) begin
     sec[5:3]   = { service, coin_input };
     sec[2]     = sec2;
     sec[1:0]   = 0;
+    disp_cs    = 0;
 
     if( !ASn ) begin
         case( A[21:20] )
             0: rom_cs = A[19:16]<6 && RnW;
             1: eep_cs = ~A[19]; // connects to an EEPROM, but it isn't on the PCB
-            2: if( A[19:18]==2'b01 ) begin // 0x24'???? DPS - display (?)
-                case( A[15:13] )
-                    0: fmode_cs  = 1; // 0x24'0000, cfg registers
-                    1: fsft_cs   = 1; // 0x24'2000, col/row scroll
-                    2: fmap_cs   = 1; // 0x24'4000, rest of VRAM
-                    3: bmode_cs  = 1; // 0x24'6000, cfg registers
-                    4: bsft_cs   = 1; // 0x24'8000, col/row scroll
-                    5: bmap_cs   = 1; // 0x24'a000, rest of VRAM
-                    6: nexrm0_cs = 1; // BAC06 chip on second PCB
-                    default:;
-                endcase
+            2: begin
+                disp_cs = 1;
+                if( A[19:18]==2'b01 ) begin // 0x24'???? DSP - DiSPlay (?)
+                    case( A[15:13] )
+                        0: fmode_cs  = 1; // 0x24'0000, cfg registers
+                        1: fsft_cs   = 1; // 0x24'2000, col/row scroll
+                        2: fmap_cs   = 1; // 0x24'4000, rest of VRAM
+                        3: bmode_cs  = 1; // 0x24'6000, cfg registers
+                        4: bsft_cs   = 1; // 0x24'8000, col/row scroll
+                        5: bmap_cs   = 1; // 0x24'a000, rest of VRAM
+                        6: nexrm0_cs = 1; // BAC06 chip on second PCB
+                        default:;
+                    endcase
+                end
             end
             3: begin // RAMIO
                 case( A[16:14] ) // 0x3?'????
@@ -242,6 +248,63 @@ always @(posedge clk) begin
                 rom_cs ? rom_data :
                 sec[1] ? mcu_dout : 16'hffff;
 end
+
+
+wire DTACKn;
+wire bus_cs    = pal_cs || pre_vram_cs || pre_ram_cs || rom_cs;
+wire bus_busy  = |{ rom_cs & ~ok_dly, (pre_ram_cs | pre_vram_cs) & ~ram_ok, disp_cs & disp_busy };
+wire bus_legit = disp_cs;
+
+// Memory access to the display area gets locked until a blank starts
+// during a blank, each access has a 2 clock delay until DTACKn is generated
+// in practice, this means that each access has a 1 clock penalty, as the
+// 1st clock after /AS goes low is lost by the CPU anyway
+reg        disp_busy;
+wire       disp_blank = disp_cs & (~LVBL | ~LHBL);
+reg        disp_blank_l, disp_cs_l;
+reg  [1:0] disp_bs_cnt;
+
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        disp_busy   <= 0;
+        disp_bs_cnt <= 0;
+    end else begin
+        disp_blank_l <= disp_blank;
+        disp_cs_l    <= disp_cs;
+        // display request
+        if( disp_cs & ~disp_cs_l )
+            disp_busy    <= 1;
+
+        // display ack
+        if( disp_blank & ~disp_blank_l) begin
+            disp_bs_cnt <= 2'b11;
+        end else if( cpu_cen ) begin
+            disp_bs_cnt <= disp_bs_cnt >> 1;
+        end
+        // display data good
+        if( disp_bs_cnt==0 )
+            disp_busy <= 0;
+    end
+end
+
+jtframe_68kdtack #(.W(8)) u_dtack(
+    .rst        ( rst       ),
+    .clk        ( clk       ),
+    .cpu_cen    ( cpu_cen   ),
+    .cpu_cenb   ( cpu_cenb  ),
+    .bus_cs     ( bus_cs    ),
+    .bus_busy   ( bus_busy  ),
+    .bus_legit  ( bus_legit ),
+    .ASn        ( ASn       ),
+    .DSn        ({UDSn,LDSn}),
+    .num        ( 8'd5      ),  // numerator
+    .den        ( 8'd24     ),  // denominator
+    .DTACKn     ( DTACKn    ),
+    // Frequency report
+    .fave       (           ),
+    .fworst     (           ),
+    .frst       (           )
+);
 
 jtframe_m68k u_cpu(
     .clk        ( clk         ),

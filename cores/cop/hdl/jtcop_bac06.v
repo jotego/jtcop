@@ -23,6 +23,26 @@
 // gfx2 | 0x40000 = 128 kB
 // gfx3 | 0x40000 = 256 kB  (midres)
 
+// The memory connected to the BAC06 is divided in two regions
+// by the MSB. The lower region corresponds to the tilemap
+// and is selected by the /NMAPSEL pin (#95).
+// The upper region contains the row/column scroll information.
+// The CPU selects it with pin /FSFT
+// The BAC-06 outputs a /NMAP pin to the memory, which gets
+// renamed in the schematics to BxMSFT, signalling the use
+// for each memory half
+
+// The BAC06 lets 12 address bits pass through to the memory
+// but only the BAC06 used for B0 (background 0) has a 12+1 A
+// memory connected. The other two chips had 10+1 A memories
+
+// Only B0's BAC06 has the /NUDS and /NLDS inputs connected
+// directly to the processor's outputs. The other chips have these
+// signals gated by their respective chip select signals.
+// I think this means that the processor could access the memory
+// at any time, regardless of the /NSIFT and /NMAPSEL inputs
+
+
 module jtcop_bac06(
     input       rst,
     input       clk,        // 12MHz original
@@ -31,7 +51,7 @@ module jtcop_bac06(
     inout       pxl_cen,    //  6 MHz
 
     input       mode_cs,
-    input       sift_cs,     // scroll
+    input       sift_cs,    // scroll
     input       map_cs,     // memory
 
     // CPU interface
@@ -130,7 +150,8 @@ generate
     end
 endgenerate
 
-wire [1:0] cpu_we = {2{~cpu_rnw & map_cs}} & ~cpu_dsn;
+wire [1:0] cpu_we = {2{~cpu_rnw & (map_cs | sift_cs)}} & ~cpu_dsn;
+wire [RAM_AW-1:0] cpu_acc = { sift_cs, cpu_addr[RAM_AW-2:0] };
 
 jtframe_dual_ram16 #(.aw(RAM_AW)) u_ram(
     // Port 0
@@ -142,7 +163,7 @@ jtframe_dual_ram16 #(.aw(RAM_AW)) u_ram(
     // Port 1, CPU
     .clk1   ( clk_cpu   ),
     .data1  ( cpu_dout  ),
-    .addr1  ( cpu_addr[RAM_AW:1] ),
+    .addr1  ( cpu_acc   ),
     .we1    ( cpu_we    ),
     .q1     ( cpu_ram   )
 );

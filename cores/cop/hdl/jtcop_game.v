@@ -101,7 +101,7 @@ wire    cpu_cen, cpu_cenb,
         cen_pcm, cen_pcmb;
 
 // video signals
-wire        HB, VB, LVBL;
+wire        HB, VB, LVBL, LHBL;
 wire [ 8:0] vrender;
 wire        hstart, vint;
 wire        colscr_en, rowscr_en;
@@ -194,6 +194,8 @@ jtcop_main u_main(
     .sec        ( mcu_sel   ),
     .sec2       ( mcu_sel2  ),
     // Video
+    .LVBL       ( LVBL      ),
+    .LHBL       ( LHBL      ),
     .vint       ( vint      ),
     .video_en   ( video_en  ),
     // Video circuitry
@@ -302,6 +304,7 @@ jtcop_video u_video(
     .HB         ( HB        ),
     .VB         ( VB        ),
     .LVBL       ( LVBL      ),
+    .LHBL       ( LHBL      ),
     .LHBL_dly   ( LHBL_dly  ),
     .LVBL_dly   ( LVBL_dly  ),
     .red        ( red       ),

@@ -66,6 +66,7 @@ module jtcop_video(
     output             HS,
     output             VS,
     output             LVBL,
+    output             LHBL,
     output             LHBL_dly,
     output             LVBL_dly,
 
