@@ -25,10 +25,18 @@ module jtcop_main(
     // external interrupts
     input              nexirq,
 
-    // main
+    // Bus signals
+    output      [15:0] cpu_dout,
+    output      [18:1] cpu_addr,
+    output             UDSWn,
+    output             LDSWn,
+    output             RnW,
+
+    // MCU/SUB CPU
     input       [15:0] mcu_dout,
     output reg  [15:0] mcu_din,
-    output reg  [ 5:0] mcu_sel,
+    output reg [5:0]   sec,         // bit 2 is unused
+    input              sec2,        // this is the bit2!
 
     // sound
     output             snd_irqn,
@@ -55,10 +63,7 @@ module jtcop_main(
     output reg         obj_cs,       // called MIX in the schematics
     output reg         obj_copy,     // called *DM in the schematics
     output reg         mixpsel_cs,   // related to the OBJ buffer DMA function
-
-    // MCU/SUB CPU
-    output reg [5:0]   sec,         // bit 2 is unused
-    input              sec2,        // this is the bit2!
+    input       [15:0] obj_dout,
 
     // cabinet I/O
     input       [ 8:0] joystick1,
@@ -89,11 +94,9 @@ wire [23:1] A;
 wire        BERRn;
 wire [ 2:0] FC;
 reg  [ 2:0] IPLn;
-wire        BRn, BGACKn, BGn, RnW;
-wire        ASn, UDSn, LDSn, BUSn, VPAn,
-            UDSWn, LDSWn;
+wire        BRn, BGACKn, BGn;
+wire        ASn, UDSn, LDSn, BUSn, VPAn;
 reg  [15:0] cpu_din;
-wire [15:0] cpu_dout;
 reg         disp_cs, sysram_cs,
             secirq, vint, vint_clr,
             cblk, ok_dly;
@@ -114,6 +117,7 @@ assign UDSWn = RnW | UDSn;
 assign LDSWn = RnW | LDSn;
 assign BUSn  = ASn | (LDSn & UDSn);
 assign VPAn  = ~&{ FC, ~ASn };
+assign cpu_addr = A[18:1];
 
 assign snd_irqn = ~snreq;
 assign ram_cs   = sysram_cs | fsft_cs | fmap_cs | bsft_cs | bmap_cs | cmap_cs | csft_cs;
@@ -289,6 +293,7 @@ always @(posedge clk) begin
     cpu_din <=  ram_cs    ? ram_data :
                 rom_cs    ? rom_data :
                 pal_cs!=0 ? pal_dout :
+                obj_cs    ? obj_dout :
                 sec[1]    ? mcu_dout : 16'hffff;
 end
 

@@ -21,14 +21,16 @@ module jtcop_sdram(
     input           clk,
 
     // Main CPU
+
     input            main_cs,
-    input            vram_cs,
-    input            ram_cs,
     input     [18:1] main_addr,
     output    [15:0] main_data,
-    output    [15:0] ram_data,
     output           main_ok,
+
+    input            ram_cs,
     output           ram_ok,
+    output    [15:0] ram_data,
+
     input     [ 1:0] dsn,
     input     [15:0] main_dout,
     input            main_rnw,
@@ -71,9 +73,9 @@ module jtcop_sdram(
     output    [15:0] b0_data,
     output           b0_ok,
     //        B0 - ROM
-    output           scr0_ok,
-    input    [16:0]  scr0_addr, 
-    output   [31:0]  scr0_data,    
+    output           b0rom_ok,
+    input    [16:0]  b0rom_addr,
+    output   [31:0]  b0rom_data,
 
     // Scroll B1 - RAM
     input            b1_cs,
@@ -81,9 +83,9 @@ module jtcop_sdram(
     output    [15:0] b1_data,
     output           b1_ok,
     //        B1 - ROM
-    output           scr1_ok,
-    input    [16:0]  scr1_addr, 
-    output   [31:0]  scr1_data,    
+    output           b1rom_ok,
+    input    [16:0]  b1rom_addr,
+    output   [31:0]  b1rom_data,
 
     // Scroll B2 - RAM
     input            b2_cs,
@@ -91,9 +93,9 @@ module jtcop_sdram(
     output    [15:0] b2_data,
     output           b2_ok,
     //        B2 - ROM
-    output           scr2_ok,
-    input    [15:0]  scr2_addr,
-    output   [31:0]  scr2_data,        
+    output           b2rom_ok,
+    input    [15:0]  b2rom_addr,
+    output   [31:0]  b2rom_data,
 
     // Obj
     output           obj_ok,
@@ -326,10 +328,10 @@ jtframe_rom_2slots #(
 
 // Backgrounds
 /*
-wire [15:0] scr2_eff;
+wire [15:0] b2rom_eff;
 
-assign scr2_eff = BANKS ? :
+assign b2rom_eff = BANKS ? :
             { }
-            { ~b2cgsel[0], scr2_addr[14:0] };
+            { ~b2cgsel[0], b2rom_addr[14:0] };
 */
 endmodule

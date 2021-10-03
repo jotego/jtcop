@@ -26,16 +26,23 @@ module jtcop_video(
     // CPU interface
     input      [12:1]  cpu_addr,
     input      [15:0]  cpu_dout,
-    output     [15:0]  cpu_din,
     input      [ 1:0]  cpu_dsn,
     input              cpu_rnw,
 
-    input      [ 1:0]  pal_cs,
-    input              objram_cs,
     input              fmode_cs,
     input              bmode_cs,
     input              cmode_cs,
-    input      [2:0]   prisel,
+
+    // Palette
+    input      [ 1:0]  pal_cs,
+    input      [ 2:0]  prisel,
+    output     [15:0]  pal_dout,
+
+    // Objects
+    input              objram_cs,
+    input              obj_copy,
+    input              mixpsel_cs,
+    output     [15:0]  obj_dout,
 
     // priority PROM
     input      [9:0]   prog_addr,
@@ -82,6 +89,7 @@ module jtcop_video(
     output             LHBL,
     output             LHBL_dly,
     output             LVBL_dly,
+    output             flip,
 
     output     [ 7:0]  red,
     output     [ 7:0]  green,
@@ -103,13 +111,14 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(13)) u_ba0(
     .pxl_cen    ( pxl_cen       ),
 
     .mode_cs    ( fmode_cs      ),
+    .flip       ( flip          ),
 
     // CPU interface
     .cpu_dout   ( cpu_dout      ),
     .cpu_addr   ( cpu_addr      ),
     .cpu_rnw    ( cpu_rnw       ),
     .cpu_dsn    ( cpu_dsn       ),
-    .cpu_din    ( cpu_din       ),
+//    .cpu_din    ( cpu_din       ),
 
     // Timer signals
     .vdump      ( vdump         ),
@@ -143,13 +152,14 @@ jtcop_bac06 u_ba1(
     .pxl_cen    ( pxl_cen       ),
 
     .mode_cs    ( bmode_cs      ),
+    .flip       ( flip          ),
 
     // CPU interface
     .cpu_dout   ( cpu_dout      ),
     .cpu_addr   ( cpu_addr      ),
     .cpu_rnw    ( cpu_rnw       ),
     .cpu_dsn    ( cpu_dsn       ),
-    .cpu_din    ( cpu_din       ),
+//    .cpu_din    ( cpu_din       ),
 
     // Timer signals
     .vdump      ( vdump         ),
@@ -183,13 +193,14 @@ jtcop_bac06 u_ba2(
     .pxl_cen    ( pxl_cen       ),
 
     .mode_cs    ( cmode_cs      ),
+    .flip       ( flip          ),
 
     // CPU interface
     .cpu_dout   ( cpu_dout      ),
     .cpu_addr   ( cpu_addr      ),
     .cpu_rnw    ( cpu_rnw       ),
     .cpu_dsn    ( cpu_dsn       ),
-    .cpu_din    ( cpu_din       ),
+//    .cpu_din    ( cpu_din       ),
 
     // Timer signals
     .vdump      ( vdump         ),
@@ -229,7 +240,7 @@ jtcop_colmix u_colmix(
     .cpu_addr   ( cpu_addr[10:1]),
     .cpu_dout   ( cpu_dout      ),
     .dsn        ( cpu_dsn       ),
-    .cpu_din    ( cpu_din       ),
+    .cpu_din    ( pal_dout      ),
 
     .prisel     ( prisel        ),
 

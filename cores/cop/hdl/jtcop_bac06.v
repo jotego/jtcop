@@ -54,13 +54,13 @@ module jtcop_bac06 #(
     inout       pxl_cen,    //  6 MHz
 
     input       mode_cs,
+    inout       flip,       // set by master BAC06
 
     // CPU interface
     input   [15:0] cpu_dout,
     input   [12:1] cpu_addr,
     input          cpu_rnw,
     input   [ 1:0] cpu_dsn,
-    output  [15:0] cpu_din,
 
     // Timer signals
     inout   [8:0]  vdump,
@@ -98,8 +98,6 @@ wire [15:0] cpu_ram;
 wire [ 1:0] ncgsel;
 
 
-assign cpu_din = cpu_ram;
-
 function [15:0] combine( input [15:0] din );
     combine = { cpu_dsn[1] ? din[15:8] : cpu_dout[15:8],
                 cpu_dsn[0] ? din[ 7:0] : cpu_dout[ 7:0]  };
@@ -127,6 +125,8 @@ end
 
 generate
     if( MASTER ) begin
+        assign flip = 0;
+
         jtframe_cen48 u_cen(
             .clk    ( clk       ),    // 48 MHz
             .cen6   ( pxl_cen   ),
