@@ -33,8 +33,8 @@ module jtcop_game(
     // cabinet I/O
     input   [ 1:0]  start_button,
     input   [ 1:0]  coin_input,
-    input   [ 7:0]  joystick1,
-    input   [ 7:0]  joystick2,
+    input   [ 8:0]  joystick1,
+    input   [ 8:0]  joystick2,
 
     // SDRAM interface
     input           downloading,
@@ -164,7 +164,7 @@ reg  [15:0] mcu_dout;
 wire [15:0] mcu_din;
 wire [ 5:0] mcu_sel;
 wire        mcu_sel2;   // this funny name is to keep the schematics' naming
-
+wire        nexirq;
 // ROM banks
 wire [1:0] sndflag, b1flg, mixflg;
 wire [2:0] crback;
@@ -205,6 +205,7 @@ jtcop_main u_main(
     .mcu_dout   ( mcu_dout  ),
     .sec        ( mcu_sel   ),
     .sec2       ( mcu_sel2  ),
+    .nexirq     ( nexirq    ),
     // Video
     .LVBL       ( LVBL      ),
     .LHBL       ( LHBL      ),
@@ -395,6 +396,7 @@ jtcop_video u_video(
     assign mcu_p3i = { sel[5:3], mcu_p3o[4:0] };
     assign { sndflag, b1flg, b0flg, mixflg } = mcu_p1o[6:0];
     assign crback = mcu_p3o[2:0];
+    assign nexirq = 1;
 
     always @(posedge clk24) begin
         p2l <= mcu_p2o;

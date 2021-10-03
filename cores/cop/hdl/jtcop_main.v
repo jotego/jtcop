@@ -20,10 +20,10 @@ module jtcop_main(
     input              rst,
     input              clk,
 
-    // external interrupts
     input              LVBL,
     input              LHBL,
-    input              sec2,
+    // external interrupts
+    input              nexirq,
 
     // main
     input       [15:0] mcu_dout,
@@ -39,6 +39,7 @@ module jtcop_main(
     output reg [ 1:0]  pal_cs,
     input      [15:0]  pal_dout,
 
+    // BAC06 chips
     output reg         fmode_cs,
     output reg         fsft_cs,
     output reg         fmap_cs,
@@ -50,28 +51,38 @@ module jtcop_main(
     output reg         csft_cs,
     output reg         cmap_cs,
 
+    // Objects
+    output reg         obj_cs,       // called MIX in the schematics
+    output reg         obj_copy,     // called *DM in the schematics
+    output reg         mixpsel_cs,   // related to the OBJ buffer DMA function
+
     // MCU/SUB CPU
     output reg [5:0]   sec,         // bit 2 is unused
     input              sec2,        // this is the bit2!
 
     // cabinet I/O
-    input       [ 7:0] joystick1,
-    input       [ 7:0] joystick2,
+    input       [ 8:0] joystick1,
+    input       [ 8:0] joystick2,
 
     input       [ 1:0] start_button,
     input       [ 1:0] coin_input,
     input              service,
+    output reg         nexrm1,
 
     // RAM access
     output             ram_cs,
     input       [15:0] ram_data,   // coming from VRAM or RAM
     input              ram_ok,
 
+    output reg         rom_cs,
+    input       [15:0] rom_data,
+    input              rom_ok,
+
     // DIP switches
     input              dip_pause,
     input              dip_test,
     input    [7:0]     dipsw_a,
-    input    [7:0]     dipsw_b,
+    input    [7:0]     dipsw_b
 );
 
 wire [23:1] A;
@@ -79,15 +90,25 @@ wire        BERRn;
 wire [ 2:0] FC;
 reg  [ 2:0] IPLn;
 wire        BRn, BGACKn, BGn, RnW;
-wire        ASn, UDSn, LDSn, BUSn, VPAn;
+wire        ASn, UDSn, LDSn, BUSn, VPAn,
+            UDSWn, LDSWn;
 reg  [15:0] cpu_din;
-reg         disp_cs, sysram_cs;
+wire [15:0] cpu_dout;
+reg         disp_cs, sysram_cs,
+            secirq, vint, vint_clr,
+            cblk, ok_dly;
+
+wire        cpu_cen, cpu_cenb;
+reg  [ 2:0] read_cs;
 
 `ifdef SIMULATION
 wire [23:0] A_full = {A,1'b0};
 `endif
 
-reg         snreq, eep_cs;
+reg         snreq, eep_cs,
+            prisel_cs,
+            nexin_cs,       // this pin C15 of connector 2. It's unconnected in all games
+            nexout_cs;      // Connector 2, pin A16: unused
 
 assign UDSWn = RnW | UDSn;
 assign LDSWn = RnW | LDSn;
@@ -98,13 +119,13 @@ assign snd_irqn = ~snreq;
 assign ram_cs   = sysram_cs | fsft_cs | fmap_cs | bsft_cs | bmap_cs | cmap_cs | csft_cs;
 
 always @(*) begin
-    IPLn = 7;
+    IPLn = ~3'd0;
     if( vint )
-        IPLn = 6;
-    else if( secirq )
-        IPLn = 5;
-    else if( nexirq )
-        IPLn = 4;
+        IPLn = ~3'd6;
+    else if( secirq )   // active high
+        IPLn = ~3'd5;
+    else if( !nexirq )  // active low
+        IPLn = ~3'd4;
 end
 
 always @(*) begin
@@ -125,17 +146,17 @@ always @(*) begin
     cmap_cs    = 0;
     nexrm1     = 0;
     prisel_cs  = 0;
-    dm_cs      = 0;
+    obj_copy   = 0;
     snreq      = 0;
     vint_clr   = 0;
     mixpsel_cs = 0;
     cblk       = 0;
-    nexout     = 0;
+    nexout_cs  = 0;
     read_cs    = 0;
     nexin_cs   = 0;
     pal_cs     = 0;
     sysram_cs  = 0;
-    mix        = 0;
+    obj_cs     = 0;
     sec[5:3]   = { service, coin_input };
     sec[2]     = sec2;
     sec[1:0]   = 0;
@@ -157,7 +178,7 @@ always @(*) begin
                         5: bmap_cs   = 1; // 0x24'a000, tilemap
                         6: begin
                             nexrm0_cs = 1; // BAC06 chip on second PCB
-                            case( cpu_addr[10:9])
+                            case( A[10:9])
                                 0: cmode_cs = 1; // these signals could go
                                 1: csft_cs  = 1; // in a different order
                                 2: cmap_cs  = 1;
@@ -184,20 +205,20 @@ always @(*) begin
                         if( !RnW && A[4] ) begin // 0x30'C010
                             case( A[3:1] )
                                 0: prisel_cs  = 1;
-                                1: dm_cs      = 1;
+                                1: obj_copy   = 1;
                                 2: snreq      = 1;
                                 3: sec[0]     = 1;
                                 4: vint_clr   = 1;
                                 5: mixpsel_cs = 1;
                                 6: cblk       = 1; // coin block, unused
-                                7: nexout     = 1;
+                                7: nexout_cs  = 1;
                             endcase
-                        end else begin
+                        end
                     end
                     4: pal_cs[0] = 1; // 0x31'0000 called PSEL in the schematics
                     5: pal_cs[1] = 1; // 0x31'4000
                     6: sysram_cs = 1;   // 0x31'8000
-                    7: mix     = 1;   // 0x31'C000 sprites
+                    7: obj_cs    = 1;   // 0x31'C000 sprites
                 endcase
             end
         endcase
@@ -209,15 +230,16 @@ reg LVBL_l, sec2_l;
 
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
-        prisel  <= 0;
-        mixpsel <= 0;
         vint    <= 0;
         secirq  <= 0;
         LVBL_l  <= 0;
         sec2_l  <= 0;
         snd_latch <= 0;
         mcu_din <= 0;
+        ok_dly  <= 0;
+        prisel  <= 0;
     end else begin
+        ok_dly <= rom_ok;
 
         LVBL_l <= LVBL;
         if( vint_clr )
@@ -237,6 +259,8 @@ always @(posedge clk, posedge rst) begin
         else if( !sec2_l && sec2 )
             secirq  <= 1;
 
+        // Colour mixer
+        if( prisel_cs ) prisel <= cpu_dout[2:0];
     end
 end
 
@@ -270,7 +294,7 @@ end
 
 
 wire DTACKn;
-wire bus_cs    = pal_cs | ram_cs | rom_cs;
+wire bus_cs    = pal_cs!=0 || ram_cs || rom_cs;
 wire bus_busy  = |{ rom_cs & ~ok_dly, ram_cs & ~ram_ok, disp_cs & disp_busy };
 wire bus_legit = disp_cs;
 
@@ -316,7 +340,7 @@ jtframe_68kdtack #(.W(8)) u_dtack(
     .bus_legit  ( bus_legit ),
     .ASn        ( ASn       ),
     .DSn        ({UDSn,LDSn}),
-    .num        ( 8'd5      ),  // numerator
+    .num        ( 7'd5      ),  // numerator
     .den        ( 8'd24     ),  // denominator
     .DTACKn     ( DTACKn    ),
     // Frequency report
@@ -352,7 +376,7 @@ jtframe_m68k u_cpu(
     .BGn        ( BGn         ),
 
     .DTACKn     ( DTACKn      ),
-    .IPLn       ( { irqn, 2'b11 } ) // VBLANK
+    .IPLn       ( IPLn        ) // VBLANK
 );
 
 
