@@ -27,7 +27,7 @@ module jtcop_colmix(
 
     // CPU interface
     input      [ 1:0]  pal_cs,
-    input      [11:1]  cpu_addr,
+    input      [10:1]  cpu_addr,
     input      [15:0]  cpu_dout,
     input      [ 1:0]  dsn,
     output     [15:0]  cpu_din,
@@ -53,7 +53,7 @@ module jtcop_colmix(
     input      [ 3:0]  gfx_en
 );
 
-wire [ 9:0] seladdr;
+reg  [ 9:0] seladdr;
 wire [ 1:0] selbus;
 wire [15:0] pal_gr, cpu_gr;
 wire [ 7:0] pal_b,  cpu_b;

@@ -69,7 +69,7 @@ module jtcop_sdram(
     input            b0_cs,
     input     [12:0] b0_addr,
     output    [15:0] b0_data,
-    output           b0_ok
+    output           b0_ok,
     //        B0 - ROM
     output           scr0_ok,
     input    [16:0]  scr0_addr, 
@@ -79,7 +79,7 @@ module jtcop_sdram(
     input            b1_cs,
     input     [10:0] b1_addr,
     output    [15:0] b1_data,
-    output           b1_ok
+    output           b1_ok,
     //        B1 - ROM
     output           scr1_ok,
     input    [16:0]  scr1_addr, 
@@ -89,7 +89,7 @@ module jtcop_sdram(
     input            b2_cs,
     input     [10:0] b2_addr,
     output    [15:0] b2_data,
-    output           b2_ok
+    output           b2_ok,
     //        B2 - ROM
     output           scr2_ok,
     input    [15:0]  scr2_addr,
@@ -139,18 +139,26 @@ parameter BANKS=0;
 /* verilator lint_off WIDTH */
 localparam [24:0] BA1_START   = `BA1_START,
                   MCU_START   = `MCU_START,
-                  PCM_OFFSET  = (`PCM_START-BA1_START)>>1,
                   BA2_START   = `BA2_START,
                   GFX2_START  = `GFX2_START,
                   GFX3_START  = `GFX3_START,
                   BA3_START   = `BA3_START,
                   PROM_START  = `PROM_START;
 
+localparam [21:0] RAM_OFFSET  = 22'h10_0000,
+                  B0_OFFSET   = 22'h10_2000,
+                  B1_OFFSET   = 22'h10_4000,
+                  B2_OFFSET   = 22'h10_5000,
+                  PCM_OFFSET  = (`PCM_START-BA1_START)>>1,
+                  ZERO_OFFSET = 0;
+
+wire prom_we;
+
 jtframe_dwnld #(
     .BA1_START ( BA1_START ), // sound
     .BA2_START ( BA2_START ), // tiles
     .BA3_START ( BA3_START ), // obj
-    .PROM_START( MCU_PROM  ), // PCM MCU
+    .PROM_START( PROM_START), // PCM MCU
     .SWAB      ( 1         )
 ) u_dwnld(
     .clk          ( clk            ),
@@ -177,7 +185,7 @@ wire [15:0] snd_eff;
 
 assign adpcm_eff = { adpcm_addr[15] | sndflag[2], adpcm_addr[14:0] };
 assign snd_eff = BANKS ? { sndflag[1] | snd_addr[15],
-                           (sndbank | snd_addr[15]) & snd_addr[14]
+                           (sndbank | snd_addr[15]) & snd_addr[14],
                            snd_addr[13:0] } :
                         { 1'b0, snd_addr[14:0] };
 
@@ -191,7 +199,7 @@ assign snd_eff = BANKS ? { sndflag[1] | snd_addr[15],
 reg  [14:0] ram_maddr; // merged address
 
 always @* begin
-    ram_maddr = {2'b0, ram_addr[12:0]};
+    ram_maddr = {2'b0, main_addr[13:1]};
     // first BAC06 (16kB)
     if( fsft_cs )
         ram_maddr[14:12] = 3'b010;
@@ -233,7 +241,7 @@ jtframe_ram_5slots #(
     .rst        ( rst       ),
     .clk        ( clk       ),
 
-    .offset0    (VRAM_OFFSET),
+    .offset0    ( RAM_OFFSET),
     .offset1    (ZERO_OFFSET),
     .offset2    ( B0_OFFSET ),
     .offset3    ( B1_OFFSET ),
@@ -317,10 +325,11 @@ jtframe_rom_2slots #(
 );
 
 // Backgrounds
+/*
 wire [15:0] scr2_eff;
 
 assign scr2_eff = BANKS ? :
             { }
             { ~b2cgsel[0], scr2_addr[14:0] };
-
+*/
 endmodule

@@ -109,12 +109,11 @@ endfunction
 always @(posedge clk) begin
     if( rst ) begin
         mode[0] <= 0; mode[1] <= 0; mode[2] <= 0; mode[3] <= 0;
-        mode[4] <= 0; mode[5] <= 0; mode[6] <= 0; mode[7] <= 0;
     end else begin
-        if( cpu_we && mode_cs ) begin
+        if( !cpu_rnw && mode_cs ) begin
             if( !cpu_addr[4] ) begin
                 if( !cpu_dsn[0] ) mode[cpu_addr[2:1]] <= cpu_dout[7:0];
-            else begin
+            end else begin
                 case( cpu_addr[2:1] )
                     0: hscr <= combine( hscr );
                     1: vscr <= combine( vscr );
@@ -138,7 +137,7 @@ generate
             .cen6b(), .cen3b(), .cen3qb(), .cen1p5b()
         );
 
-        jtframe_vtimer(
+        jtframe_vtimer u_vtimer(
             .clk        ( clk       ),
             .pxl_cen    ( pxl_cen   ),
             .vdump      ( vdump     ),

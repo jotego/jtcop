@@ -46,18 +46,19 @@ module jtcop_snd(
 
 parameter BANKS=0;
 
-localparam [7:0] OPN_GAIN = 8'h04;
-                 OPL_GAIN = 8'h04;
-                 PCM_GAIN = 8'h04;
+localparam [7:0] OPN_GAIN = 8'h04,
+                 OPL_GAIN = 8'h04,
+                 PCM_GAIN = 8'h04,
                  PSG_GAIN = 8'h04;
 
 wire [15:0] cpu_addr;
-wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout;
+wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout, oki_dout;
 reg  [ 7:0] cpu_din, dev_mux;
 reg         nmin, opl_cs, opn_cs, ram_cs, bank_cs,
             nmi_clr, oki_cs, dev_cs, cen_oki;
 wire        irqn, ram_we, cpu_rnw, oki_wrn,
             oki_sample, rdy;
+wire        opn_irqn, opl_irqn;
 reg  [ 2:0] cen_sh=1;
 
 wire signed [15:0] opl_snd, opn_snd;

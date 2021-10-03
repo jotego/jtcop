@@ -19,13 +19,16 @@
 module jtcop_video(
     input              rst,
     input              clk,
+    input              clk_cpu,
     output             pxl2_cen,  // pixel clock enable (2x)
     output             pxl_cen,   // pixel clock enable
 
     // CPU interface
     input      [12:1]  cpu_addr,
     input      [15:0]  cpu_dout,
-    input      [ 1:0]  dsn,
+    output     [15:0]  cpu_din,
+    input      [ 1:0]  cpu_dsn,
+    input              cpu_rnw,
 
     input      [ 1:0]  pal_cs,
     input              objram_cs,
@@ -45,10 +48,10 @@ module jtcop_video(
     input       [15:0] b0ram_data,
     input              b0ram_ok,
 
-    output             bac0_cs,
-    output      [16:0] bac0_addr,
-    input       [15:0] bac0_data,
-    input              bac0_ok
+    output             b0rom_cs,
+    output      [18:0] b0rom_addr,
+    input       [31:0] b0rom_data,
+    input              b0rom_ok,
 
     // Background 1
     output             b1ram_cs,
@@ -56,10 +59,10 @@ module jtcop_video(
     input       [15:0] b1ram_data,
     input              b1ram_ok,
 
-    output             bac1_cs,
-    output      [16:0] bac1_addr,
-    input       [15:0] bac1_data,
-    input              bac1_ok
+    output             b1rom_cs,
+    output      [18:0] b1rom_addr,
+    input       [31:0] b1rom_data,
+    input              b1rom_ok,
 
     // Background 2
     output             b2ram_cs,
@@ -67,11 +70,10 @@ module jtcop_video(
     input       [15:0] b2ram_data,
     input              b2ram_ok,
 
-    output             bac2_cs,
-    output      [16:0] bac2_addr,
-    input       [15:0] bac2_data,
-    input              bac2_ok
-
+    output             b2rom_cs,
+    output      [18:0] b2rom_addr,
+    input       [31:0] b2rom_data,
+    input              b2rom_ok,
 
     // Video signal
     output             HS,
@@ -83,14 +85,17 @@ module jtcop_video(
 
     output     [ 7:0]  red,
     output     [ 7:0]  green,
-    output     [ 7:0]  blue
+    output     [ 7:0]  blue,
+
+    // Debug
+    input      [ 3:0]  gfx_en
 );
 
 wire   [8:0]  vdump, vrender, hdump;
 wire   [7:0]  ba0_pxl, ba1_pxl, ba2_pxl, obj_pxl;
 reg           gmode_cs, gsft_cs, gmap_cs;
 
-jtcop_bac06 #(.MASTER(1),.RAM_AW(12)) u_ba0(
+jtcop_bac06 #(.MASTER(1),.RAM_AW(13)) u_ba0(
     .rst        ( rst           ),
     .clk        ( clk           ),
     .clk_cpu    ( clk_cpu       ),
@@ -122,10 +127,11 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(12)) u_ba0(
     .ram_ok     ( b0ram_ok      ),
 
     // ROMs
-    .rom_cs     ( bac0_cs       ),
-    .rom_addr   ( bac0_addr     ),
-    .rom_data   ( bac0_data     ),
-    .rom_ok     ( bac0_ok       ),
+    .rom_cs     ( b0rom_cs      ),
+    .rom_addr   ( b0rom_addr    ),
+    .rom_data   ( b0rom_data    ),
+    .rom_ok     ( b0rom_ok      ),
+
     .pxl        ( ba0_pxl       )
 );
 
@@ -161,10 +167,12 @@ jtcop_bac06 u_ba1(
     .ram_ok     ( b1ram_ok      ),
 
     // ROMs
-    .rom_cs     ( bac1_cs       ),
-    .rom_addr   ( bac1_addr     ),
-    .rom_data   ( bac1_data     ),
-    .rom_ok     ( bac1_ok       )
+    .rom_cs     ( b1rom_cs      ),
+    .rom_addr   ( b1rom_addr    ),
+    .rom_data   ( b1rom_data    ),
+    .rom_ok     ( b1rom_ok      ),
+
+    .pxl        ( ba1_pxl       )
 );
 
 jtcop_bac06 u_ba2(
@@ -199,10 +207,12 @@ jtcop_bac06 u_ba2(
     .ram_ok     ( b2ram_ok      ),
 
     // ROMs
-    .rom_cs     ( bac2_cs       ),
-    .rom_addr   ( bac2_addr     ),
-    .rom_data   ( bac2_data     ),
-    .rom_ok     ( bac2_ok       )
+    .rom_cs     ( b2rom_cs      ),
+    .rom_addr   ( b2rom_addr    ),
+    .rom_data   ( b2rom_data    ),
+    .rom_ok     ( b2rom_ok      ),
+
+    .pxl        ( ba2_pxl       )
 );
 
 jtcop_colmix u_colmix(
@@ -216,9 +226,9 @@ jtcop_colmix u_colmix(
 
     // CPU interface
     .pal_cs     ( pal_cs        ),
-    .cpu_addr   ( cpu_addr      ),
+    .cpu_addr   ( cpu_addr[10:1]),
     .cpu_dout   ( cpu_dout      ),
-    .dsn        ( dsn           ),
+    .dsn        ( cpu_dsn       ),
     .cpu_din    ( cpu_din       ),
 
     .prisel     ( prisel        ),
