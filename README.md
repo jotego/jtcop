@@ -26,25 +26,28 @@ BAC06 chip |   Region    | Total Size  |  MSFT
 Block  |  kB  | Location | Use
 -------|------|----------|-----------
 B0     |  16  |  SDRAM   | VRAM + RAM?
-B1     |   4  |   BRAM   | VRAM
-B2     |   4  |   BRAM   | VRAM
+B1     |   4  |  SDRAM   | VRAM
+B2     |   4  |  SDRAM   | VRAM
 OBJ    |   1  |   BRAM   | line buffer*
-OBJ    |   2  |          | obj RAM
+OBJ    |   2  |   BRAM   | obj RAM
 OBJ    |   2  |   BRAM   | obj table buffer
 Main   |  16  |  SDRAM   | M68000 RAM
 6502   |   2  |   BRAM   | 6502A RAM
-HuC6280|  10  |  SDRAM   | protection
+HuC6280|  10  |   BRAM   | protection
 HuC6280|   1  |   BRAM   | firmware
 i8751  |   4  |   BRAM   | firmware
 i8751  |   1  |   BRAM   | on-chip RAM
 JT03   |  12  |   BRAM   |
 JTOPL  |   9  |   BRAM   |
 FX68K  |   6  |   BRAM   | microcode
+Scan2x |   2  |   BRAM   |
+OSD    |   2  |   BRAM   |
+Credits|   1  |   BRAM   |
 
-Model   | Total  |  BRAM
---------|--------|---------
-Huc6280 | 85     |  43
-I8751   | 79     |  37
+Model   |  BRAM
+--------|---------
+Huc6280 |  53
+I8751   |  47
 
 
 * the line buffer is not in the schematics,

@@ -141,10 +141,10 @@ always @(*) begin
                     case( A[15:13] )
                         0: fmode_cs  = 1; // 0x24'0000, cfg registers
                         1: fsft_cs   = 1; // 0x24'2000, col/row scroll
-                        2: fmap_cs   = 1; // 0x24'4000, rest of VRAM
+                        2: fmap_cs   = 1; // 0x24'4000, tilemap
                         3: bmode_cs  = 1; // 0x24'6000, cfg registers
                         4: bsft_cs   = 1; // 0x24'8000, col/row scroll
-                        5: bmap_cs   = 1; // 0x24'a000, rest of VRAM
+                        5: bmap_cs   = 1; // 0x24'a000, tilemap
                         6: nexrm0_cs = 1; // BAC06 chip on second PCB
                         default:;
                     endcase

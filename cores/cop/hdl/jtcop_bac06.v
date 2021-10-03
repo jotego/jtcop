@@ -36,11 +36,11 @@
 // but only the BAC06 used for B0 (background 0) has a 12+1 A
 // memory connected. The other two chips had 10+1 A memories
 
-// Only B0's BAC06 has the /NUDS and /NLDS inputs connected
-// directly to the processor's outputs. The other chips have these
-// signals gated by their respective chip select signals.
-// I think this means that the processor could access the memory
-// at any time, regardless of the /NSIFT and /NMAPSEL inputs
+// The /NUDS and /NLDS inputs of all chips are gated via a 74LS32
+// chip by the /DSP chip select signal. That signal has a synchronization
+// with the pixel clock. The BAC06 probably gives priority to the
+// CPU when accessing memory, and the synchronization is done
+// outside
 
 
 module jtcop_bac06(
