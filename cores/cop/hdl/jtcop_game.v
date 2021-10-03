@@ -129,7 +129,19 @@ wire [12:1] cpu_addr;
 wire [15:0] main_dout, char_dout, pal_dout, obj_dout;
 wire [ 1:0] dsn;
 wire        UDSWn, LDSWn, main_rnw;
-wire        char_cs, scr1_cs, pal_cs, objram_cs;
+
+// BAC06 CS signals
+wire        fmode_cs, fsft_cs, fmap_cs,
+            bmode_cs, bsft_cs, bmap_cs,
+            cmode_cs, csft_cs, cmap_cs;
+
+// BAC06 VRAM read access
+wire        b0_cs, b0_ok,
+            b1_cs, b1_ok,
+            b2_cs, b2_ok;
+wire [12:0] b0_addr;
+wire [10:0] b1_addr, b2_addr;
+wire [15:0] b0_data, b1_data, b2_data;
 
 // Sound CPU
 wire [15:0] snd_addr;
@@ -199,11 +211,17 @@ jtcop_main u_main(
     .vint       ( vint      ),
     .video_en   ( video_en  ),
     // Video circuitry
-    .vram_cs    ( vram_cs   ),
-    .char_cs    ( char_cs   ),
+    .fmode_cs   ( fmode_cs  ),
+    .fsft_cs    ( fsft_cs   ),
+    .fmap_cs    ( fmap_cs   ),
+    .bmode_cs   ( bmode_cs  ),
+    .bsft_cs    ( bsft_cs   ),
+    .bmap_cs    ( bmap_cs   ),
+    .cmode_cs   ( cmode_cs  ),
+    .csft_cs    ( csft_cs   ),
+    .cmap_cs    ( cmap_cs   ),
     .pal_cs     ( pal_cs    ),
     .objram_cs  ( objram_cs ),
-    .char_dout  ( char_dout ),
     .pal_dout   ( pal_dout  ),
     .obj_dout   ( obj_dout  ),
 
@@ -271,6 +289,10 @@ jtcop_video u_video(
     .objram_cs  ( objram_cs ),
     .vint       ( vint      ),
 
+    .fmode_cs   ( fmode_cs  ),
+    .bmode_cs   ( bmode_cs  ),
+    .cmode_cs   ( cmode_cs  ),
+
     .cpu_dout   ( main_dout ),
     .dsn        ( dsn       ),
     .char_dout  ( char_dout ),
@@ -281,6 +303,22 @@ jtcop_video u_video(
     .ext_flip   ( dip_flip  ),
 
     // SDRAM interface
+    .b0ram_cs   ( b0_cs     ),
+    .b0ram_addr ( b0_addr   ),
+    .b0ram_data ( b0_data   ),
+    .b0ram_ok   ( b0_ok     ),
+
+    .b1ram_cs   ( b1_cs     ),
+    .b1ram_addr ( b1_addr   ),
+    .b1ram_data ( b1_data   ),
+    .b1ram_ok   ( b1_ok     ),
+
+    .b2ram_cs   ( b2_cs     ),
+    .b2ram_addr ( b2_addr   ),
+    .b2ram_data ( b2_data   ),
+    .b2ram_ok   ( b2_ok     ),
+
+
     .scr0_ok    ( scr0_ok   ),
     .scr0_addr  ( scr0_addr ),
     .scr0_data  ( scr0_data ),
@@ -430,6 +468,29 @@ jtcop_sdram u_sdram(
     .vrender    ( vrender   ),
     .LVBL       ( LVBL      ),
 //    .game_id    ( game_id   ),
+
+    // Video RAM
+    .fsft_cs    ( fsft_cs   ),
+    .fmap_cs    ( fmap_cs   ),
+    .bsft_cs    ( bsft_cs   ),
+    .bmap_cs    ( bmap_cs   ),
+    .csft_cs    ( csft_cs   ),
+    .cmap_cs    ( cmap_cs   ),
+
+    .b0_cs      ( b0_cs     ),
+    .b0_addr    ( b0_addr   ),
+    .b0_data    ( b0_data   ),
+    .b0_ok      ( b0_ok     ),
+
+    .b1_cs      ( b1_cs     ),
+    .b1_addr    ( b1_addr   ),
+    .b1_data    ( b1_data   ),
+    .b1_ok      ( b1_ok     ),
+
+    .b2_cs      ( b2_cs     ),
+    .b2_addr    ( b2_addr   ),
+    .b2_data    ( b2_data   ),
+    .b2_ok      ( b2_ok     ),
 
     // i8751 MCU / Sub CPU
     .mcu_we     ( mcu_we    ),

@@ -35,8 +35,9 @@ module jtcop_main(
     output reg [7:0]   snd_latch,
 
     // Palette
-    output reg [2:0]   prisel,
-    output reg [1:0]   pal_cs,
+    output reg [ 2:0]  prisel,
+    output reg [ 1:0]  pal_cs,
+    input      [15:0]  pal_dout,
 
     output reg         fmode_cs,
     output reg         fsft_cs,
@@ -45,6 +46,9 @@ module jtcop_main(
     output reg         bsft_cs,
     output reg         bmap_cs,
     output reg         nexrm0_cs,
+    output reg         cmode_cs,
+    output reg         csft_cs,
+    output reg         cmap_cs,
 
     // MCU/SUB CPU
     output reg [5:0]   sec,         // bit 2 is unused
@@ -60,7 +64,6 @@ module jtcop_main(
 
     // RAM access
     output             ram_cs,
-    output             vram_cs,
     input       [15:0] ram_data,   // coming from VRAM or RAM
     input              ram_ok,
 
@@ -78,7 +81,7 @@ reg  [ 2:0] IPLn;
 wire        BRn, BGACKn, BGn, RnW;
 wire        ASn, UDSn, LDSn, BUSn, VPAn;
 reg  [15:0] cpu_din;
-reg         disp_cs;
+reg         disp_cs, sysram_cs;
 
 `ifdef SIMULATION
 wire [23:0] A_full = {A,1'b0};
@@ -92,6 +95,7 @@ assign BUSn  = ASn | (LDSn & UDSn);
 assign VPAn  = ~&{ FC, ~ASn };
 
 assign snd_irqn = ~snreq;
+assign ram_cs   = sysram_cs | fsft_cs | fmap_cs | bsft_cs | bmap_cs | cmap_cs | csft_cs;
 
 always @(*) begin
     IPLn = 7;
@@ -106,13 +110,19 @@ end
 always @(*) begin
     rom_cs     = 0;
     eep_cs     = 0;
+    // fist BAC06 chip
     fmode_cs   = 0;
     fsft_cs    = 0;
     fmap_cs    = 0;
+    // second BAC06 chip
     bmode_cs   = 0;
     bsft_cs    = 0;
     bmap_cs    = 0;
+    // third BAC06 chip
     nexrm0_cs  = 0;
+    cmode_cs   = 0;
+    csft_cs    = 0;
+    cmap_cs    = 0;
     nexrm1     = 0;
     prisel_cs  = 0;
     dm_cs      = 0;
@@ -124,7 +134,7 @@ always @(*) begin
     read_cs    = 0;
     nexin_cs   = 0;
     pal_cs     = 0;
-    sysram     = 0;
+    sysram_cs  = 0;
     mix        = 0;
     sec[5:3]   = { service, coin_input };
     sec[2]     = sec2;
@@ -145,7 +155,15 @@ always @(*) begin
                         3: bmode_cs  = 1; // 0x24'6000, cfg registers
                         4: bsft_cs   = 1; // 0x24'8000, col/row scroll
                         5: bmap_cs   = 1; // 0x24'a000, tilemap
-                        6: nexrm0_cs = 1; // BAC06 chip on second PCB
+                        6: begin
+                            nexrm0_cs = 1; // BAC06 chip on second PCB
+                            case( cpu_addr[10:9])
+                                0: cmode_cs = 1; // these signals could go
+                                1: csft_cs  = 1; // in a different order
+                                2: cmap_cs  = 1;
+                                default:;
+                            endcase
+                        end
                         default:;
                     endcase
                 end
@@ -178,7 +196,7 @@ always @(*) begin
                     end
                     4: pal_cs[0] = 1; // 0x31'0000 called PSEL in the schematics
                     5: pal_cs[1] = 1; // 0x31'4000
-                    6: sysram  = 1;   // 0x31'8000
+                    6: sysram_cs = 1;   // 0x31'8000
                     7: mix     = 1;   // 0x31'C000 sprites
                 endcase
             end
@@ -244,15 +262,16 @@ end
 // input multiplexer
 
 always @(posedge clk) begin
-    cpu_din <=  ram_cs ? ram_data :
-                rom_cs ? rom_data :
-                sec[1] ? mcu_dout : 16'hffff;
+    cpu_din <=  ram_cs    ? ram_data :
+                rom_cs    ? rom_data :
+                pal_cs!=0 ? pal_dout :
+                sec[1]    ? mcu_dout : 16'hffff;
 end
 
 
 wire DTACKn;
-wire bus_cs    = pal_cs || pre_vram_cs || pre_ram_cs || rom_cs;
-wire bus_busy  = |{ rom_cs & ~ok_dly, (pre_ram_cs | pre_vram_cs) & ~ram_ok, disp_cs & disp_busy };
+wire bus_cs    = pal_cs | ram_cs | rom_cs;
+wire bus_busy  = |{ rom_cs & ~ok_dly, ram_cs & ~ram_ok, disp_cs & disp_busy };
 wire bus_legit = disp_cs;
 
 // Memory access to the display area gets locked until a blank starts

@@ -43,7 +43,10 @@
 // outside
 
 
-module jtcop_bac06(
+module jtcop_bac06 #(
+    parameter RAM_AW=11,    // normally 4kB (AW=11, 16 bits), it can be 16kB too (AW=13)
+              MASTER=0      // One BAC06 chip will be the timing master
+) (
     input       rst,
     input       clk,        // 12MHz original
     input       clk_cpu,
@@ -51,8 +54,6 @@ module jtcop_bac06(
     inout       pxl_cen,    //  6 MHz
 
     input       mode_cs,
-    input       sift_cs,    // scroll
-    input       map_cs,     // memory
 
     // CPU interface
     input   [15:0] cpu_dout,
@@ -70,6 +71,12 @@ module jtcop_bac06(
     inout          HS,
     inout          VS,
 
+    // VRAM
+    output         ram_cs,
+    output  [RAM_AW-1:0] ram_addr,
+    input   [15:0] ram_data,
+    input          ram_ok,
+
     // ROMs
     output         rom_cs,
     output  [18:0] rom_addr,    // top 2 bits are NCGSEL[1:0]
@@ -79,8 +86,6 @@ module jtcop_bac06(
     output  [ 7:0] pxl          // pixel output
 );
 
-parameter RAM_AW=11,    // normally 4kB (AW=11, 16 bits), it can be 8kB too
-          MASTER=0      // One BAC06 chip will be the timing master
 
 reg  [ 7:0] mode[0:3];
 reg  [15:0] hscr;
@@ -150,22 +155,5 @@ generate
     end
 endgenerate
 
-wire [1:0] cpu_we = {2{~cpu_rnw & (map_cs | sift_cs)}} & ~cpu_dsn;
-wire [RAM_AW-1:0] cpu_acc = { sift_cs, cpu_addr[RAM_AW-2:0] };
-
-jtframe_dual_ram16 #(.aw(RAM_AW)) u_ram(
-    // Port 0
-    .clk0   ( clk       ),
-    .data0  (           ),
-    .addr0  ( addr      ),
-    .we0    ( 1'b0      ),
-    .q0     ( ram_dout  ),
-    // Port 1, CPU
-    .clk1   ( clk_cpu   ),
-    .data1  ( cpu_dout  ),
-    .addr1  ( cpu_acc   ),
-    .we1    ( cpu_we    ),
-    .q1     ( cpu_ram   )
-);
 
 endmodule

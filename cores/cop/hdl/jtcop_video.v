@@ -30,12 +30,8 @@ module jtcop_video(
     input      [ 1:0]  pal_cs,
     input              objram_cs,
     input              fmode_cs,
-    input              fsft_cs,
-    input              fmap_cs,
     input              bmode_cs,
-    input              bsft_cs,
-    input              bmap_cs,
-    input              nexrm0_cs,   // ba3 chip selection
+    input              cmode_cs,
     input      [2:0]   prisel,
 
     // priority PROM
@@ -44,18 +40,33 @@ module jtcop_video(
     input              prio_we,
 
     // Background 0
+    output             b0ram_cs,
+    output      [12:0] b0ram_addr,
+    input       [15:0] b0ram_data,
+    input              b0ram_ok,
+
     output             bac0_cs,
     output      [16:0] bac0_addr,
     input       [15:0] bac0_data,
     input              bac0_ok
 
     // Background 1
+    output             b1ram_cs,
+    output      [10:0] b1ram_addr,
+    input       [15:0] b1ram_data,
+    input              b1ram_ok,
+
     output             bac1_cs,
     output      [16:0] bac1_addr,
     input       [15:0] bac1_data,
     input              bac1_ok
 
     // Background 2
+    output             b2ram_cs,
+    output      [10:0] b2ram_addr,
+    input       [15:0] b2ram_data,
+    input              b2ram_ok,
+
     output             bac2_cs,
     output      [16:0] bac2_addr,
     input       [15:0] bac2_data,
@@ -79,20 +90,6 @@ wire   [8:0]  vdump, vrender, hdump;
 wire   [7:0]  ba0_pxl, ba1_pxl, ba2_pxl, obj_pxl;
 reg           gmode_cs, gsft_cs, gmap_cs;
 
-always @(*) begin
-    gmode_cs  = 0;
-    gsft_cs   = 0;
-    gmap_cs   = 0;
-    if( nexrm0_cs )  begin
-        case( cpu_addr[10:9])
-            0: gmode_cs = 1; // these signals could go
-            1: gsft_cs  = 1; // in a different order
-            2: gmap_cs  = 1;
-            default:;
-        endcase
-    end
-end
-
 jtcop_bac06 #(.MASTER(1),.RAM_AW(12)) u_ba0(
     .rst        ( rst           ),
     .clk        ( clk           ),
@@ -101,8 +98,6 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(12)) u_ba0(
     .pxl_cen    ( pxl_cen       ),
 
     .mode_cs    ( fmode_cs      ),
-    .sift_cs    ( fsft_cs       ),
-    .map_cs     ( fmap_cs       ),
 
     // CPU interface
     .cpu_dout   ( cpu_dout      ),
@@ -119,6 +114,12 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(12)) u_ba0(
     .LVBL       ( LVBL          ),
     .HS         ( HS            ),
     .VS         ( VS            ),
+
+    // VRAM
+    .ram_cs     ( b0ram_cs      ),
+    .ram_addr   ( b0ram_addr    ),
+    .ram_data   ( b0ram_data    ),
+    .ram_ok     ( b0ram_ok      ),
 
     // ROMs
     .rom_cs     ( bac0_cs       ),
@@ -136,8 +137,6 @@ jtcop_bac06 u_ba1(
     .pxl_cen    ( pxl_cen       ),
 
     .mode_cs    ( bmode_cs      ),
-    .sift_cs    ( bsft_cs       ),
-    .map_cs     ( bmap_cs       ),
 
     // CPU interface
     .cpu_dout   ( cpu_dout      ),
@@ -154,6 +153,12 @@ jtcop_bac06 u_ba1(
     .LVBL       ( LVBL          ),
     .HS         ( HS            ),
     .VS         ( VS            ),
+
+    // VRAM
+    .ram_cs     ( b1ram_cs      ),
+    .ram_addr   ( b1ram_addr    ),
+    .ram_data   ( b1ram_data    ),
+    .ram_ok     ( b1ram_ok      ),
 
     // ROMs
     .rom_cs     ( bac1_cs       ),
@@ -169,9 +174,7 @@ jtcop_bac06 u_ba2(
     .pxl2_cen   ( pxl2_cen      ),
     .pxl_cen    ( pxl_cen       ),
 
-    .mode_cs    ( fmode_cs      ),
-    .sift_cs    ( fsft_cs       ),
-    .map_cs     ( fmap_cs       ),
+    .mode_cs    ( cmode_cs      ),
 
     // CPU interface
     .cpu_dout   ( cpu_dout      ),
@@ -188,6 +191,12 @@ jtcop_bac06 u_ba2(
     .LVBL       ( LVBL          ),
     .HS         ( HS            ),
     .VS         ( VS            ),
+
+    // VRAM
+    .ram_cs     ( b2ram_cs      ),
+    .ram_addr   ( b2ram_addr    ),
+    .ram_data   ( b2ram_data    ),
+    .ram_ok     ( b2ram_ok      ),
 
     // ROMs
     .rom_cs     ( bac2_cs       ),

@@ -33,6 +33,14 @@ module jtcop_sdram(
     input     [15:0] main_dout,
     input            main_rnw,
 
+    // Video RAM
+    input            fsft_cs,
+    input            fmap_cs,
+    input            bsft_cs,
+    input            bmap_cs,
+    input            csft_cs,
+    input            cmap_cs,
+
     // ROM banks
     input     [ 2:1] sndflag,
     input     [ 2:1] b1flg,
@@ -57,17 +65,32 @@ module jtcop_sdram(
     output    [ 7:0] adpcm_data,
     output           adpcm_ok,
 
-    // Scroll 0
+    // Scroll B0 - RAM
+    input            b0_cs,
+    input     [12:0] b0_addr,
+    output    [15:0] b0_data,
+    output           b0_ok
+    //        B0 - ROM
     output           scr0_ok,
     input    [16:0]  scr0_addr, 
     output   [31:0]  scr0_data,    
 
-    // Scroll 1
+    // Scroll B1 - RAM
+    input            b1_cs,
+    input     [10:0] b1_addr,
+    output    [15:0] b1_data,
+    output           b1_ok
+    //        B1 - ROM
     output           scr1_ok,
     input    [16:0]  scr1_addr, 
     output   [31:0]  scr1_data,    
 
-    // Scroll 2
+    // Scroll B2 - RAM
+    input            b2_cs,
+    input     [10:0] b2_addr,
+    output    [15:0] b2_data,
+    output           b2_ok
+    //        B2 - ROM
     output           scr2_ok,
     input    [15:0]  scr2_addr,
     output   [31:0]  scr2_data,        
@@ -146,8 +169,6 @@ jtframe_dwnld #(
     .sdram_ack    ( prog_ack       )
 );
 
-
-
 // Sound
 // adpcm_addr[16] is used as an /OE signal on the board
 // I'm ignoring that connection here as it isn't relevant
@@ -160,6 +181,109 @@ assign snd_eff = BANKS ? { sndflag[1] | snd_addr[15],
                            snd_addr[13:0] } :
                         { 1'b0, snd_addr[14:0] };
 
+// RAM size
+// 16kB   M68000 exclusive use
+// 16kB   B0
+//  4kB   B1
+//  4kB   B2
+// 40kB   Total -> AW=15, DW=16
+
+reg  [14:0] ram_maddr; // merged address
+
+always @* begin
+    ram_maddr = {2'b0, ram_addr[12:0]};
+    // first BAC06 (16kB)
+    if( fsft_cs )
+        ram_maddr[14:12] = 3'b010;
+    else if( fmap_cs )
+        ram_maddr[14:12] = 3'b011;
+    // second BAC06 (4kB)
+    else if( bsft_cs )
+        ram_maddr[14:10] = 5'b1000_0;
+    else if( bmap_cs )
+        ram_maddr[14:10] = 5'b1000_1;
+    // third BAC06 (4kB)
+    else if( csft_cs )
+        ram_maddr[14:10] = 5'b1100_0;
+    else if( cmap_cs )
+        ram_maddr[14:10] = 5'b1100_1;
+end
+
+jtframe_ram_5slots #(
+    // VRAM/RAM
+    .SLOT0_DW(16),
+    .SLOT0_AW(15),  // 64 kB (only 40 used)
+
+    // Game ROM
+    .SLOT1_DW(16),
+    .SLOT1_AW(18),  // 512kB temptative value
+
+    // VRAM access by B0
+    .SLOT2_DW(16),
+    .SLOT2_AW(12),
+
+    // VRAM access by B1
+    .SLOT3_DW(16),
+    .SLOT3_AW(10),
+
+    // VRAM access by B2
+    .SLOT4_DW(16),
+    .SLOT4_AW(10)
+) u_bank0(
+    .rst        ( rst       ),
+    .clk        ( clk       ),
+
+    .offset0    (VRAM_OFFSET),
+    .offset1    (ZERO_OFFSET),
+    .offset2    ( B0_OFFSET ),
+    .offset3    ( B1_OFFSET ),
+    .offset4    ( B2_OFFSET ),
+
+    .slot0_addr ( ram_maddr ),
+    .slot1_addr ( main_addr ),
+    .slot2_addr ( b0_addr   ),
+    .slot3_addr ( b1_addr   ),
+    .slot4_addr ( b2_addr   ),
+
+    //  output data
+    .slot0_dout ( ram_data  ),
+    .slot1_dout ( main_data ),
+    .slot2_dout ( b0_data   ),
+    .slot3_dout ( b1_data   ),
+    .slot4_dout ( b2_data   ),
+
+    .slot0_cs   ( ram_cs    ),
+    .slot1_cs   ( main_cs   ),
+    .slot2_cs   ( b0_cs     ),
+    .slot3_cs   ( b1_cs     ),
+    .slot4_cs   ( b2_cs     ),
+
+    .slot0_wen  ( ~main_rnw ),
+    .slot0_din  ( main_dout ),
+    .slot0_wrmask( dsn      ),
+
+    .slot1_clr  ( 1'b0      ),
+    .slot2_clr  ( 1'b0      ),
+    .slot3_clr  ( 1'b0      ),
+    .slot4_clr  ( 1'b0      ),
+
+    .slot0_ok   ( ram_ok    ),
+    .slot1_ok   ( main_ok   ),
+    .slot2_ok   ( b0_ok     ),
+    .slot3_ok   ( b1_ok     ),
+    .slot4_ok   ( b2_ok     ),
+
+    // SDRAM controller interface
+    .sdram_ack   ( ba_ack[0] ),
+    .sdram_rd    ( ba_rd[0]  ),
+    .sdram_wr    ( ba_wr     ),
+    .sdram_addr  ( ba0_addr  ),
+    .data_dst    ( ba_dst[0] ),
+    .data_rdy    ( ba_rdy[0] ),
+    .data_write  ( ba0_din   ),
+    .sdram_wrmask( ba0_din_m ),
+    .data_read   ( data_read )
+);
 
 jtframe_rom_2slots #(
     .SLOT0_DW(   8),
