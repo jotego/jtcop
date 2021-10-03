@@ -108,7 +108,7 @@ wire [31:0] char_data;
 
 wire        b0rom_ok, b1rom_ok, b2rom_ok,
             b0rom_cs, b1rom_cs, b2rom_cs;
-wire [16:0] b0rom_addr, b1rom_addr, b2rom_addr;
+wire [18:0] b0rom_addr, b1rom_addr, b2rom_addr;
 wire [31:0] b0rom_data, b1rom_data, b2rom_data;
 
 wire        obj_ok, obj_cs, objram_cs, mixpsel_cs, obj_copy;
@@ -116,8 +116,7 @@ wire [19:0] obj_addr;
 wire [15:0] obj_data;
 
 // CPU interface
-wire [12:1] cpu_addr;
-wire [15:0] main_dout, char_dout, pal_dout, obj_dout;
+wire [15:0] main_dout, pal_dout, obj_dout;
 wire [ 1:0] dsn;
 wire        UDSWn, LDSWn, main_rnw;
 
@@ -139,7 +138,7 @@ wire        nexrm1, nexrm0_cs;
 // ROM banks
 wire     [ 2:1] sndflag, b1flg, mixflg;
 wire     [ 2:0] crback;
-wire            b0flg, sndbank;
+wire            b0flg, snd_bank;
 
 // Palette
 wire [ 1:0] pal_cs;
@@ -169,10 +168,6 @@ wire [15:0] mcu_din;
 wire [ 5:0] mcu_sel;
 wire        mcu_sel2;   // this funny name is to keep the schematics' naming
 wire        nexirq;
-// ROM banks
-wire [1:0] sndflag, b1flg, mixflg;
-wire [2:0] crback;
-wire       b0flg;
 
 // Cabinet inputs
 wire [ 7:0] dipsw_a, dipsw_b;
@@ -237,7 +232,7 @@ jtcop_main u_main(
     .obj_dout   ( obj_dout  ),
 
     // CPU bus
-    .cpu_addr   ( cpu_addr  ),
+    .cpu_addr   ( main_addr ),
     .cpu_dout   ( main_dout ),
     .UDSWn      ( UDSWn     ),
     .LDSWn      ( LDSWn     ),
@@ -285,7 +280,7 @@ jtcop_video u_video(
 
 //    .game_id    ( game_id   ),
     // CPU interface
-    .cpu_addr   ( cpu_addr[12:1]  ),
+    .cpu_addr   ( main_addr[12:1]  ),
 
     // Object
     .objram_cs  ( objram_cs ),
@@ -310,7 +305,6 @@ jtcop_video u_video(
     .prom_din   ( prog_data[1:0] ),
 
     .flip       ( flip      ),
-    .ext_flip   ( dip_flip  ),
 
     // SDRAM interface
     .b0ram_cs   ( b0_cs     ),
@@ -512,7 +506,7 @@ jtcop_sdram u_sdram(
     .mixflg     ( mixflg    ),
     .crback     ( crback    ),
     .b0flg      ( b0flg     ),
-    .sndbank    ( sndbank   ),
+    .sndbank    ( snd_bank  ),
 
     // Main CPU
     .main_cs    ( main_cs   ),

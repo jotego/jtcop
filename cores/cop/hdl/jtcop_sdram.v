@@ -74,7 +74,7 @@ module jtcop_sdram(
     output           b0_ok,
     //        B0 - ROM
     output           b0rom_ok,
-    input    [16:0]  b0rom_addr,
+    input    [18:0]  b0rom_addr,
     output   [31:0]  b0rom_data,
 
     // Scroll B1 - RAM
@@ -84,7 +84,7 @@ module jtcop_sdram(
     output           b1_ok,
     //        B1 - ROM
     output           b1rom_ok,
-    input    [16:0]  b1rom_addr,
+    input    [18:0]  b1rom_addr,
     output   [31:0]  b1rom_data,
 
     // Scroll B2 - RAM
@@ -94,7 +94,7 @@ module jtcop_sdram(
     output           b2_ok,
     //        B2 - ROM
     output           b2rom_ok,
-    input    [15:0]  b2rom_addr,
+    input    [18:0]  b2rom_addr,
     output   [31:0]  b2rom_data,
 
     // Obj
