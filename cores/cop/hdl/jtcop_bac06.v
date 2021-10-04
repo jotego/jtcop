@@ -127,7 +127,9 @@ end
 
 generate
     if( MASTER ) begin
-        assign flip = 0;
+        wire [8:0] vrender1;
+        assign flip  = 0;
+        assign vload = vrender1==0; // second last line before the end of V blank
 
         jtframe_cen48 u_cen(
             .clk    ( clk       ),    // 48 MHz
@@ -139,15 +141,22 @@ generate
             .cen6b(), .cen3b(), .cen3qb(), .cen1p5b()
         );
 
-        jtframe_vtimer u_vtimer(
+        jtframe_vtimer #(
+            .VB_END     ( 9'd271    ),
+            .VS_START   ( 9'd255    ),
+            .HS_START   ( 9'd327    ),
+            .HB_START   ( 9'd255    ),
+            .HB_END     ( 9'd383    ),
+            .HINIT      ( 9'd255    )
+        )   u_vtimer(
             .clk        ( clk       ),
             .pxl_cen    ( pxl_cen   ),
             .vdump      ( vdump     ),
             .vrender    ( vrender   ),
-            .vrender1   (           ),
+            .vrender1   ( vrender1  ),
             .H          ( hdump     ),
             .Hinit      ( hinit     ),
-            .Vinit      ( vload     ),
+            .Vinit      (           ),
             .LHBL       ( LHBL      ),
             .LVBL       ( LVBL      ),
             .HS         ( HS        ),

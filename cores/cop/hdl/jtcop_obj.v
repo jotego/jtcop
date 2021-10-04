@@ -23,6 +23,7 @@ module jtcop_obj(
     input              pxl_cen,
 
     input              LVBL,
+    input              hinit,
     input              vload,
     input      [ 7:0]  vdump,
     input      [ 7:0]  hdump,
@@ -43,6 +44,9 @@ module jtcop_obj(
     output     [7:0]   pxl
 );
 
+wire [ 9:0]   tbl_addr;
+wire [15:0]   tbl_dout;
+
 jtcop_obj_buffer u_buffer(
     .rst        ( rst       ),
     .clk        ( clk       ),
@@ -50,6 +54,7 @@ jtcop_obj_buffer u_buffer(
     .pxl_cen    ( pxl_cen   ),
 
     .LVBL       ( LVBL      ),
+    .hinit      ( hinit     ),
     .vload      ( vload     ),
     .vdump      ( vdump[7:0]),
     .hdump      ( hdump[7:0]),
@@ -61,9 +66,14 @@ jtcop_obj_buffer u_buffer(
     .cpu_dsn    ( cpu_dsn   ),
     .cpu_rnw    ( cpu_rnw   ),
     .objram_cs  ( objram_cs ),
+
+    // Object engine
+    .tbl_addr   ( tbl_addr  ),
+    .tbl_dout   ( tbl_dout  ),
+
     // DMA trigger
     .obj_copy   ( obj_copy  ),
-    .mixpsel_cs ( mixpsel_cs)
+    .mixpsel    ( mixpsel   )
 );
 
 endmodule
