@@ -44,13 +44,31 @@ module jtcop_obj_buffer(
 wire [ 1:0] cpu_we = ~({2{cpu_rnw}} | cpu_dsn) & {2{objram_cs}};
 wire [15:0] buf_dout;
 wire [ 9:0] bus_scan;
+wire [ 7:0] dmapdb;
 reg  [ 3:0] v14;
+reg  [ 7:0] buf_latch;
+reg         dma_on, dma_charged;
+
+assign bus_scan = { v14, hdump[7:4], ~hdump[3:2] };
+assign dmapdb   = mixpsel ? buf_latch : bus_scan[9:2];
 
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
-        v14 <= 0;
+        dma_on      <= 0;
+        dma_charged <= 0;
+        v14         <= 0;
+        buf_latch   <= 0;
+    end else begin
+        dma_charged <= dma_on ? 0 : (obj_copy ? 1 : dma_charged);
+        dma_on <= vload  ? 0 : (!LVBL && v14==7 && pxl_cen ? dma_charged : dma_on);
+        v14    <= vload ? 8 : (hinit & pxl_cen ? (v14+1d1) : v14);
+        if( pxl_cen ) buf_latch <= buf_dout;
+    end
+end
+
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
     end else if(pxl_cen) begin
-        v14 <= vload ? 4'h8 : (hinit ? (v14+1d1) : v14);
     end
 end
 
