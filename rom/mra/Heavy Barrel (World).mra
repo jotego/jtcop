@@ -86,22 +86,14 @@
             <part name="ec28.9f" crc="33ce2b1a" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x198000 -->
-        <interleave output="16">
-            <part name="ec15.16c" crc="21816707" map="01"/>
-            <part name="ec16.17c" crc="a5684574" map="10"/>
-        </interleave>
-        <interleave output="16">
-            <part name="ec11.16a" crc="5c768315" map="01"/>
-            <part name="ec12.17a" crc="8b64d7a4" map="10"/>
-        </interleave>
-        <interleave output="16">
-            <part name="ec13.13c" crc="56e3ed65" map="01"/>
-            <part name="ec14.14c" crc="bedfe7f3" map="10"/>
-        </interleave>
-        <interleave output="16">
-            <part name="ec09.13a" crc="26240ea0" map="01"/>
-            <part name="ec10.14a" crc="47d95447" map="10"/>
-        </interleave>
+        <part name="ec15.16c" crc="21816707"/>
+        <part name="ec16.17c" crc="a5684574"/>
+        <part name="ec11.16a" crc="5c768315"/>
+        <part name="ec12.17a" crc="8b64d7a4"/>
+        <part name="ec13.13c" crc="56e3ed65"/>
+        <part name="ec14.14c" crc="bedfe7f3"/>
+        <part name="ec09.13a" crc="26240ea0"/>
+        <part name="ec10.14a" crc="47d95447"/>
         <!-- mcu - starts at 0x218000 -->
         <part name="ec31-e.9a" crc="bf93a2ec"/>
         <part repeat="0x17000"> FF</part>

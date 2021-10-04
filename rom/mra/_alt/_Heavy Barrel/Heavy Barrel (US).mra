@@ -86,22 +86,14 @@
             <part name="heavy_barrel_28.9f" crc="33ce2b1a" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x198000 -->
-        <interleave output="16">
-            <part name="heavy_barrel_15.16c" crc="21816707" map="01"/>
-            <part name="heavy_barrel_16.17c" crc="a5684574" map="10"/>
-        </interleave>
-        <interleave output="16">
-            <part name="heavy_barrel_11.16a" crc="5c768315" map="01"/>
-            <part name="heavy_barrel_12.17a" crc="8b64d7a4" map="10"/>
-        </interleave>
-        <interleave output="16">
-            <part name="heavy_barrel_13.13c" crc="56e3ed65" map="01"/>
-            <part name="heavy_barrel_14.14c" crc="bedfe7f3" map="10"/>
-        </interleave>
-        <interleave output="16">
-            <part name="heavy_barrel_09.13a" crc="26240ea0" map="01"/>
-            <part name="heavy_barrel_10.14a" crc="47d95447" map="10"/>
-        </interleave>
+        <part name="heavy_barrel_15.16c" crc="21816707"/>
+        <part name="heavy_barrel_16.17c" crc="a5684574"/>
+        <part name="heavy_barrel_11.16a" crc="5c768315"/>
+        <part name="heavy_barrel_12.17a" crc="8b64d7a4"/>
+        <part name="heavy_barrel_13.13c" crc="56e3ed65"/>
+        <part name="heavy_barrel_14.14c" crc="bedfe7f3"/>
+        <part name="heavy_barrel_09.13a" crc="26240ea0"/>
+        <part name="heavy_barrel_10.14a" crc="47d95447"/>
         <!-- mcu - starts at 0x218000 -->
         <part name="heavy_barrel_31.9a" crc="239d726f"/>
         <part repeat="0x17000"> FF</part>
