@@ -60,7 +60,6 @@ module jtcop_game(
     input   [24:0]  ioctl_addr,
     input   [ 7:0]  ioctl_dout,
     input           ioctl_wr,
-    output  [ 7:0]  ioctl_din,
     output  [21:0]  prog_addr,
     output  [15:0]  prog_data,
     output  [ 1:0]  prog_mask,
@@ -360,7 +359,7 @@ jtcop_video u_video(
 );
 
 `ifndef NOSOUND
-    jtcop_snd u_snd(
+    jtcop_snd u_sound(
         .rst        ( rst24     ),
         .clk        ( clk24     ),
         .cen_opn    ( cen_opn   ),

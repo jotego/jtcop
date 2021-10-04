@@ -141,6 +141,7 @@ parameter BANKS=0;
 /* verilator lint_off WIDTH */
 localparam [24:0] BA1_START   = `BA1_START,
                   MCU_START   = `MCU_START,
+                  MCU_END     = MCU_START + 25'h1000,
                   BA2_START   = `BA2_START,
                   GFX2_START  = `GFX2_START,
                   GFX3_START  = `GFX3_START,
@@ -155,6 +156,10 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   ZERO_OFFSET = 0;
 
 wire prom_we;
+
+assign mcu_we  = ioctl_addr >= MCU_START && ioctl_addr < MCU_END;
+assign prio_we = prom_we && ioctl_addr < (PROM_START+25'h100);
+assign dwnld_busy = downloading;
 
 jtframe_dwnld #(
     .BA1_START ( BA1_START ), // sound

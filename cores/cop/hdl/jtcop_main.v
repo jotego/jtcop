@@ -377,11 +377,11 @@ jtframe_m68k u_cpu(
     .VPAn       ( VPAn        ),
     .FC         ( FC          ),
 
-    .BERRn      ( BERRn       ),
+    .BERRn      ( 1'b1        ),
     // Bus arbitrion
     .HALTn      ( dip_pause   ),
-    .BRn        ( BRn         ),
-    .BGACKn     ( BGACKn      ),
+    .BRn        ( 1'b1        ),
+    .BGACKn     ( 1'b1        ),
     .BGn        ( BGn         ),
 
     .DTACKn     ( DTACKn      ),
