@@ -398,7 +398,7 @@ jtcop_video u_video(
     reg  [7:0] p2l, mcu_p0i;
     reg        mcu_intn, mcu_sel0l;
 
-    assign mcu_p3i = { sel[5:3], mcu_p3o[4:0] };
+    assign mcu_p3i = { mcu_sel[5:3], mcu_p3o[4:0] };
     assign { sndflag, b1flg, b0flg, mixflg } = mcu_p1o[6:0];
     assign crback = mcu_p3o[2:0];
     assign nexirq = 1;

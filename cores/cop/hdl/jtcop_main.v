@@ -303,6 +303,7 @@ end
 
 
 wire DTACKn;
+reg  disp_busy;
 wire bus_cs    = pal_cs!=0 || ram_cs || rom_cs;
 wire bus_busy  = |{ rom_cs & ~ok_dly, ram_cs & ~ram_ok, disp_cs & disp_busy };
 wire bus_legit = disp_cs;
@@ -311,7 +312,6 @@ wire bus_legit = disp_cs;
 // during a blank, each access has a 2 clock delay until DTACKn is generated
 // in practice, this means that each access has a 1 clock penalty, as the
 // 1st clock after /AS goes low is lost by the CPU anyway
-reg        disp_busy;
 wire       disp_blank = disp_cs & (~LVBL | ~LHBL);
 reg        disp_blank_l, disp_cs_l;
 reg  [1:0] disp_bs_cnt;
