@@ -1,0 +1,3 @@
+include ../../cop/hdl/jtcop.def
+
+MCU=1
