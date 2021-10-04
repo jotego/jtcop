@@ -22,6 +22,12 @@ module jtcop_obj(
     input              clk_cpu,
     input              pxl_cen,
 
+    input              LVBL,
+    input              vload,
+    input      [ 7:0]  vdump,
+    input      [ 7:0]  hdump,
+
+
     // CPU interface
     input      [10:1]  cpu_addr,
     input      [15:0]  cpu_dout,
@@ -32,7 +38,7 @@ module jtcop_obj(
 
     // DMA trigger
     input              obj_copy,
-    input              mixpsel_cs,
+    input              mixpsel,
 
     output     [7:0]   pxl
 );
@@ -42,6 +48,12 @@ jtcop_obj_buffer u_buffer(
     .clk        ( clk       ),
     .clk_cpu    ( clk_cpu   ),
     .pxl_cen    ( pxl_cen   ),
+
+    .LVBL       ( LVBL      ),
+    .vload      ( vload     ),
+    .vdump      ( vdump[7:0]),
+    .hdump      ( hdump[7:0]),
+
     // CPU interface
     .cpu_addr   ( cpu_addr  ),
     .cpu_dout   ( cpu_dout  ),

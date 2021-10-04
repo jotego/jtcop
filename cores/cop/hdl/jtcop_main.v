@@ -62,7 +62,7 @@ module jtcop_main(
     // Objects
     output reg         obj_cs,       // called MIX in the schematics
     output reg         obj_copy,     // called *DM in the schematics
-    output reg         mixpsel_cs,   // related to the OBJ buffer DMA function
+    output reg         mixpsel,      // related to the OBJ buffer DMA function
     input       [15:0] obj_dout,
 
     // cabinet I/O
@@ -109,7 +109,7 @@ wire [23:0] A_full = {A,1'b0};
 `endif
 
 reg         snreq, eep_cs,
-            prisel_cs,
+            prisel_cs, mixpsel_cs,
             nexin_cs,       // this pin C15 of connector 2. It's unconnected in all games
             nexout_cs;      // Connector 2, pin A16: unused
 
@@ -242,6 +242,7 @@ always @(posedge clk, posedge rst) begin
         mcu_din <= 0;
         ok_dly  <= 0;
         prisel  <= 0;
+        mixpsel <= 0;
     end else begin
         ok_dly <= rom_ok;
 
@@ -265,6 +266,9 @@ always @(posedge clk, posedge rst) begin
 
         // Colour mixer
         if( prisel_cs ) prisel <= cpu_dout[2:0];
+
+        // Object DMA
+        if( mixpsel_cs ) mixpsel <= cpu_dout[0];
     end
 end
 

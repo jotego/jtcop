@@ -41,7 +41,7 @@ module jtcop_video(
     // Objects
     input              objram_cs,
     input              obj_copy,
-    input              mixpsel_cs,
+    input              mixpsel,
     output     [15:0]  obj_dout,
 
     // priority PROM
@@ -101,6 +101,7 @@ module jtcop_video(
 
 wire   [8:0]  vdump, vrender, hdump;
 wire   [7:0]  ba0_pxl, ba1_pxl, ba2_pxl, obj_pxl;
+wire          vload, hinit;
 reg           gmode_cs, gsft_cs, gmap_cs;
 
 jtcop_bac06 #(.MASTER(1),.RAM_AW(13)) u_ba0(
@@ -128,6 +129,8 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(13)) u_ba0(
     .LVBL       ( LVBL          ),
     .HS         ( HS            ),
     .VS         ( VS            ),
+    .vload      ( vload         ),
+    .hinit      ( hinit         ),
 
     // VRAM
     .ram_cs     ( b0ram_cs      ),
@@ -169,6 +172,8 @@ jtcop_bac06 u_ba1(
     .LVBL       ( LVBL          ),
     .HS         ( HS            ),
     .VS         ( VS            ),
+    .vload      ( vload         ),
+    .hinit      ( hinit         ),
 
     // VRAM
     .ram_cs     ( b1ram_cs      ),
@@ -210,6 +215,8 @@ jtcop_bac06 u_ba2(
     .LVBL       ( LVBL          ),
     .HS         ( HS            ),
     .VS         ( VS            ),
+    .vload      ( vload         ),
+    .hinit      ( hinit         ),
 
     // VRAM
     .ram_cs     ( b2ram_cs      ),
@@ -232,6 +239,12 @@ jtcop_obj u_obj(
     .clk_cpu    ( clk_cpu       ),
     .pxl_cen    ( pxl_cen       ),
 
+    .LVBL       ( LVBL          ),
+    .vload      ( vload         ),
+    .hinit      ( hinit         ),
+    .hdump      ( hdump[7:0]    ),
+    .vdump      ( vdump[7:0]    ),
+
     // CPU interface
     .cpu_addr   ( cpu_addr[10:1]),
     .cpu_dout   ( cpu_dout      ),
@@ -242,7 +255,7 @@ jtcop_obj u_obj(
 
     // DMA trigger
     .obj_copy   ( obj_copy      ),
-    .mixpsel_cs ( mixpsel_cs    ),
+    .mixpsel    ( mixpsel       ),
 
     .pxl        ( obj_pxl       )
 );

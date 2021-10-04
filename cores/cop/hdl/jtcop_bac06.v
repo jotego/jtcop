@@ -70,6 +70,8 @@ module jtcop_bac06 #(
     inout          LVBL,
     inout          HS,
     inout          VS,
+    inout          vload,
+    inout          hinit,
 
     // VRAM
     output         ram_cs,
@@ -144,8 +146,8 @@ generate
             .vrender    ( vrender   ),
             .vrender1   (           ),
             .H          ( hdump     ),
-            .Hinit      (           ),
-            .Vinit      (           ),
+            .Hinit      ( hinit     ),
+            .Vinit      ( vload     ),
             .LHBL       ( LHBL      ),
             .LVBL       ( LVBL      ),
             .HS         ( HS        ),

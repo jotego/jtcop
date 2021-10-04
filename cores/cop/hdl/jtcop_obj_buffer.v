@@ -22,6 +22,12 @@ module jtcop_obj_buffer(
     input              clk_cpu,
     input              pxl_cen,
 
+    input              LVBL,
+    input              vload,
+    input              hinit,       // called vcunt in schematics
+    input      [ 7:0]  vdump,
+    input      [ 7:0]  hdump,
+
     // CPU interface
     input      [10:1]  cpu_addr,
     input      [15:0]  cpu_dout,
@@ -32,10 +38,22 @@ module jtcop_obj_buffer(
 
     // DMA trigger
     input              obj_copy,
-    input              mixpsel_cs
+    input              mixpsel
 );
 
-wire [1:0] cpu_we = ~({2{cpu_rnw}} | cpu_dsn) & {2{objram_cs}};
+wire [ 1:0] cpu_we = ~({2{cpu_rnw}} | cpu_dsn) & {2{objram_cs}};
+wire [15:0] buf_dout;
+wire [ 9:0] bus_scan;
+reg  [ 3:0] v14;
+
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        v14 <= 0;
+    end else if(pxl_cen) begin
+        v14 <= vload ? 4'h8 : (hinit ? (v14+1d1) : v14);
+    end
+end
+
 
 jtframe_dual_ram16 #(.aw(10)) u_buffer(
     // Port 0: CPU
@@ -47,9 +65,9 @@ jtframe_dual_ram16 #(.aw(10)) u_buffer(
     // Port 1
     .clk1   ( clk       ),
     .data1  (           ),
-    .addr1  (           ),
-    .we1    (           ),
-    .q1     (           )
+    .addr1  ( buf_scan  ),
+    .we1    ( 2'd0      ),
+    .q1     ( buf_dout  )
 );
 
 endmodule

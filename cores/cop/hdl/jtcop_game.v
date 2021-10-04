@@ -111,7 +111,7 @@ wire        b0rom_ok, b1rom_ok, b2rom_ok,
 wire [18:0] b0rom_addr, b1rom_addr, b2rom_addr;
 wire [31:0] b0rom_data, b1rom_data, b2rom_data;
 
-wire        obj_ok, obj_cs, objram_cs, mixpsel_cs, obj_copy;
+wire        obj_ok, obj_cs, objram_cs, mixpsel, obj_copy;
 wire [19:0] obj_addr;
 wire [15:0] obj_data;
 
@@ -228,7 +228,7 @@ jtcop_main u_main(
     // Objects
     .obj_cs     ( objram_cs ),
     .obj_copy   ( obj_copy  ),
-    .mixpsel_cs ( mixpsel_cs),
+    .mixpsel    ( mixpsel   ),
     .obj_dout   ( obj_dout  ),
 
     // CPU bus
@@ -284,7 +284,7 @@ jtcop_video u_video(
 
     // Object
     .objram_cs  ( objram_cs ),
-    .mixpsel_cs ( mixpsel_cs),
+    .mixpsel    ( mixpsel   ),
     .obj_dout   ( obj_dout  ),
     .obj_copy   ( obj_copy  ),
 
