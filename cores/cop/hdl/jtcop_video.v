@@ -226,6 +226,27 @@ jtcop_bac06 u_ba2(
     .pxl        ( ba2_pxl       )
 );
 
+jtcop_obj u_obj(
+    .rst        ( rst           ),
+    .clk        ( clk           ),
+    .clk_cpu    ( clk_cpu       ),
+    .pxl_cen    ( pxl_cen       ),
+
+    // CPU interface
+    .cpu_addr   ( cpu_addr[10:1]),
+    .cpu_dout   ( cpu_dout      ),
+    .obj_dout   ( obj_dout      ),
+    .cpu_dsn    ( cpu_dsn       ),
+    .cpu_rnw    ( cpu_rnw       ),
+    .objram_cs  ( objram_cs     ),
+
+    // DMA trigger
+    .obj_copy   ( obj_copy      ),
+    .mixpsel_cs ( mixpsel_cs    ),
+
+    .pxl        ( obj_pxl       )
+);
+
 jtcop_colmix u_colmix(
     .rst        ( rst           ),
     .clk        ( clk           ),
