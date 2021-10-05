@@ -150,7 +150,7 @@ wire [ 7:0] snd_data;
 wire        snd_cs, snd_ok;
 
 wire [ 7:0] snd_latch;
-wire        snd_irqn;
+wire        snreq;
 
 // PCM
 wire [17:0] adpcm_addr;
@@ -209,7 +209,7 @@ jtcop_main u_main(
     .nexrm0_cs  ( nexrm0_cs ),
     // Sound communication
     .snd_latch  ( snd_latch ),
-    .snd_irqn   ( snd_irqn  ),
+    .snreq      ( snreq     ),
     // Palette
     .prisel     ( prisel    ),
     .pal_cs     ( pal_cs    ),
@@ -366,7 +366,7 @@ jtcop_video u_video(
         .cen_opl    ( cen_opl   ),
 
         // From main CPU
-        .snreq      ( snd_irqn  ),
+        .snreq      ( snreq     ),
         .latch      ( snd_latch ),
         .snd_bank   ( snd_bank  ),
 

@@ -39,7 +39,7 @@ module jtcop_main(
     input              sec2,        // this is the bit2!
 
     // sound
-    output             snd_irqn,
+    output reg         snreq,
     output reg [7:0]   snd_latch,
 
     // Palette
@@ -108,7 +108,7 @@ reg  [ 2:0] read_cs;
 wire [23:0] A_full = {A,1'b0};
 `endif
 
-reg         snreq, eep_cs,
+reg         eep_cs,
             prisel_cs, mixpsel_cs,
             nexin_cs,       // this pin C15 of connector 2. It's unconnected in all games
             nexout_cs;      // Connector 2, pin A16: unused
@@ -119,7 +119,6 @@ assign BUSn  = ASn | (LDSn & UDSn);
 assign VPAn  = ~&{ FC, ~ASn };
 assign cpu_addr = A[18:1];
 
-assign snd_irqn = ~snreq;
 assign ram_cs   = sysram_cs | fsft_cs | fmap_cs | bsft_cs | bmap_cs | cmap_cs | csft_cs;
 
 always @(*) begin
