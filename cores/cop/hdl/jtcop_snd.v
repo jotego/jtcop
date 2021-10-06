@@ -193,6 +193,8 @@ jt03 u_2203(
     .snd_sample()
 );
 
+assign adpcm_cs = 1;
+
 jt6295 #(.INTERPOL(1)) u_adpcm(
     .rst        ( rst       ),
     .clk        ( clk       ),

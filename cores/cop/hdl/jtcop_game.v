@@ -425,6 +425,7 @@ jtcop_video u_video(
     end
 
     jtframe_8751mcu #(
+        .ROMBIN     ("../../../../rom/ei31.9a"),
         .DIVCEN     ( 1             ),
         .SYNC_XDATA ( 1             ),
         //.SYNC_P1    ( 1             ),

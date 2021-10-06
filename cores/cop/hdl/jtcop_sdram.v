@@ -146,7 +146,9 @@ localparam [24:0] BA1_START   = `BA1_START,
                   GFX2_START  = `GFX2_START,
                   GFX3_START  = `GFX3_START,
                   BA3_START   = `BA3_START,
-                  PROM_START  = `PROM_START;
+                  PROM_START  = `PROM_START,
+                  PRIO_START  = PROM_START+25'h200,
+                  PRIO_END    = PRIO_START+25'h200;
 
 localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   B0_OFFSET   = 22'h10_2000,
@@ -157,15 +159,16 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
 
 wire prom_we;
 
-assign mcu_we  = ioctl_addr >= MCU_START && ioctl_addr < MCU_END;
-assign prio_we = prom_we && ioctl_addr < (PROM_START+25'h100);
+assign mcu_we  = ioctl_addr >= MCU_START  && ioctl_addr < MCU_END;
+// priority PROM is meant to be the second one in the MRA file
+assign prio_we = ioctl_addr >= PRIO_START && ioctl_addr < PRIO_END;
 assign dwnld_busy = downloading;
 
 jtframe_dwnld #(
     .BA1_START ( BA1_START ), // sound
     .BA2_START ( BA2_START ), // tiles
     .BA3_START ( BA3_START ), // obj
-    .PROM_START( PROM_START), // PCM MCU
+    .PROM_START( MCU_START ), // MCU
     .SWAB      ( 1         )
 ) u_dwnld(
     .clk          ( clk            ),
@@ -305,7 +308,7 @@ jtframe_rom_2slots #(
     .SLOT0_AW(  16),
 
     .SLOT1_DW(   8),
-    .SLOT1_AW(  18),
+    .SLOT1_AW(  163),
 
     .SLOT1_OFFSET( PCM_OFFSET )
 ) u_bank1(
@@ -330,6 +333,10 @@ jtframe_rom_2slots #(
     .data_rdy   ( ba_rdy[1] ),
     .data_read  ( data_read )
 );
+
+assign ba_rd[3:2] = 0;
+assign ba2_addr = 0;
+assign ba3_addr = 0;
 
 // Backgrounds
 /*

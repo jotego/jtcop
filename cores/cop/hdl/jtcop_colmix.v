@@ -140,7 +140,11 @@ jtframe_dual_ram #(
     .q1     ( pal_b     )
 );
 
-jtframe_prom #(.aw(10),.dw(2),.simfile("../../../rom/robocop/mb7122e.17e")) u_selbus(
+jtframe_prom #(
+    .aw     ( 10            ),
+    .dw     ( 2             ),
+//  .simfile("../../../rom/robocop/mb7122e.17e")
+) u_selbus(
     .clk    ( clk           ),
     .cen    ( 1'b1          ),
     .data   ( prom_din      ),

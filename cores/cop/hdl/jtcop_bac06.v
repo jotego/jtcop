@@ -99,6 +99,9 @@ reg  [15:0] mmr_mux;
 wire [15:0] cpu_ram;
 wire [ 1:0] ncgsel;
 
+assign ram_cs = 0;
+assign ram_addr = 0;
+
 
 function [15:0] combine( input [15:0] din );
     combine = { cpu_dsn[1] ? din[15:8] : cpu_dout[15:8],
