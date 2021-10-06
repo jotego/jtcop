@@ -36,7 +36,7 @@ module jtcop_main(
     input       [15:0] mcu_dout,
     output reg  [15:0] mcu_din,
     output reg [5:0]   sec,         // bit 2 is unused
-    input              sec2,        // this is the bit2!
+    input              sec2,        // this is the bit 2!
 
     // sound
     output reg         snreq,
@@ -173,18 +173,18 @@ always @(*) begin
                 disp_cs = 1;
                 if( A[19:18]==2'b01 ) begin // 0x24'???? DSP - DiSPlay (?)
                     case( A[15:13] )
-                        0: fmode_cs  = 1; // 0x24'0000, cfg registers
-                        1: fsft_cs   = 1; // 0x24'2000, col/row scroll
-                        2: fmap_cs   = 1; // 0x24'4000, tilemap
-                        3: bmode_cs  = 1; // 0x24'6000, cfg registers
-                        4: bsft_cs   = 1; // 0x24'8000, col/row scroll
-                        5: bmap_cs   = 1; // 0x24'a000, tilemap
+                        0: fmode_cs  = 1;       // 0x24'0000, cfg registers
+                        1: fsft_cs   = ~BUSn;   // 0x24'2000, col/row scroll
+                        2: fmap_cs   = ~BUSn;   // 0x24'4000, tilemap
+                        3: bmode_cs  = 1;       // 0x24'6000, cfg registers
+                        4: bsft_cs   = ~BUSn;   // 0x24'8000, col/row scroll
+                        5: bmap_cs   = ~BUSn;   // 0x24'a000, tilemap
                         6: begin
                             nexrm0_cs = 1; // BAC06 chip on second PCB
                             case( A[10:9])
                                 0: cmode_cs = 1; // these signals could go
-                                1: csft_cs  = 1; // in a different order
-                                2: cmap_cs  = 1;
+                                1: csft_cs  = ~BUSn; // in a different order
+                                2: cmap_cs  = ~BUSn;
                                 default:;
                             endcase
                         end
@@ -220,7 +220,7 @@ always @(*) begin
                     end
                     4: pal_cs[0] = 1; // 0x31'0000 called PSEL in the schematics
                     5: pal_cs[1] = 1; // 0x31'4000
-                    6: sysram_cs = 1;   // 0x31'8000
+                    6: sysram_cs = ~BUSn;   // 0x31'8000
                     7: obj_cs    = 1;   // 0x31'C000 sprites
                 endcase
             end
@@ -297,6 +297,7 @@ always @(posedge clk) begin
                 rom_cs    ? rom_data :
                 pal_cs!=0 ? pal_dout :
                 obj_cs    ? obj_dout :
+                read_cs!=0? cab_dout :
                 sec[1]    ? mcu_dout : 16'hffff;
 end
 

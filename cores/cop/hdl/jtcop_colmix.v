@@ -107,9 +107,9 @@ jtframe_dual_ram16 #(
     // CPU writes
     .clk0   ( clk_cpu   ),
     .addr0  ( cpu_addr  ),
-    .data0  ( cpu_gr    ),
+    .data0  ( cpu_dout  ),
     .we0    ( we_gr     ),
-    .q0     ( cpu_din   ),
+    .q0     ( cpu_gr    ),
 
     // Video reads
     .clk1   ( clk       ),
@@ -128,9 +128,9 @@ jtframe_dual_ram #(
     // CPU writes
     .clk0   ( clk_cpu   ),
     .addr0  ( cpu_addr  ),
-    .data0  ( cpu_b     ),
+    .data0  (cpu_dout[7:0]),
     .we0    ( we_b      ),
-    .q0     (cpu_din[7:0]),
+    .q0     ( cpu_b     ),
 
     // Video reads
     .clk1   ( clk       ),
@@ -142,7 +142,7 @@ jtframe_dual_ram #(
 
 jtframe_prom #(
     .aw     ( 10            ),
-    .dw     ( 2             ),
+    .dw     ( 2             )
 //  .simfile("../../../rom/robocop/mb7122e.17e")
 ) u_selbus(
     .clk    ( clk           ),

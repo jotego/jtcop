@@ -159,10 +159,16 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
 
 wire prom_we;
 
-assign mcu_we  = ioctl_addr >= MCU_START  && ioctl_addr < MCU_END;
+assign mcu_we  = prom_we && prog_addr >= MCU_START  && prog_addr < MCU_END;
 // priority PROM is meant to be the second one in the MRA file
-assign prio_we = ioctl_addr >= PRIO_START && ioctl_addr < PRIO_END;
-assign dwnld_busy = downloading;
+assign prio_we = prom_we && prog_addr >= PRIO_START && prog_addr < PRIO_END;
+
+`ifdef JTFRAME_DWNLD_PROM_ONLY
+    assign dwnld_busy = downloading | prom_we; // keep the game in reset while
+        // the short PROM download occurs
+`else
+    assign dwnld_busy = downloading;
+`endif
 
 jtframe_dwnld #(
     .BA1_START ( BA1_START ), // sound
