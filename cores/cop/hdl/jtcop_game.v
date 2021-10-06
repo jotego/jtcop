@@ -396,12 +396,17 @@ jtcop_video u_video(
     wire [7:0] mcu_p0o, mcu_p1o, mcu_p2o, mcu_p3o, mcu_p3i;
     reg  [7:0] p2l, mcu_p0i;
     reg        mcu_intn, mcu_sel0l;
+    wire       mcu_wrlo, mcu_wrhi, mcr_rdhi, mcu_rdlo;
 
     assign mcu_p3i = { mcu_sel[5:3], mcu_p3o[4:0] };
     assign { sndflag, b1flg, b0flg, mixflg } = mcu_p1o[6:0];
     assign crback = mcu_p3o[2:0];
     assign nexirq = 1;
     assign mcu_sel2 = p2l[2];
+    assign mcu_rdhi = mcu_p2o[4] & ~p2l[4];
+    assign mcu_rdlo = mcu_p2o[5] & ~p2l[5];
+    assign mcu_wrhi = mcu_p2o[7] & ~p2l[7];
+    assign mcu_wrlo = mcu_p2o[6] & ~p2l[6];
 
     always @(posedge clk24) begin
         p2l <= mcu_p2o;
@@ -413,16 +418,16 @@ jtcop_video u_video(
             mcu_intn <= 0;
 
         // MCU reads
-        if( mcu_p2o[4] & ~p2l[4] )
+        if( mcu_rdhi )
             mcu_p0i <= mcu_din[15:8];
-        if( mcu_p2o[5] & ~p2l[5] )
+        if( mcu_rdlo )
             mcu_p0i <= mcu_din[7:0];
 
         // MCU writes
-        if( mcu_p2o[6] & ~p2l[6] )
-            mcu_dout[7:0] <= mcu_p0o;
-        if( mcu_p2o[7] & ~p2l[7] )
+        if( mcu_wrhi )
             mcu_dout[15:8] <= mcu_p0o;
+        if( mcu_wrlo )
+            mcu_dout[7:0] <= mcu_p0o;
     end
 
     jtframe_8751mcu #(

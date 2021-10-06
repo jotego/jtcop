@@ -53,6 +53,7 @@ module mist_dump(
             $shm_probe(UUT.u_game,"A");
             $shm_probe(UUT.u_game.u_main,"A");
             $shm_probe(UUT.u_game.u_mcu,"A");
+            $shm_probe(UUT.u_game.u_mcu.cen0);
             `ifndef NOSOUND
                 $shm_probe(UUT.u_game.u_sound,"A");
             `endif
