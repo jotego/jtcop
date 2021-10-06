@@ -12,6 +12,9 @@ core=5
 
 [rbf]
 name="jtcop"
+dev = [
+    { dev="i8751",   rbf="jtninja" }
+]
 
 [dipsw]
 delete = [ "Unused", "Unknown" ]

@@ -44,9 +44,9 @@ module jtcop_colmix(
     input      [7:0]   ba2_pxl,
     input      [7:0]   obj_pxl, // called "MCOL" in the schematics
 
-    output reg [7:0]   red,
-    output reg [7:0]   green,
-    output reg [7:0]   blue,
+    output     [7:0]   red,
+    output     [7:0]   green,
+    output     [7:0]   blue,
     output             LVBL_dly,
     output             LHBL_dly,
 
