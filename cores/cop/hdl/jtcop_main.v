@@ -122,13 +122,14 @@ assign cpu_addr = A[18:1];
 assign ram_cs   = sysram_cs | fsft_cs | fmap_cs | bsft_cs | bmap_cs | cmap_cs | csft_cs;
 
 always @(*) begin
-    IPLn = ~3'd0;
     if( vint )
-        IPLn = ~3'd6;
+        IPLn = ~3'd6;   // 001 = 1
     else if( secirq )   // active high
-        IPLn = ~3'd5;
+        IPLn = ~3'd5;   // 010 = 2
     else if( !nexirq )  // active low
-        IPLn = ~3'd4;
+        IPLn = ~3'd4;   // 011 = 3
+    else
+        IPLn = ~3'd0;
 end
 
 always @(*) begin
