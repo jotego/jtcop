@@ -52,6 +52,10 @@ module mist_dump(
             //$shm_probe(UUT.u_game.u_sdram.u_dwnld,"A");
             $shm_probe(UUT.u_game,"A");
             $shm_probe(UUT.u_game.u_main,"A");
+            $shm_probe(UUT.u_game.u_main.u_dtack.fave);
+            $shm_probe(UUT.u_game.u_video.u_ba0,"A");
+            $shm_probe(UUT.u_game.u_video.u_ba1,"A");
+            $shm_probe(UUT.u_game.u_video.u_ba2,"A");
             //$shm_probe(UUT.u_game.u_mcu,"A");
             //$shm_probe(UUT.u_game.u_mcu.cen0);
             `ifndef NOSOUND

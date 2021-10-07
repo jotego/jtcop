@@ -248,15 +248,15 @@ jtframe_ram_5slots #(
 
     // VRAM access by B0
     .SLOT2_DW(16),
-    .SLOT2_AW(12),
+    .SLOT2_AW(13),
 
     // VRAM access by B1
     .SLOT3_DW(16),
-    .SLOT3_AW(10),
+    .SLOT3_AW(11),
 
     // VRAM access by B2
     .SLOT4_DW(16),
-    .SLOT4_AW(10)
+    .SLOT4_AW(11)
 ) u_bank0(
     .rst        ( rst       ),
     .clk        ( clk       ),
