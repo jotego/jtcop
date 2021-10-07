@@ -52,10 +52,11 @@ module mist_dump(
             //$shm_probe(UUT.u_game.u_sdram.u_dwnld,"A");
             $shm_probe(UUT.u_game,"A");
             $shm_probe(UUT.u_game.u_main,"A");
-            $shm_probe(UUT.u_game.u_mcu,"A");
-            $shm_probe(UUT.u_game.u_mcu.cen0);
+            //$shm_probe(UUT.u_game.u_mcu,"A");
+            //$shm_probe(UUT.u_game.u_mcu.cen0);
             `ifndef NOSOUND
                 $shm_probe(UUT.u_game.u_sound,"A");
+                $shm_probe(UUT.u_game.u_sound.u_cpu,"AS");
             `endif
         `endif
     end

@@ -30,5 +30,10 @@ $JTFRAME/hdl/sound/jtframe_uprate2_fir.v
 $JTFRAME/hdl/sound/jtframe_fir.v
 $JTFRAME/hdl/sound/jtframe_fir_mono.v
 
+$JTFRAME/hdl/cpu/t65/T65_Pack.vhd
+$JTFRAME/hdl/cpu/t65/T65.vhd
+$JTFRAME/hdl/cpu/t65/T65_ALU.vhd
+$JTFRAME/hdl/cpu/t65/T65_MCode.vhd
+
 # 68000
 -F $JTFRAME/hdl/cpu/jtframe_m68k.f

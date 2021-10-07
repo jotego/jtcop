@@ -70,7 +70,7 @@ assign irqn     = opn_irqn & opl_irqn;
 assign ram_we   = ram_cs & ~cpu_rnw;
 assign oki_wrn  = ~(oki_cs & ~cpu_rnw);
 assign sample   = cen_opn;
-assign rom_addr = { 1'b0, cpu_addr[14:0] };
+assign rom_addr = cpu_addr;
 assign rdy      = ~rom_cs | rom_ok;
 
 always @(*) begin
@@ -102,8 +102,10 @@ always @(posedge clk) begin
     dev_cs  <= opn_cs | opl_cs | oki_cs;
     dev_mux <= opn_cs  ? opn_dout :
                opl_cs  ? opl_dout : oki_dout;
+end
 
-    cpu_din <= rom_cs  ? rom_data :
+always @* begin
+    cpu_din = rom_cs  ? rom_data :
                ram_cs  ? ram_dout :
                nmi_clr ? latch    :
                dev_cs  ? dev_mux :
@@ -131,12 +133,25 @@ always @(posedge clk) begin
         if( bank_cs ) snd_bank <= cpu_dout[0];
     end
 end
+/*
+reg  cen_cpu;
+wire clk_cpu = clk & cen_cpu;
+
+always @(negedge clk) begin
+  cen_cpu <= & cen_opn & (rdy | rst);
+end
 
 MC6502 u_cpu(
     .rstn   ( ~rst      ),
-    .clk    ( clk       ),
-    .cen    ( cen_opn   ),
-    .i_rdy  ( rdy       ),
+    .clk    ( clk_cpu   ),
+    .cen    ( 1'b1   ),
+    .i_rdy  ( 1'b1       ),
+
+//    .clk    ( clk       ),
+//    .cen    ( cen_opn   ),
+//    .i_rdy  ( rdy       ),
+//
+
     .i_irqn ( irqn      ),
     .i_nmin ( nmin      ),
     .i_db   ( cpu_din   ),
@@ -145,11 +160,35 @@ MC6502 u_cpu(
     .o_rw   ( cpu_rnw   ),
     .o_ab   ( cpu_addr  )
 );
+*/
+T65 u_cpu(
+    .Mode   ( 2'd0      ),  // 6502 mode
+    .Res_n  ( ~rst      ),
+    .Enable ( cen_opn   ),
+    .Clk    ( clk       ),
+    .Rdy    ( rdy       ),
+    .Abort_n( 1'b1      ),
+    .IRQ_n  ( irqn      ),
+    .NMI_n  ( nmin      ),
+    .SO_n   ( 1'b1      ),
+    .R_W_n  ( cpu_rnw   ),
+    .Sync   (           ),
+    .EF     (           ),
+    .MF     (           ),
+    .XF     (           ),
+    .ML_n   (           ),
+    .VP_n   (           ),
+    .VDA    (           ),
+    .VPA    (           ),
+    .A      ( cpu_addr  ),
+    .DI     ( cpu_din   ),
+    .DO     ( cpu_dout  )
+);
 
 jtframe_ram #(.aw(10)) u_ram(
     .clk    ( clk           ),
     .cen    ( 1'b1          ),
-    .data   ( cpu_din       ),
+    .data   ( cpu_dout      ),
     .addr   ( cpu_addr[9:0] ),
     .we     ( ram_we        ),
     .q      ( ram_dout      )

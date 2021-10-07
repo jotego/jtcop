@@ -32,7 +32,12 @@ set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) ../../../mo
 set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/8051/mc8051.qip   ]
 
 # Sound
-set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/mc6502/mc6502.qip ]
+// set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/mc6502/mc6502.qip ]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/t65/T65_Pack.vhd     ]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/t65/T65.vhd          ]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/t65/T65_ALU.vhd      ]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/cpu/t65/T65_MCode.vhd    ]
+
 set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ../../../modules/jt12/hdl/jt03.qip                 ]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/sound/jtframe_mixer.v ]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/sound/jtframe_dcrm.v ]

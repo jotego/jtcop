@@ -200,10 +200,14 @@ wire [15:0] adpcm_eff;
 wire [15:0] snd_eff;
 
 assign adpcm_eff = { adpcm_addr[15] | sndflag[2], adpcm_addr[14:0] };
+`ifdef MCU
 assign snd_eff = BANKS ? { sndflag[1] | snd_addr[15],
                            (sndbank | snd_addr[15]) & snd_addr[14],
                            snd_addr[13:0] } :
                         { 1'b0, snd_addr[14:0] };
+`else
+assign snd_eff = { 1'b0, snd_addr[14:0] };
+`endif
 
 // RAM size
 // 16kB   M68000 exclusive use
@@ -321,7 +325,7 @@ jtframe_rom_2slots #(
     .rst        ( rst       ),
     .clk        ( clk       ),
 
-    .slot0_addr ( snd_addr  ),
+    .slot0_addr ( snd_eff   ),
     .slot0_dout ( snd_data  ),
     .slot0_cs   ( snd_cs    ),
     .slot0_ok   ( snd_ok    ),
