@@ -549,16 +549,19 @@ jtcop_sdram u_sdram(
 
     // BG 0
     .b0rom_ok    ( b0rom_ok   ),
+    .b0rom_cs    ( b0rom_cs   ),
     .b0rom_addr  ( b0rom_addr ),
     .b0rom_data  ( b0rom_data ),
 
     // BG 1
     .b1rom_ok    ( b1rom_ok   ),
+    .b1rom_cs    ( b1rom_cs   ),
     .b1rom_addr  ( b1rom_addr ),
     .b1rom_data  ( b1rom_data ),
 
     // BG 2
     .b2rom_ok    ( b2rom_ok   ),
+    .b2rom_cs    ( b2rom_cs   ),
     .b2rom_addr  ( b2rom_addr ),
     .b2rom_data  ( b2rom_data ),
 

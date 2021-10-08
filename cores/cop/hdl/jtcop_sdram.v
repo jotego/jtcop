@@ -75,6 +75,7 @@ module jtcop_sdram(
     //        B0 - ROM
     output           b0rom_ok,
     input    [18:0]  b0rom_addr,
+    input            b0rom_cs,
     output   [31:0]  b0rom_data,
 
     // Scroll B1 - RAM
@@ -85,6 +86,7 @@ module jtcop_sdram(
     //        B1 - ROM
     output           b1rom_ok,
     input    [18:0]  b1rom_addr,
+    input            b1rom_cs,
     output   [31:0]  b1rom_data,
 
     // Scroll B2 - RAM
@@ -95,6 +97,7 @@ module jtcop_sdram(
     //        B2 - ROM
     output           b2rom_ok,
     input    [18:0]  b2rom_addr,
+    input            b2rom_cs,
     output   [31:0]  b2rom_data,
 
     // Obj
@@ -161,14 +164,14 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
 wire        prom_we, is_gfx1;
 wire [21:0] pre_prog;
 
-assign mcu_we  = prom_we && prog_addr >= MCU_START  && prog_addr < MCU_END;
+assign mcu_we  = prom_we && pre_prog >= MCU_START  && pre_prog < MCU_END;
 // priority PROM is meant to be the second one in the MRA file
-assign prio_we = prom_we && prog_addr >= PRIO_START && prog_addr < PRIO_END;
-assign is_gfx1 = prog_ba==2'd2 && prog_addr < GFX1_LEN;
+assign prio_we = prom_we && pre_prog >= PRIO_START && pre_prog < PRIO_END;
+assign is_gfx1 = prog_ba==2'd2 && pre_prog < GFX1_LEN;
 
 // MSB bit moved to LSB position, so we get all four colour planes
 // in a single 32-bit read
-assign pre_prog = is_gfx1 ? { prog_addr[21:16], prog_addr[14:0], prog_addr[15] } : prog_addr;
+assign prog_addr = is_gfx1 ? { pre_prog[21:16], pre_prog[14:0], pre_prog[15] } : pre_prog;
 
 `ifdef JTFRAME_DWNLD_PROM_ONLY
     assign dwnld_busy = downloading | prom_we; // keep the game in reset while
@@ -357,16 +360,16 @@ jtframe_rom_2slots #(
 
 jtframe_rom_3slots #(
     .SLOT0_DW(  32),
-    .SLOT0_AW(  18),
+    .SLOT0_AW(  19),
 
     .SLOT1_DW(  32),
-    .SLOT1_AW(  18),
+    .SLOT1_AW(  19),
 
-    .SLOT1_DW(   8),
-    .SLOT1_AW(  18),
+    .SLOT2_DW(   8),
+    .SLOT2_AW(  19),
 
-
-    .SLOT1_OFFSET( PCM_OFFSET )
+    .SLOT1_OFFSET( GFX2_START >> 1 ),
+    .SLOT2_OFFSET( GFX3_START >> 1 )
 ) u_bank2(
     .rst        ( rst        ),
     .clk        ( clk        ),

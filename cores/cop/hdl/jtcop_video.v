@@ -147,6 +147,7 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(13)) u_ba0(
     .pxl        ( ba0_pxl       )
 );
 
+`ifndef NOBA1
 jtcop_bac06 u_ba1(
     .rst        ( rst           ),
     .clk        ( clk           ),
@@ -189,7 +190,13 @@ jtcop_bac06 u_ba1(
 
     .pxl        ( ba1_pxl       )
 );
+`else
+    assign b1ram_cs = 0;
+    assign b1rom_cs = 0;
+    assign ba1_pxl  = 0;
+`endif
 
+`ifndef NOBA2
 jtcop_bac06 u_ba2(
     .rst        ( rst           ),
     .clk        ( clk           ),
@@ -232,6 +239,11 @@ jtcop_bac06 u_ba2(
 
     .pxl        ( ba2_pxl       )
 );
+`else
+    assign b2ram_cs = 0;
+    assign b2rom_cs = 0;
+    assign ba2_pxl  = 0;
+`endif
 
 jtcop_obj u_obj(
     .rst        ( rst           ),

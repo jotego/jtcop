@@ -82,8 +82,8 @@ module jtcop_bac06 #(
     input          ram_ok,
 
     // ROMs
-    output         rom_cs,
-    output  [18:0] rom_addr,    // top 2 bits are NCGSEL[1:0]
+    output reg     rom_cs,
+    output reg [18:0] rom_addr,    // top 2 bits are NCGSEL[1:0]
     input   [31:0] rom_data,
     input          rom_ok,
 
@@ -112,9 +112,9 @@ localparam [1:0] GEOM_4X1 = 0, // 128 x  32  |   64 x 16
                  GEOM_2X2 = 1, //  64 x  64  |   32 x 32
                  GEOM_1X4 = 2; //  32 x 128  |   16 x 64
 
-localparam TILEMAP_AREA = 0;
+localparam TILEMAP_AREA = 1;
 
-assign tile16_en = mode[0][0];
+assign tile16_en = ~mode[0][0];
 assign msbrow_en = mode[0][1];
 assign rowscr_en = mode[0][2];
 assign colscr_en = mode[0][3];
@@ -206,7 +206,7 @@ generate
 endgenerate
 
 reg  [8:0] buf_waddr;
-reg  [7:0] buf_wdata;
+wire [7:0] buf_wdata;
 reg        buf_we;
 
 jtframe_linebuf #(
@@ -238,7 +238,8 @@ reg [ 1:0] ram_good;
 reg [ 4:0] tilecnt;
 
 // drawing
-reg  draw_busy = 0;
+reg  draw_busy, rom_good;
+reg  hflip = 0;
 
 always @* begin
     row_addr = 0;
@@ -291,16 +292,19 @@ end
 // Obtain tile information
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
+        pre_cs <= 0;
         scan_busy <= 0;
         HSl <= 0;
         hn  <= 0;
         ram_good <= 0;
+        draw <= 0;
     end else begin
         ram_good <= { ram_good[0] & ram_ok, ram_ok };
         HSl <= HS;
+        draw <= 0;
         if( HSl && !HS ) begin
             scan_busy <= 1;
-            hn       <= 0;
+            hn       <= hscr[9:0];
             tilecnt  <= 0;
             ram_good <= 0;
             pre_cs   <= 1;
@@ -308,7 +312,6 @@ always @(posedge clk, posedge rst) begin
             veff     <= {2'd0, vrender} + vscr[9:0];
         end
         if( scan_busy ) begin
-            draw <= 0;
             if( ram_good[1] && ram_ok && !draw && !draw_busy ) begin
                 tile_id  <= ram_data[11:0];
                 tile_pal <= ram_data[15:12];
@@ -326,13 +329,48 @@ always @(posedge clk, posedge rst) begin
 end
 
 // Draw the tile
+reg  [31:0] draw_data;
+wire [ 3:0] draw_pxl;
+reg  [ 3:0] draw_cnt;
+
+assign draw_pxl  = hflip ? { draw_data[31], draw_data[23], draw_data[15], draw_data[7] } :
+                           { draw_data[24], draw_data[16], draw_data[ 8], draw_data[0] };
+assign buf_wdata = { tile_pal, draw_pxl };
+
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
         draw_busy <= 0;
+        draw_cnt  <= 0;
+        buf_waddr <= 0;
+        rom_good  <= 0;
+        buf_we    <= 0;
+        rom_cs    <= 0;
     end else begin
+        rom_good <= rom_ok;
         if( draw ) begin
             draw_busy <= 1;
-
+            if( tile16_en )
+                rom_addr <= 0; // ignore for now
+            else
+                rom_addr <= { 4'd0, tile_id, veff[2:0] };
+            draw_cnt <= 0;
+            rom_cs   <= 1;
+        end
+        if( !buf_we && rom_good && rom_ok && draw_cnt==0 ) begin
+            draw_data <= rom_data;
+            rom_cs    <= 1;
+            buf_we    <= 1;
+            draw_cnt  <= 7;
+        end
+        if( buf_we ) begin
+            draw_data <= hflip ? draw_data<<1 : draw_data>>1;
+            draw_cnt <= draw_cnt-1'd1;
+            buf_waddr<= buf_waddr+9'd1;
+            if( draw_cnt==0 ) begin
+                draw_busy <= 0;
+                buf_we    <= 0;
+                if( !scan_busy ) buf_waddr <= 0;
+            end
         end
     end
 end
