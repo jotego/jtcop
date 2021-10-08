@@ -320,12 +320,14 @@ jtframe_ram_5slots #(
     .data_read   ( data_read )
 );
 
+// Bank 1: Sound
+
 jtframe_rom_2slots #(
     .SLOT0_DW(   8),
     .SLOT0_AW(  16),
 
     .SLOT1_DW(   8),
-    .SLOT1_AW(  163),
+    .SLOT1_AW(  16),
 
     .SLOT1_OFFSET( PCM_OFFSET )
 ) u_bank1(
@@ -351,11 +353,51 @@ jtframe_rom_2slots #(
     .data_read  ( data_read )
 );
 
-assign ba_rd[3:2] = 0;
-assign ba2_addr = 0;
+// Bank 2: BAC06 chips
+
+jtframe_rom_3slots #(
+    .SLOT0_DW(  32),
+    .SLOT0_AW(  18),
+
+    .SLOT1_DW(  32),
+    .SLOT1_AW(  18),
+
+    .SLOT1_DW(   8),
+    .SLOT1_AW(  18),
+
+
+    .SLOT1_OFFSET( PCM_OFFSET )
+) u_bank2(
+    .rst        ( rst        ),
+    .clk        ( clk        ),
+
+    .slot0_addr ( b0rom_addr ),
+    .slot0_dout ( b0rom_data ),
+    .slot0_cs   ( b0rom_cs   ),
+    .slot0_ok   ( b0rom_ok   ),
+
+    .slot1_addr ( b1rom_addr ),
+    .slot1_dout ( b1rom_data ),
+    .slot1_cs   ( b1rom_cs   ),
+    .slot1_ok   ( b1rom_ok   ),
+
+    .slot2_addr ( b2rom_addr ),
+    .slot2_dout ( b2rom_data ),
+    .slot2_cs   ( b2rom_cs   ),
+    .slot2_ok   ( b2rom_ok   ),
+
+    // SDRAM controller interface
+    .sdram_addr ( ba2_addr   ),
+    .sdram_req  ( ba_rd[2]   ),
+    .sdram_ack  ( ba_ack[2]  ),
+    .data_dst   ( ba_dst[2]  ),
+    .data_rdy   ( ba_rdy[2]  ),
+    .data_read  ( data_read  )
+);
+
+assign ba_rd[3] = 0;
 assign ba3_addr = 0;
 
-// Backgrounds
 /*
 wire [15:0] b2rom_eff;
 

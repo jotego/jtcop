@@ -284,9 +284,12 @@ jtcop_colmix u_colmix(
     .prom_we    ( prio_we       ),
 
     .ba0_pxl    ( ba0_pxl       ),
-    .ba1_pxl    ( ba1_pxl       ),
-    .ba2_pxl    ( ba2_pxl       ),
-    .obj_pxl    ( obj_pxl       ),
+    .ba1_pxl    ( 8'd0          ),
+    .ba2_pxl    ( 8'd0          ),
+    .obj_pxl    ( 8'd0          ),
+    //.ba1_pxl    ( ba1_pxl       ),
+    //.ba2_pxl    ( ba2_pxl       ),
+    //.obj_pxl    ( obj_pxl       ),
 
     .red        ( red           ),
     .green      ( green         ),

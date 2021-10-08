@@ -56,12 +56,12 @@
         </interleave>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
-            <part name="ep20" crc="1d8d38b8" map="01"/>
-            <part name="ep21" crc="187929b2" map="10"/>
-        </interleave>
-        <interleave output="16">
             <part name="ep18" crc="b6580b5e" map="01"/>
             <part name="ep19" crc="9bad01c7" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="ep20" crc="1d8d38b8" map="01"/>
+            <part name="ep21" crc="187929b2" map="10"/>
         </interleave>
         <part repeat="0x40000"> FF</part>
         <!-- gfx3 - starts at 0x150000 -->

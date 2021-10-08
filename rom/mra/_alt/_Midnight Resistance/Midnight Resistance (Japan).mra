@@ -53,12 +53,12 @@
         </interleave>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
-            <part name="fl09" crc="907d5910" map="01"/>
-            <part name="fl08" crc="a936c03c" map="10"/>
+            <part name="fl06" crc="b7241ab9" map="01"/>
+            <part name="fl07" crc="2068c45c" map="10"/>
         </interleave>
         <interleave output="16">
-            <part name="fl07" crc="2068c45c" map="01"/>
-            <part name="fl06" crc="b7241ab9" map="10"/>
+            <part name="fl08" crc="a936c03c" map="01"/>
+            <part name="fl09" crc="907d5910" map="10"/>
         </interleave>
         <!-- gfx3 - starts at 0x150000 -->
         <interleave output="16">
