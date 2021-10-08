@@ -237,6 +237,9 @@ reg        pre_cs;
 reg [ 1:0] ram_good;
 reg [ 4:0] tilecnt;
 
+// drawing
+reg  draw_busy = 0;
+
 always @* begin
     row_addr = 0;
     col_addr = 0;
@@ -285,8 +288,6 @@ always @(posedge clk, posedge rst) begin
     end
 end
 
-wire draw_busy = 0;
-
 // Obtain tile information
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
@@ -320,6 +321,18 @@ always @(posedge clk, posedge rst) begin
                     pre_cs    <= 0;
                 end
             end
+        end
+    end
+end
+
+// Draw the tile
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        draw_busy <= 0;
+    end else begin
+        if( draw ) begin
+            draw_busy <= 1;
+
         end
     end
 end
