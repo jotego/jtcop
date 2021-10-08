@@ -49,10 +49,16 @@
         <part name="fa11.11k" crc="4e547bad"/>
         <!-- gfx1 - starts at 0xB0000 -->
         <interleave output="16">
-            <part name="fa05.11a" crc="09802924" map="01"/>
-            <part name="fa04.9a" crc="ec25b895" map="10"/>
+            <part name="fa05.11a" crc="09802924" map="01" length="0x4000"/>
+            <part name="fa04.9a" crc="ec25b895" map="10" length="0x4000"/>
         </interleave>
-        <part repeat="0x10000"> FF</part>
+        <part repeat="0x8000"> FF</part>
+        <!-- ROM split at C0000 (10000) -->
+        <interleave output="16">
+            <part name="fa05.11a" crc="09802924" map="01" length="0x4000" offset="0x4000"/>
+            <part name="fa04.9a" crc="ec25b895" map="10" length="0x4000" offset="0x4000"/>
+        </interleave>
+        <part repeat="0x8000"> FF</part>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
             <part name="fa07.17a" crc="e932268b" map="01"/>

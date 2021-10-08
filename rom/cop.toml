@@ -38,3 +38,9 @@ order = [
     "maincpu", "audiocpu", "oki",
     "gfx1", "gfx2", "gfx3", "gfx4", "mcu", "sub", "proms"
 ]
+
+splits = [
+    { machine="baddudes", region="gfx1", offset=0x4000, min_len=0x10000 },
+    { machine="secretag",   region="gfx1", offset=0x4000, min_len=0x10000 },
+    { machine="birdtry",  region="gfx1", offset=0x4000, min_len=0x10000 }
+]

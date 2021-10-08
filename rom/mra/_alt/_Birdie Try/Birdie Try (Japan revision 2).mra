@@ -55,10 +55,16 @@
         <part repeat="0x10000"> FF</part>
         <!-- gfx1 - starts at 0xB0000 -->
         <interleave output="16">
-            <part name="ek-25.15h" crc="4df134ad" map="01"/>
-            <part name="ek-26.16h" crc="a00d3e8e" map="10"/>
+            <part name="ek-25.15h" crc="4df134ad" map="01" length="0x4000"/>
+            <part name="ek-26.16h" crc="a00d3e8e" map="10" length="0x4000"/>
         </interleave>
-        <part repeat="0x10000"> FF</part>
+        <part repeat="0x8000"> FF</part>
+        <!-- ROM split at C0000 (10000) -->
+        <interleave output="16">
+            <part name="ek-25.15h" crc="4df134ad" map="01" length="0x4000" offset="0x4000"/>
+            <part name="ek-26.16h" crc="a00d3e8e" map="10" length="0x4000" offset="0x4000"/>
+        </interleave>
+        <part repeat="0x8000"> FF</part>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
             <part name="ek-18.14d" crc="9886fb70" map="01"/>

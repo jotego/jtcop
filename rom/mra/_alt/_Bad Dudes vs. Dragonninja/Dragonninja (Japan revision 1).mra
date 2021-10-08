@@ -51,10 +51,16 @@
         <part repeat="0x10000"> FF</part>
         <!-- gfx1 - starts at 0xB0000 -->
         <interleave output="16">
-            <part name="eg25.15h" crc="6791bc20" map="01"/>
-            <part name="eg26.16h" crc="5d75fc8f" map="10"/>
+            <part name="eg25.15h" crc="6791bc20" map="01" length="0x4000"/>
+            <part name="eg26.16h" crc="5d75fc8f" map="10" length="0x4000"/>
         </interleave>
-        <part repeat="0x10000"> FF</part>
+        <part repeat="0x8000"> FF</part>
+        <!-- ROM split at C0000 (10000) -->
+        <interleave output="16">
+            <part name="eg25.15h" crc="6791bc20" map="01" length="0x4000" offset="0x4000"/>
+            <part name="eg26.16h" crc="5d75fc8f" map="10" length="0x4000" offset="0x4000"/>
+        </interleave>
+        <part repeat="0x8000"> FF</part>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
             <part name="eg18.14d" crc="05cfc3e5" map="01"/>
