@@ -155,13 +155,20 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   B1_OFFSET   = 22'h10_4000,
                   B2_OFFSET   = 22'h10_5000,
                   PCM_OFFSET  = (`PCM_START-BA1_START)>>1,
-                  ZERO_OFFSET = 0;
+                  ZERO_OFFSET = 0,
+                  GFX1_LEN    = 22'h1_0000;
 
-wire prom_we;
+wire        prom_we, is_gfx1;
+wire [21:0] pre_prog;
 
 assign mcu_we  = prom_we && prog_addr >= MCU_START  && prog_addr < MCU_END;
 // priority PROM is meant to be the second one in the MRA file
 assign prio_we = prom_we && prog_addr >= PRIO_START && prog_addr < PRIO_END;
+assign is_gfx1 = prog_ba==2'd2 && prog_addr < GFX1_LEN;
+
+// MSB bit moved to LSB position, so we get all four colour planes
+// in a single 32-bit read
+assign pre_prog = is_gfx1 ? { prog_addr[21:16], prog_addr[14:0], prog_addr[15] } : prog_addr;
 
 `ifdef JTFRAME_DWNLD_PROM_ONLY
     assign dwnld_busy = downloading | prom_we; // keep the game in reset while
@@ -182,7 +189,7 @@ jtframe_dwnld #(
     .ioctl_addr   ( ioctl_addr     ),
     .ioctl_dout   ( ioctl_dout     ),
     .ioctl_wr     ( ioctl_wr       ),
-    .prog_addr    ( prog_addr      ),
+    .prog_addr    ( pre_prog       ),
     .prog_data    ( prog_data      ),
     .prog_mask    ( prog_mask      ), // active low
     .prog_we      ( prog_we        ),

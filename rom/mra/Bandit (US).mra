@@ -63,12 +63,11 @@
             <part name="18.18" crc="ac38e585" map="01"/>
             <part name="20.20" crc="2194f737" map="10"/>
         </interleave>
-        <part repeat="0x20000"> FF</part>
         <interleave output="16">
             <part name="22.22" crc="fcc6cb4d" map="01"/>
             <part name="24.24" crc="aa3c33b6" map="10"/>
         </interleave>
-        <part repeat="0x20000"> FF</part>
+        <part repeat="0x40000"> FF</part>
         <!-- gfx3 - starts at 0x150000 -->
         <interleave output="16">
             <part name="29.29" crc="32218c8a" map="01"/>
