@@ -38,11 +38,12 @@
             <part name="ei01-1.3a" crc="74f5110c" map="01"/>
             <part name="ei04-1.3c" crc="4bf158a7" map="10"/>
         </interleave>
+        <part repeat="0x20000"> FF</part>
         <interleave output="16">
             <part name="ei03.6a" crc="f8f2bd94" map="01"/>
             <part name="ei06.6c" crc="3ff8da57" map="10"/>
         </interleave>
-        <part repeat="0x40000"> FF</part>
+        <part repeat="0x20000"> FF</part>
         <!-- audiocpu - starts at 0x80000 -->
         <part name="ei07.8a" crc="9fb1ef4b"/>
         <part repeat="0x8000"> FF</part>

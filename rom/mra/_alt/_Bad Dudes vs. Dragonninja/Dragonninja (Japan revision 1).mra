@@ -38,11 +38,12 @@
             <part name="eg01-1.3a" crc="e08e6885" map="01"/>
             <part name="eg04-1.3c" crc="41b8b3f8" map="10"/>
         </interleave>
+        <part repeat="0x20000"> FF</part>
         <interleave output="16">
             <part name="eg03.6a" crc="c52c2e9d" map="01"/>
             <part name="eg06.6c" crc="2b81faf7" map="10"/>
         </interleave>
-        <part repeat="0x40000"> FF</part>
+        <part repeat="0x20000"> FF</part>
         <!-- audiocpu - starts at 0x80000 -->
         <part name="eg07.8a" crc="001d2f51"/>
         <part repeat="0x8000"> FF</part>
