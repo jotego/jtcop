@@ -275,18 +275,25 @@ end
 // Cabinet inputs
 reg  [15:0] cab_dout;
 
+function [8:0] sort_joy( input [8:0] joy_in);
+    sort_joy = { joy_in[8:4], joy_in[0], joy_in[1], joy_in[2], joy_in[3] };
+endfunction
+
+wire [8:0] sort1 = sort_joy(joystick1),
+           sort2 = sort_joy(joystick2);
+
 always @(posedge clk) begin
     cab_dout <= 16'hffff;
     if( read_cs[0] )
-        cab_dout <= { joystick2[7:0], joystick1[7:0] };
+        cab_dout <= { sort2[7:0], sort1[7:0] };
     if( read_cs[1] )
         cab_dout <= { 8'hff,
                         ~LVBL,
                         service,
                         coin_input,
                         start_button,
-                        joystick2[8],
-                        joystick1[8] };
+                        sort2[8],
+                        sort1[8] };
     if( read_cs[2] )
         cab_dout <= { dipsw_b, dipsw_a };
 end
