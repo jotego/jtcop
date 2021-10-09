@@ -83,7 +83,7 @@ module jtcop_bac06 #(
 
     // ROMs
     output reg     rom_cs,
-    output reg [18:0] rom_addr,    // top 2 bits are NCGSEL[1:0]
+    output reg [16:0] rom_addr,
     input   [31:0] rom_data,
     input          rom_ok,
 
@@ -333,6 +333,7 @@ end
 reg  [31:0] draw_data;
 wire [ 3:0] draw_pxl;
 reg  [ 3:0] draw_cnt;
+reg         half;
 
 assign draw_pxl  = hflip ? { draw_data[23], draw_data[31], draw_data[7], draw_data[15] } :
                            { draw_data[16], draw_data[24], draw_data[0], draw_data[ 8] };
@@ -346,21 +347,23 @@ always @(posedge clk, posedge rst) begin
         rom_good  <= 0;
         buf_we    <= 0;
         rom_cs    <= 0;
+        half      <= 0;
     end else begin
         rom_good <= rom_ok;
         if( draw ) begin
             draw_busy <= 1;
+            half      <= 0;
             if( tile16_en )
-                rom_addr <= 0; // ignore for now
+                rom_addr <= { tile_id[10:0], 1'b0, veff[3:0], 1'b0 };
             else
-                rom_addr <= { 4'd0, tile_id[10:0], veff[2:0], 1'b0 };
+                rom_addr <= { 2'd0, tile_id[10:0], veff[2:0], 1'b0 };
             draw_cnt <= 0;
             rom_cs   <= 1;
             rom_good <= 0;
         end
         if( !buf_we && rom_cs && rom_good && rom_ok && draw_cnt==0 ) begin
             draw_data <= rom_data;
-            rom_cs    <= 1;
+            rom_cs    <= 0;
             buf_we    <= 1;
             draw_cnt  <= 7;
         end
@@ -369,10 +372,17 @@ always @(posedge clk, posedge rst) begin
             draw_cnt <= draw_cnt-1'd1;
             buf_waddr<= buf_waddr+9'd1;
             if( draw_cnt==0 ) begin
-                draw_busy <= 0;
-                rom_cs    <= 0;
                 buf_we    <= 0;
-                if( !scan_busy ) buf_waddr <= 0;
+                if( !tile16_en || half) begin
+                    draw_busy <= 0;
+                    rom_cs    <= 0;
+                    if( !scan_busy ) buf_waddr <= 0;
+                end else begin // second half of 16 bit tile
+                    rom_addr[4] <= 1;
+                    rom_cs      <= 1;
+                    rom_good    <= 0;
+                    half        <= 1;
+                end
             end
         end
     end

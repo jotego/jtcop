@@ -56,7 +56,7 @@ module jtcop_video(
     input              b0ram_ok,
 
     output             b0rom_cs,
-    output      [18:0] b0rom_addr,
+    output      [16:0] b0rom_addr,
     input       [31:0] b0rom_data,
     input              b0rom_ok,
 
@@ -67,7 +67,7 @@ module jtcop_video(
     input              b1ram_ok,
 
     output             b1rom_cs,
-    output      [18:0] b1rom_addr,
+    output      [16:0] b1rom_addr,
     input       [31:0] b1rom_data,
     input              b1rom_ok,
 
@@ -78,7 +78,7 @@ module jtcop_video(
     input              b2ram_ok,
 
     output             b2rom_cs,
-    output      [18:0] b2rom_addr,
+    output      [16:0] b2rom_addr,
     input       [31:0] b2rom_data,
     input              b2rom_ok,
 
@@ -296,10 +296,9 @@ jtcop_colmix u_colmix(
     .prom_we    ( prio_we       ),
 
     .ba0_pxl    ( ba0_pxl       ),
-    .ba1_pxl    ( 8'd0          ),
+    .ba1_pxl    ( ba1_pxl       ),
     .ba2_pxl    ( 8'd0          ),
     .obj_pxl    ( 8'd0          ),
-    //.ba1_pxl    ( ba1_pxl       ),
     //.ba2_pxl    ( ba2_pxl       ),
     //.obj_pxl    ( obj_pxl       ),
 

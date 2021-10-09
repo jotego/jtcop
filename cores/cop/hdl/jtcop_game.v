@@ -107,7 +107,7 @@ wire [31:0] char_data;
 
 wire        b0rom_ok, b1rom_ok, b2rom_ok,
             b0rom_cs, b1rom_cs, b2rom_cs;
-wire [18:0] b0rom_addr, b1rom_addr, b2rom_addr;
+wire [16:0] b0rom_addr, b1rom_addr, b2rom_addr;
 wire [31:0] b0rom_data, b1rom_data, b2rom_data;
 
 wire        obj_ok, obj_cs, objram_cs, mixpsel, obj_copy;
