@@ -111,18 +111,18 @@
     <rom index="1">
         <part>01</part>
     </rom>
-    <switches base="16" default="00">
+    <switches base="16" default="ff">
         <!-- DSW -->
         <dip name="Coin A" bits="0,1" ids="3/1,2/1,1/2,1/1"/>
         <dip name="Coin B" bits="2,3" ids="3/1,2/1,1/2,1/1"/>
         <dip name="Service Mode" bits="4" ids="On,Off"/>
         <dip name="Demo Sounds" bits="5" ids="Off,On"/>
         <dip name="Flip Screen" bits="6" ids="On,Off"/>
-        <dip name="Difficulty (Extend)" bits="0,1" ids="Hardest,Hard,Easy,Normal"/>
-        <dip name="Difficulty (Course)" bits="2,3" ids="Hardest,Hard,Easy,Normal"/>
-        <dip name="Allow Continue" bits="4" ids="Off,On"/>
-        <dip name="Timer" bits="5" ids="Fast,Normal"/>
-        <dip name="Control Panel Type" bits="6,7" ids="Type C - Upright,Unused,Type B - Cocktail 2,Type A - Cocktail"/>
+        <dip name="Difficulty (Extend)" bits="8,9" ids="Hardest,Hard,Easy,Normal"/>
+        <dip name="Difficulty (Course)" bits="10,11" ids="Hardest,Hard,Easy,Normal"/>
+        <dip name="Allow Continue" bits="12" ids="Off,On"/>
+        <dip name="Timer" bits="13" ids="Fast,Normal"/>
+        <dip name="Control Panel Type" bits="14,15" ids="Type C - Upright,Unused,Type B - Cocktail 2,Type A - Cocktail"/>
     </switches>
     <buttons names="Shot,Jump,-,-,-,Start,Coin,Core credits" default="Y,X,B,A,R,Start,Select,-" count="2"/>
 </misterromdescription>

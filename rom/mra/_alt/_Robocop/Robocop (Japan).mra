@@ -102,18 +102,18 @@
     <rom index="1">
         <part>00</part>
     </rom>
-    <switches base="16" default="00">
+    <switches base="16" default="7f">
         <!-- DSW -->
         <dip name="Coin A" bits="0,1" ids="3/1,2/1,1/2,1/1"/>
         <dip name="Coin B" bits="2,3" ids="3/1,2/1,1/2,1/1"/>
         <dip name="Demo Sounds" bits="5" ids="Off,On"/>
         <dip name="Flip Screen" bits="6" ids="On,Off"/>
         <dip name="Cabinet" bits="7" ids="Upright,Cocktail"/>
-        <dip name="Player Energy" bits="0,1" ids="Very High,Low,High,Medium"/>
-        <dip name="Difficulty" bits="2,3" ids="Hardest,Hard,Easy,Normal"/>
-        <dip name="Allow Continue" bits="4" ids="No,Yes"/>
-        <dip name="Bonus Stage Energy" bits="5" ids="Low,High"/>
-        <dip name="Brink Time" bits="6" ids="Less,Normal"/>
+        <dip name="Player Energy" bits="8,9" ids="Very High,Low,High,Medium"/>
+        <dip name="Difficulty" bits="10,11" ids="Hardest,Hard,Easy,Normal"/>
+        <dip name="Allow Continue" bits="12" ids="No,Yes"/>
+        <dip name="Bonus Stage Energy" bits="13" ids="Low,High"/>
+        <dip name="Brink Time" bits="14" ids="Less,Normal"/>
     </switches>
     <buttons names="Shot,Jump,-,-,-,Start,Coin,Core credits" default="Y,X,B,A,R,Start,Select,-" count="2"/>
 </misterromdescription>
