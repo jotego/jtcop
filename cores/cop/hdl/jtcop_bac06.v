@@ -239,7 +239,7 @@ reg [ 4:0] tilecnt;
 
 // drawing
 reg  draw_busy, rom_good;
-reg  hflip = 0;
+reg  hflip = 1;
 
 always @* begin
     row_addr = 0;
@@ -313,6 +313,7 @@ always @(posedge clk, posedge rst) begin
         end
         if( scan_busy ) begin
             if( ram_good[1] && ram_ok && !draw && !draw_busy ) begin
+                //tile_id  <= { vrender[8:3], hn[7:3] }; //ram_data[11:0];
                 tile_id  <= ram_data[11:0];
                 tile_pal <= ram_data[15:12];
                 draw     <= 1;
@@ -352,11 +353,12 @@ always @(posedge clk, posedge rst) begin
             if( tile16_en )
                 rom_addr <= 0; // ignore for now
             else
-                rom_addr <= { 4'd0, tile_id, veff[2:0] };
+                rom_addr <= { 4'd0, tile_id[10:0], veff[2:0], 1'b0 };
             draw_cnt <= 0;
             rom_cs   <= 1;
+            rom_good <= 0;
         end
-        if( !buf_we && rom_good && rom_ok && draw_cnt==0 ) begin
+        if( !buf_we && rom_cs && rom_good && rom_ok && draw_cnt==0 ) begin
             draw_data <= rom_data;
             rom_cs    <= 1;
             buf_we    <= 1;
@@ -368,6 +370,7 @@ always @(posedge clk, posedge rst) begin
             buf_waddr<= buf_waddr+9'd1;
             if( draw_cnt==0 ) begin
                 draw_busy <= 0;
+                rom_cs    <= 0;
                 buf_we    <= 0;
                 if( !scan_busy ) buf_waddr <= 0;
             end

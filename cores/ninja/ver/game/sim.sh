@@ -51,11 +51,13 @@ if which ncverilog >/dev/null; then
     HEXDUMP=
 fi
 
-rm -f sdram_bank?.*
-jtsim_sdram $HEXDUMP  \
-    -banks $BA1_START $BA2_START $BA3_START \
-    -stop $MCU_START \
-    $SDRAM_SNAP || exit $?
+# Cannot use jtsim_sdram because of gfx
+# address changes during load
+# rm -f sdram_bank?.*
+# jtsim_sdram $HEXDUMP  \
+#     -banks $BA1_START $BA2_START $BA3_START \
+#     -stop $MCU_START \
+#     $SDRAM_SNAP || exit $?
 
 
 jtsim -mist -sysname $SYSNAME $SIMULATOR \
