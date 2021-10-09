@@ -245,7 +245,7 @@ always @* begin
     row_addr = 0;
     col_addr = 0;
     pre_ram  = 0;
-    case( geometry )
+    case( ~geometry )
         GEOM_4X1: begin
             row_addr[4:0] = veff[7:3] >> tile16_en; // 32 or 16 rows
             col_addr[6:0] = hn[9:3]   >> tile16_en; //128 or 64 cols

@@ -115,12 +115,16 @@ jtframe_dual_ram16 #(
     .clk1   ( clk       ),
     .addr1  ( pal_addr  ),
     .data1  (           ),
-    .we1    ( 2'b0      ),
-    .q1     ( pal_gr    )
+    .we1    ( 2'b0      )
+    `ifndef GRAY
+    ,.q1     ( pal_gr    )
+    `endif
 );
 
-//assign pal_gr = {4{pal_addr[3:0]}};
-//assign pal_b  = {2{pal_addr[3:0]}};
+`ifdef GRAY
+    assign pal_gr = {4{pal_addr[3:0]}};
+    assign pal_b  = {2{pal_addr[3:0]}};
+`endif
 
 // Blue palette RAM
 jtframe_dual_ram #(
@@ -139,8 +143,10 @@ jtframe_dual_ram #(
     .clk1   ( clk       ),
     .addr1  ( pal_addr  ),
     .data1  (           ),
-    .we1    ( 1'b0      ),
-    .q1     ( pal_b     )
+    .we1    ( 1'b0      )
+    `ifndef GRAY
+    ,.q1     ( pal_b     )
+    `endif
 );
 
 jtframe_prom #(
