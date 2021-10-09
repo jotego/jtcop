@@ -97,7 +97,7 @@ reg  [ 2:0] IPLn;
 wire        BRn, BGACKn, BGn;
 wire        ASn, UDSn, LDSn, BUSn, VPAn;
 reg  [15:0] cpu_din;
-reg         disp_cs, sysram_cs,
+reg         disp_cs, sysram_cs, pre_ram_cs,
             secirq, vint, vint_clr,
             cblk, ok_dly;
 
@@ -119,7 +119,10 @@ assign BUSn  = ASn | (LDSn & UDSn);
 assign VPAn  = ~&{ FC, ~ASn };
 assign cpu_addr = A[18:1];
 
-assign ram_cs   = sysram_cs | fsft_cs | fmap_cs | bsft_cs | bmap_cs | cmap_cs | csft_cs;
+assign pre_ram_cs = sysram_cs | fsft_cs | fmap_cs |
+                                bsft_cs | bmap_cs |
+                                cmap_cs | csft_cs;
+assign ram_cs   = ~BUSn & pre_ram_cs;
 
 always @(*) begin
     if( vint )
@@ -174,18 +177,18 @@ always @(*) begin
                 disp_cs = 1;
                 if( A[19:18]==2'b01 ) begin // 0x24'???? DSP - DiSPlay (?)
                     case( A[15:13] )
-                        0: fmode_cs  = 1;       // 0x24'0000, cfg registers
-                        1: fsft_cs   = ~BUSn;   // 0x24'2000, col/row scroll
-                        2: fmap_cs   = ~BUSn;   // 0x24'4000, tilemap
-                        3: bmode_cs  = 1;       // 0x24'6000, cfg registers
-                        4: bsft_cs   = ~BUSn;   // 0x24'8000, col/row scroll
-                        5: bmap_cs   = ~BUSn;   // 0x24'a000, tilemap
+                        0: fmode_cs  = 1;   // 0x24'0000, cfg registers
+                        1: fsft_cs   = 1;   // 0x24'2000, col/row scroll
+                        2: fmap_cs   = 1;   // 0x24'4000, tilemap
+                        3: bmode_cs  = 1;   // 0x24'6000, cfg registers
+                        4: bsft_cs   = 1;   // 0x24'8000, col/row scroll
+                        5: bmap_cs   = 1;   // 0x24'a000, tilemap
                         6: begin
                             nexrm0_cs = 1; // BAC06 chip on second PCB
                             case( A[10:9])
                                 0: cmode_cs = 1; // these signals could go
-                                1: csft_cs  = ~BUSn; // in a different order
-                                2: cmap_cs  = ~BUSn;
+                                1: csft_cs  = 1; // in a different order
+                                2: cmap_cs  = 1;
                                 default:;
                             endcase
                         end
@@ -221,7 +224,7 @@ always @(*) begin
                     end
                     4: pal_cs[0] = 1; // 0x31'0000 called PSEL in the schematics
                     5: pal_cs[1] = 1; // 0x31'4000
-                    6: sysram_cs = ~BUSn;   // 0x31'8000
+                    6: sysram_cs = 1;   // 0x31'8000
                     7: obj_cs    = 1;   // 0x31'C000 sprites
                 endcase
             end
@@ -312,8 +315,8 @@ end
 
 wire DTACKn;
 reg  disp_busy;
-wire bus_cs    = pal_cs!=0 || ram_cs || rom_cs;
-wire bus_busy  = |{ rom_cs & ~ok_dly, ram_cs & ~ram_ok, disp_cs & disp_busy };
+wire bus_cs    = pal_cs!=0 || pre_ram_cs || rom_cs;
+wire bus_busy  = |{ rom_cs & ~ok_dly, pre_ram_cs & ~ram_ok, disp_cs & disp_busy };
 wire bus_legit = disp_cs;
 
 // Memory access to the display area gets locked until a blank starts
