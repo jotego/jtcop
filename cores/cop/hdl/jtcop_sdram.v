@@ -171,7 +171,7 @@ assign is_gfx1 = prog_ba==2'd2 && pre_prog < GFX1_LEN;
 
 // MSB bit moved to LSB position, so we get all four colour planes
 // in a single 32-bit read
-assign prog_addr = is_gfx1 ? { pre_prog[21:16], pre_prog[14:0], pre_prog[15] } : pre_prog;
+assign prog_addr = is_gfx1 ? { pre_prog[21:16], pre_prog[14:0], ~pre_prog[15] } : pre_prog;
 
 `ifdef JTFRAME_DWNLD_PROM_ONLY
     assign dwnld_busy = downloading | prom_we; // keep the game in reset while

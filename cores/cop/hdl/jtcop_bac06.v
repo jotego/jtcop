@@ -334,8 +334,8 @@ reg  [31:0] draw_data;
 wire [ 3:0] draw_pxl;
 reg  [ 3:0] draw_cnt;
 
-assign draw_pxl  = hflip ? { draw_data[31], draw_data[23], draw_data[15], draw_data[7] } :
-                           { draw_data[24], draw_data[16], draw_data[ 8], draw_data[0] };
+assign draw_pxl  = hflip ? { draw_data[23], draw_data[31], draw_data[7], draw_data[15] } :
+                           { draw_data[16], draw_data[24], draw_data[0], draw_data[ 8] };
 assign buf_wdata = { tile_pal, draw_pxl };
 
 always @(posedge clk, posedge rst) begin
