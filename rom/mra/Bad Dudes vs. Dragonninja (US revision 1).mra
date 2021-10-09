@@ -65,13 +65,14 @@
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
             <part name="ei18.14d" crc="05cfc3e5" map="01"/>
-            <part name="ei20.17d" crc="e11e988f" map="10"/>
+            <part name="ei22.14f" crc="b893d880" map="10"/>
         </interleave>
+        <part repeat="0x20000"> FF</part>
         <interleave output="16">
-            <part name="ei22.14f" crc="b893d880" map="01"/>
+            <part name="ei20.17d" crc="e11e988f" map="01"/>
             <part name="ei24.17f" crc="6f226dda" map="10"/>
         </interleave>
-        <part repeat="0x40000"> FF</part>
+        <part repeat="0x20000"> FF</part>
         <!-- gfx3 - starts at 0x150000 -->
         <interleave output="16">
             <part name="ei30.9h" crc="982da0d1" map="01"/>

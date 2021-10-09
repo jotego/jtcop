@@ -97,10 +97,10 @@ reg  [ 2:0] IPLn;
 wire        BRn, BGACKn, BGn;
 wire        ASn, UDSn, LDSn, BUSn, VPAn;
 reg  [15:0] cpu_din;
-reg         disp_cs, sysram_cs, pre_ram_cs,
+reg         disp_cs, sysram_cs,
             secirq, vint, vint_clr,
             cblk, ok_dly;
-
+wire        pre_ram_cs;
 wire        cpu_cen, cpu_cenb;
 reg  [ 2:0] read_cs;
 

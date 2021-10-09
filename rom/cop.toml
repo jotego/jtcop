@@ -25,7 +25,7 @@ regions = [
     { name="audiocpu",      start=$BA1_START, No_offset=true  },
     { name="oki",           start=$PCM_START },
     { name="gfx1",          start=$BA2_START, width=16, No_offset=true },
-    { name="gfx2",          start=$GFX2_START,width=16, No_offset=true, sort_byext=true },
+    { name="gfx2",          start=$GFX2_START,width=16, No_offset=true, sort_byext=true, sort_alpha=true },
     { name="gfx3",          start=$GFX3_START,width=16, No_offset=true },
     { name="gfx4",          start=$BA3_START },
     { name="sub",           start=$MCU_START },
@@ -43,4 +43,8 @@ splits = [
     { machine="baddudes", region="gfx1", offset=0x4000, min_len=0x10000 },
     { machine="secretag",   region="gfx1", offset=0x4000, min_len=0x10000 },
     { machine="birdtry",  region="gfx1", offset=0x4000, min_len=0x10000 }
+]
+
+blanks = [
+    { machine="baddudes", region="gfx2", offset=0x20000, len=0x20000 }
 ]
