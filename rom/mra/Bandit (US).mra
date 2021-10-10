@@ -70,12 +70,12 @@
         <part repeat="0x40000"> FF</part>
         <!-- gfx3 - starts at 0x150000 -->
         <interleave output="16">
-            <part name="29.29" crc="32218c8a" map="01"/>
-            <part name="30.30" crc="6a5fe9a9" map="10"/>
-        </interleave>
-        <interleave output="16">
             <part name="27.27" crc="62970304" map="01"/>
             <part name="28.28" crc="e018459f" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="29.29" crc="32218c8a" map="01"/>
+            <part name="30.30" crc="6a5fe9a9" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x190000 -->
         <part name="15.15" crc="84c03235"/>

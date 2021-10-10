@@ -162,20 +162,23 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   GFX2_OFFSET = 22'h10_0000,
                   GFX3_OFFSET = 22'h20_0000,
                   GFX1_LEN    = 22'h1_0000,
-                  GFX2_LEN    = 22'h4_0000;
+                  GFX2_LEN    = 22'h4_0000,
+                  GFX3_LEN    = 22'h2_0000;
 
-wire        prom_we, is_gfx1, is_gfx2;
-wire [21:0] pre_prog, gfx2_offset;
+wire        prom_we, is_gfx1, is_gfx2, is_gfx3;
+wire [21:0] pre_prog, gfx2_offset, gfx3_offset;
 
 assign mcu_we  = prom_we && pre_prog >= MCU_START  && pre_prog < MCU_END;
 // priority PROM is meant to be the second one in the MRA file
 assign prio_we = prom_we && pre_prog >= PRIO_START && pre_prog < PRIO_END;
 assign is_gfx1 = prog_ba==2'd2 && pre_prog < GFX1_LEN;
 assign is_gfx2 = prog_ba==2'd2 && pre_prog >= GFX1_LEN && gfx2_offset < GFX2_LEN;
+assign is_gfx3 = prog_ba==2'd2 && !is_gfx1 && !is_gfx2;
 
 // MSB bit moved to LSB position, so we get all four colour planes
 // in a single 32-bit read
 assign gfx2_offset = pre_prog - GFX1_LEN;
+assign gfx3_offset = pre_prog - GFX1_LEN - GFX2_LEN;
 
 always @* begin
     prog_addr = pre_prog;
@@ -185,9 +188,9 @@ always @* begin
     if( is_gfx2 ) begin
         prog_addr = { GFX2_OFFSET[21:18], gfx2_offset[16:0], gfx2_offset[17] };
     end
-    // if( is_gfx3 ) begin
-    //     prog_addr = { GFX3_OFFSET[21:18], gfx3_offset[16:0], ~gfx3_offset[17] };
-    // end
+    if( is_gfx3 ) begin
+        prog_addr = { GFX3_OFFSET[21:17], gfx3_offset[15:0], gfx3_offset[16] };
+    end
 end
 
 

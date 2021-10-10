@@ -297,9 +297,8 @@ jtcop_colmix u_colmix(
 
     .ba0_pxl    ( ba0_pxl       ),
     .ba1_pxl    ( ba1_pxl       ),
-    .ba2_pxl    ( 8'd0          ),
+    .ba2_pxl    ( ba2_pxl       ),
     .obj_pxl    ( 8'd0          ),
-    //.ba2_pxl    ( ba2_pxl       ),
     //.obj_pxl    ( obj_pxl       ),
 
     .red        ( red           ),

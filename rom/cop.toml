@@ -26,7 +26,7 @@ regions = [
     { name="oki",           start=$PCM_START },
     { name="gfx1",          start=$BA2_START, width=16, No_offset=true },
     { name="gfx2",          start=$GFX2_START,width=16, No_offset=true, sort_byext=true, sort_alpha=true },
-    { name="gfx3",          start=$GFX3_START,width=16, No_offset=true },
+    { name="gfx3",          start=$GFX3_START,width=16, No_offset=true, sort_byext=true, sort_alpha=true  },
     { name="gfx4",          start=$BA3_START },
     { name="sub",           start=$MCU_START },
     { name="mcu",           start=$MCU_START },
@@ -41,7 +41,8 @@ order = [
 
 splits = [
     { machine="baddudes", region="gfx1", offset=0x4000, min_len=0x10000 },
-    { machine="secretag",   region="gfx1", offset=0x4000, min_len=0x10000 },
+    { machine="baddudes", region="gfx3", offset=0x8000, min_len=0x20000 },
+    { machine="secretag", region="gfx1", offset=0x4000, min_len=0x10000 },
     { machine="birdtry",  region="gfx1", offset=0x4000, min_len=0x10000 }
 ]
 

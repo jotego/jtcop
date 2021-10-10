@@ -65,8 +65,8 @@
         <part repeat="0x60000"> FF</part>
         <!-- gfx3 - starts at 0x150000 -->
         <interleave output="16">
-            <part name="fn-09" crc="c2b27bd2" map="01"/>
-            <part name="fn-08" crc="5ac97178" map="10"/>
+            <part name="fn-08" crc="5ac97178" map="01"/>
+            <part name="fn-09" crc="c2b27bd2" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x190000 -->
         <part name="fn-01" crc="9333121b"/>

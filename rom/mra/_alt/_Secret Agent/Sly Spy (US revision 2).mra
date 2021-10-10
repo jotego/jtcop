@@ -67,8 +67,8 @@
         <part repeat="0x60000"> FF</part>
         <!-- gfx3 - starts at 0x150000 -->
         <interleave output="16">
-            <part name="fa09.22a" crc="1395e9be" map="01"/>
-            <part name="fa08.21a" crc="4d7464db" map="10"/>
+            <part name="fa08.21a" crc="4d7464db" map="01"/>
+            <part name="fa09.22a" crc="1395e9be" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x190000 -->
         <part name="fa01.4a" crc="99b0cd92"/>
