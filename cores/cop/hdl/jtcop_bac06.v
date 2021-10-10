@@ -273,10 +273,10 @@ always @* begin
             col_addr[4:0] = hn[7:3]   >> tile16_en; // 32 or 16 cols
             if( tile16_en )
                 pre_ram = msbrow_en ? { row_addr[5:0], col_addr[3:0] } : // 10 bits
-                                      { row_addr[5:0], col_addr[3:0] };
+                                      { col_addr[3:0], row_addr[5:0] };
             else
                 pre_ram = msbrow_en ? { row_addr[6:0], col_addr[4:0] } : // 12 bits
-                                      { row_addr[6:0], col_addr[4:0] };
+                                      { col_addr[4:0], row_addr[6:0] };
         end
     endcase
 end

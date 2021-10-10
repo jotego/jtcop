@@ -68,10 +68,10 @@ module jtcop_sdram(
     output           adpcm_ok,
 
     // Scroll B0 - RAM
-    input            b0_cs,
-    input     [12:0] b0_addr,
-    output    [15:0] b0_data,
-    output           b0_ok,
+    input            b0ram_cs,
+    input     [12:0] b0ram_addr,
+    output    [15:0] b0ram_data,
+    output           b0ram_ok,
     //        B0 - ROM
     output           b0rom_ok,
     input    [16:0]  b0rom_addr,
@@ -79,10 +79,10 @@ module jtcop_sdram(
     output   [31:0]  b0rom_data,
 
     // Scroll B1 - RAM
-    input            b1_cs,
-    input     [10:0] b1_addr,
-    output    [15:0] b1_data,
-    output           b1_ok,
+    input            b1ram_cs,
+    input     [10:0] b1ram_addr,
+    output    [15:0] b1ram_data,
+    output           b1ram_ok,
     //        B1 - ROM
     output           b1rom_ok,
     input    [16:0]  b1rom_addr,
@@ -90,10 +90,10 @@ module jtcop_sdram(
     output   [31:0]  b1rom_data,
 
     // Scroll B2 - RAM
-    input            b2_cs,
-    input     [10:0] b2_addr,
-    output    [15:0] b2_data,
-    output           b2_ok,
+    input            b2ram_cs,
+    input     [10:0] b2ram_addr,
+    output    [15:0] b2ram_data,
+    output           b2ram_ok,
     //        B2 - ROM
     output           b2rom_ok,
     input    [16:0]  b2rom_addr,
@@ -156,7 +156,7 @@ localparam [24:0] BA1_START   = `BA1_START,
 localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   B0_OFFSET   = 22'h10_2000,
                   B1_OFFSET   = 22'h10_4000,
-                  B2_OFFSET   = 22'h10_5000,
+                  B2_OFFSET   = 22'h10_6000,
                   PCM_OFFSET  = (`PCM_START-BA1_START)>>1,
                   ZERO_OFFSET = 0,
                   GFX2_OFFSET = 22'h10_0000,
@@ -300,22 +300,22 @@ jtframe_ram_5slots #(
 
     .slot0_addr ( ram_maddr ),
     .slot1_addr ( main_addr ),
-    .slot2_addr ( b0_addr   ),
-    .slot3_addr ( b1_addr   ),
-    .slot4_addr ( b2_addr   ),
+    .slot2_addr ( b0ram_addr),
+    .slot3_addr ( b1ram_addr),
+    .slot4_addr ( b2ram_addr),
 
     //  output data
     .slot0_dout ( ram_data  ),
     .slot1_dout ( main_data ),
-    .slot2_dout ( b0_data   ),
-    .slot3_dout ( b1_data   ),
-    .slot4_dout ( b2_data   ),
+    .slot2_dout ( b0ram_data),
+    .slot3_dout ( b1ram_data),
+    .slot4_dout ( b2ram_data),
 
     .slot0_cs   ( ram_cs    ),
     .slot1_cs   ( main_cs   ),
-    .slot2_cs   ( b0_cs     ),
-    .slot3_cs   ( b1_cs     ),
-    .slot4_cs   ( b2_cs     ),
+    .slot2_cs   ( b0ram_cs  ),
+    .slot3_cs   ( b1ram_cs  ),
+    .slot4_cs   ( b2ram_cs  ),
 
     .slot0_wen  ( ~main_rnw ),
     .slot0_din  ( main_dout ),
@@ -328,9 +328,9 @@ jtframe_ram_5slots #(
 
     .slot0_ok   ( ram_ok    ),
     .slot1_ok   ( main_ok   ),
-    .slot2_ok   ( b0_ok     ),
-    .slot3_ok   ( b1_ok     ),
-    .slot4_ok   ( b2_ok     ),
+    .slot2_ok   ( b0ram_ok  ),
+    .slot3_ok   ( b1ram_ok  ),
+    .slot4_ok   ( b2ram_ok  ),
 
     // SDRAM controller interface
     .sdram_ack   ( ba_ack[0] ),

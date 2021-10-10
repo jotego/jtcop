@@ -125,12 +125,12 @@ wire        fmode_cs, fsft_cs, fmap_cs,
             cmode_cs, csft_cs, cmap_cs;
 
 // BAC06 VRAM read access
-wire        b0_cs, b0_ok,
-            b1_cs, b1_ok,
-            b2_cs, b2_ok;
-wire [12:0] b0_addr;
-wire [10:0] b1_addr, b2_addr;
-wire [15:0] b0_data, b1_data, b2_data;
+wire        b0ram_cs, b0ram_ok,
+            b1ram_cs, b1ram_ok,
+            b2ram_cs, b2ram_ok;
+wire [12:0] b0ram_addr;
+wire [10:0] b1ram_addr, b2ram_addr;
+wire [15:0] b0ram_data, b1ram_data, b2ram_data;
 
 wire        nexrm1, nexrm0_cs;
 
@@ -300,27 +300,26 @@ jtcop_video u_video(
     .prisel     ( prisel    ),
     .pal_dout   ( pal_dout  ),
     .prio_we    ( prio_we   ),
-    .prog_addr  ( prog_addr[9:0] ),
-    .prom_din   ( prog_data[1:0] ),
+    .prog_addr  (prog_addr[9:0]),
+    .prom_din   (prog_data[1:0]),
 
-    .flip       ( flip      ),
+    .flip        ( flip       ),
 
     // SDRAM interface
-    .b0ram_cs   ( b0_cs     ),
-    .b0ram_addr ( b0_addr   ),
-    .b0ram_data ( b0_data   ),
-    .b0ram_ok   ( b0_ok     ),
+    .b0ram_cs    ( b0ram_cs   ),
+    .b0ram_addr  ( b0ram_addr ),
+    .b0ram_data  ( b0ram_data ),
+    .b0ram_ok    ( b0ram_ok   ),
 
-    .b1ram_cs   ( b1_cs     ),
-    .b1ram_addr ( b1_addr   ),
-    .b1ram_data ( b1_data   ),
-    .b1ram_ok   ( b1_ok     ),
+    .b1ram_cs    ( b1ram_cs   ),
+    .b1ram_addr  ( b1ram_addr ),
+    .b1ram_data  ( b1ram_data ),
+    .b1ram_ok    ( b1ram_ok   ),
 
-    .b2ram_cs   ( b2_cs     ),
-    .b2ram_addr ( b2_addr   ),
-    .b2ram_data ( b2_data   ),
-    .b2ram_ok   ( b2_ok     ),
-
+    .b2ram_cs    ( b2ram_cs   ),
+    .b2ram_addr  ( b2ram_addr ),
+    .b2ram_data  ( b2ram_data ),
+    .b2ram_ok    ( b2ram_ok   ),
 
     .b0rom_ok    ( b0rom_ok   ),
     .b0rom_cs    ( b0rom_cs   ),
@@ -493,20 +492,20 @@ jtcop_sdram u_sdram(
     .csft_cs    ( csft_cs   ),
     .cmap_cs    ( cmap_cs   ),
 
-    .b0_cs      ( b0_cs     ),
-    .b0_addr    ( b0_addr   ),
-    .b0_data    ( b0_data   ),
-    .b0_ok      ( b0_ok     ),
+    .b0ram_cs   ( b0ram_cs  ),
+    .b0ram_addr ( b0ram_addr),
+    .b0ram_data ( b0ram_data),
+    .b0ram_ok   ( b0ram_ok  ),
 
-    .b1_cs      ( b1_cs     ),
-    .b1_addr    ( b1_addr   ),
-    .b1_data    ( b1_data   ),
-    .b1_ok      ( b1_ok     ),
+    .b1ram_cs   ( b1ram_cs  ),
+    .b1ram_addr ( b1ram_addr),
+    .b1ram_data ( b1ram_data),
+    .b1ram_ok   ( b1ram_ok  ),
 
-    .b2_cs      ( b2_cs     ),
-    .b2_addr    ( b2_addr   ),
-    .b2_data    ( b2_data   ),
-    .b2_ok      ( b2_ok     ),
+    .b2ram_cs   ( b2ram_cs  ),
+    .b2ram_addr ( b2ram_addr),
+    .b2ram_data ( b2ram_data),
+    .b2ram_ok   ( b2ram_ok  ),
 
     // PROMs
     .mcu_we     ( mcu_we    ), // i8751 MCU / Sub CPU
