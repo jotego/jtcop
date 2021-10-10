@@ -80,7 +80,7 @@ always @(*) begin
     bank_cs = BANKS && cpu_addr[15] && !cpu_rnw;
     nmi_clr = 0;
     rom_cs  = |cpu_addr[15:14]; // some games only use bit 15
-    oki_cs  = 1;
+    oki_cs  = 0;
     if(cpu_addr[15:14]==0) begin
         case( cpu_addr[13:11] )
             0: ram_cs  = 1;
@@ -185,11 +185,11 @@ T65 u_cpu(
     .DO     ( cpu_dout  )
 );
 
-jtframe_ram #(.aw(10)) u_ram(
+jtframe_ram #(.aw(11)) u_ram(
     .clk    ( clk           ),
     .cen    ( 1'b1          ),
     .data   ( cpu_dout      ),
-    .addr   ( cpu_addr[9:0] ),
+    .addr   ( cpu_addr[10:0]),
     .we     ( ram_we        ),
     .q      ( ram_dout      )
 );
