@@ -354,7 +354,7 @@ always @(posedge clk, posedge rst) begin
             draw_busy <= 1;
             half      <= 0;
             if( tile16_en )
-                rom_addr <= { tile_id[10:0], 1'b0, veff[3:0], 1'b0 };
+                rom_addr <= { tile_id[10:0], 1'b1, veff[3:0], 1'b0 };
             else
                 rom_addr <= { 2'd0, tile_id[10:0], veff[2:0], 1'b0 };
             draw_cnt <= 0;
