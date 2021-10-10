@@ -377,11 +377,12 @@ always @(posedge clk, posedge rst) begin
                     draw_busy <= 0;
                     rom_cs    <= 0;
                     if( !scan_busy ) buf_waddr <= 0;
-                end else begin // second half of 16 bit tile
-                    rom_addr[4] <= 1;
+                end else begin // second half of 16-pxl tile
+                    rom_addr[5] <= ~rom_addr[5];
                     rom_cs      <= 1;
                     rom_good    <= 0;
                     half        <= 1;
+                    draw_cnt    <= 0;
                 end
             end
         end
