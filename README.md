@@ -1,3 +1,26 @@
+# JTCOP FPGA Clone of DEC0 Hardware by Jose Tejada (@topapate)
+
+You can show your appreciation through
+* Patreon: https://patreon.com/topapate
+* Paypal: https://paypal.me/topapate
+
+Yes, you always wanted to have a Robocop arcade board at home. First you couldn't get it because your parents somehow did not understand you. Then you grow up and your wife doesn't understand you either. Don't worry, MiST(er) is here to the rescue.
+
+What you get with this is an extremely accurate (allegedly 100% accurate) clone of the original hardware.
+
+I hope you will have as much fun with it as I had it while making it!
+
+# The Cores
+
+There are two core flavours:
+
+* jtcop, for Robocop and the other games using the HuC processor
+* jtninja, for Bad Dudes and the rest using the i8751 MCU
+
+The correct core is selected by the MRA files (MiSTer) or ARC files (MiST)
+
+# The Games
+
 Game                            | Popularity
 --------------------------------|-------------
 Bad Dudes vs. Dragonninja       | 700
