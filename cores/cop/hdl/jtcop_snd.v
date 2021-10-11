@@ -49,10 +49,10 @@ module jtcop_snd(
 
 parameter BANKS=0;
 
-localparam [7:0] OPN_GAIN = 8'h08,
-                 OPL_GAIN = 8'h08,
-                 PCM_GAIN = 8'h08,
-                 PSG_GAIN = 8'h08;
+localparam [7:0] OPN_GAIN = 8'h10,
+                 OPL_GAIN = 8'h10,
+                 PCM_GAIN = 8'h10,
+                 PSG_GAIN = 8'h10;
 
 wire [15:0] cpu_addr;
 wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout, oki_dout;
