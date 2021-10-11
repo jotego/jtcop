@@ -22,6 +22,9 @@ module jtcop_snd(
     input                cen_opn,
     input                cen_opl,
 
+    input                enable_psg,
+    input                enable_fm,
+
     // From main CPU
     input                snreq,  // sound interrupt from main CPU
     input         [ 7:0] latch,
@@ -46,10 +49,10 @@ module jtcop_snd(
 
 parameter BANKS=0;
 
-localparam [7:0] OPN_GAIN = 8'h04,
-                 OPL_GAIN = 8'h04,
-                 PCM_GAIN = 8'h04,
-                 PSG_GAIN = 8'h04;
+localparam [7:0] OPN_GAIN = 8'h08,
+                 OPL_GAIN = 8'h08,
+                 PCM_GAIN = 8'h08,
+                 PSG_GAIN = 8'h08;
 
 wire [15:0] cpu_addr;
 wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout, oki_dout;
@@ -133,34 +136,7 @@ always @(posedge clk) begin
         if( bank_cs ) snd_bank <= cpu_dout[0];
     end
 end
-/*
-reg  cen_cpu;
-wire clk_cpu = clk & cen_cpu;
 
-always @(negedge clk) begin
-  cen_cpu <= & cen_opn & (rdy | rst);
-end
-
-MC6502 u_cpu(
-    .rstn   ( ~rst      ),
-    .clk    ( clk_cpu   ),
-    .cen    ( 1'b1   ),
-    .i_rdy  ( 1'b1       ),
-
-//    .clk    ( clk       ),
-//    .cen    ( cen_opn   ),
-//    .i_rdy  ( rdy       ),
-//
-
-    .i_irqn ( irqn      ),
-    .i_nmin ( nmin      ),
-    .i_db   ( cpu_din   ),
-    .o_db   ( cpu_dout  ),
-    .o_sync (           ),
-    .o_rw   ( cpu_rnw   ),
-    .o_ab   ( cpu_addr  )
-);
-*/
 T65 u_cpu(
     .Mode   ( 2'd0      ),  // 6502 mode
     .Res_n  ( ~rst      ),
@@ -194,10 +170,10 @@ jtframe_ram #(.aw(11)) u_ram(
     .q      ( ram_dout      )
 );
 
-jtopl u_opl(
+jtopl2 u_opl(
     .rst    ( rst       ),   
     .clk    ( clk       ),   
-    .cen    ( cen_opl   ),   
+    .cen    ( cen_opl   ),
     .din    ( cpu_dout  ),
     .addr   (cpu_addr[0]),
     .cs_n   ( ~opl_cs   ),
@@ -281,8 +257,8 @@ jtframe_mixer #(.W3(10),.WOUT(16)) u_mixer(
     .ch2    ( adpcm_snd ),
     .ch3    ( psgac_snd ),
     // gain for each channel in 4.4 fixed point format
-    .gain0  ( OPN_GAIN  ),
-    .gain1  ( OPL_GAIN  ),
+    .gain0  ( enable_psg ? OPN_GAIN : 8'h0 ),
+    .gain1  ( enable_fm  ? OPL_GAIN : 8'h0 ),
     .gain2  ( PCM_GAIN  ),
     .gain3  ( PSG_GAIN  ),
     .mixed  ( snd       ),

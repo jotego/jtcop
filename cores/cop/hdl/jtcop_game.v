@@ -364,6 +364,9 @@ jtcop_video u_video(
         .cen_opn    ( cen_opn   ),
         .cen_opl    ( cen_opl   ),
 
+        .enable_fm  ( enable_fm ),
+        .enable_psg ( enable_psg),
+
         // From main CPU
         .snreq      ( snreq     ),
         .latch      ( snd_latch ),
