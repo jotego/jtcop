@@ -21,11 +21,13 @@ module jtcop_obj_draw(
     input              clk,
     input              pxl_cen,
     input              LHBL,
+    input              LVBL,
 
     output     [ 7:0]  hdump,
+    input      [ 8:0]  vrender,
 
     // Object engine
-    output     [ 9:0]  tbl_addr,
+    output reg [ 9:0]  tbl_addr,
     input      [15:0]  tbl_dout,
 
     // ROM interface
@@ -39,8 +41,72 @@ module jtcop_obj_draw(
 
 reg  [7:0] buf_pxl;
 reg  [8:0] buf_addr;
+wire [7:0] buf_wdata;
+reg        buf_we;
+reg        cen2;
+reg  [1:0] nsize, msize; // n = horizontal tiles, m = vertical tiles, like in JTCPS1
+reg        hflip, vflip;
 
-// Draw the tile
+wire [8:0] ypos;
+reg  [3:0] pal;
+reg        blink, frame, parse_busy;
+
+assign ypos = tbl_dout[8:0];
+
+// Get the information
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        tbl_addr   <= 0;
+        cen2       <= 0;
+        parse_busy <= 0;
+        draw       <= 0;
+        frame      <= 0;
+    end else begin
+        HSl <= HS;
+        LVl <= LVBL;
+        cen2 <= ~cen2;
+        draw <= 0;
+        if( !LVBL && LVl ) frame <= ~frame; // used for sprite blinking
+        if( HSl && !HS ) begin
+            tbl_addr <= 0;
+            parse_busy <= 1;
+            cen2 <= 0;
+        end
+        if( parse_busy && !draw_busy && cen2 ) begin
+            case( tbl_addr[1:0] )
+                0: begin
+                    { vflip, hflip } <= tbl_dout[14:13]
+                    nsize <= tbl_dout[12:11];
+                    msize <= tbl_dout[10:9];
+                    if( !inzone ) begin
+                        tbl_addr <= tbl_addr + 10'd4;
+                        if( &tbl_addr[9:2] ) begin
+                            parse_busy <= 0; // done
+                        end
+                    end else begin
+                        tbl_addr <= tbl_addr + 10'd1;
+                    end
+                end
+                1: begin
+                    id <= tbl_dout;
+                    tbl_addr <= tbl_addr + 10'd1;
+                end
+                2: begin
+                    xpos     <= tbl_dout[8:0];
+                    pal      <= tbl_dout[15:12];
+                    blink    <= tbl_dout[11];
+                    tbl_addr <= tbl_addr + 10'd2;
+                    draw     <= 1;
+                    if( &tbl_addr[9:2] ) begin
+                        parse_busy <= 0; // done
+                    end
+                end
+            endcase
+        end
+    end
+end
+
+// Draw the sprite
 reg  [31:0] draw_data;
 wire [ 3:0] draw_pxl;
 reg  [ 3:0] draw_cnt;
@@ -113,9 +179,9 @@ u_buffer (
     .clk        ( clk       ),
     .LHBL       ( LHBL      ),
     // New data writes
-    .wr_data    (           ),
+    .wr_data    ( buf_wdata ),
     .wr_addr    (           ),
-    .we         (           ),
+    .we         ( buf_we    ),
     // Old data reads (and erases)
     .rd_addr    ({1'b0, hdump}),
     .rd         ( pxl_cen   ),

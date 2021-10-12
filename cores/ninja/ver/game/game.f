@@ -3,6 +3,7 @@
 ../../../cop/hdl/jtcop_game.v
 ../../../cop/hdl/jtcop_main.v
 ../../../cop/hdl/jtcop_obj_buffer.v
+../../../cop/hdl/jtcop_obj_draw.v
 ../../../cop/hdl/jtcop_obj.v
 ../../../cop/hdl/jtcop_sdram.v
 ../../../cop/hdl/jtcop_snd.v

@@ -5,7 +5,8 @@ set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_m
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_sdram.v  ]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_snd.v    ]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_obj.v    ]
-set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_obj_buffer.v    ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_obj_buffer.v  ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_obj_draw.v    ]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) jtcop_video.v  ]
 
 # SDRAM
