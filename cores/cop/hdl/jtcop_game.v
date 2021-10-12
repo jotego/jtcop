@@ -85,11 +85,11 @@ module jtcop_game(
     input           enable_psg,
     input           enable_fm,
     // Debug
-    input   [3:0]   gfx_en
+    input   [3:0]   gfx_en,
     // input   [7:0]   debug_bus,
     // status dump
-    // input   [ 7:0]  st_addr,
-    // output reg [ 7:0]  st_dout
+    input      [7:0] st_addr,
+    output     [7:0] st_dout
 );
 
 // video signals
@@ -173,7 +173,7 @@ wire [ 7:0] dipsw_a, dipsw_b;
 //wire [ 7:0] game_id;
 
 // Status report
-wire [7:0] st_video, st_main;
+// wire [7:0] st_video, st_main;
 
 assign { dipsw_b, dipsw_a } = dipsw[15:0];
 assign dsn = { UDSWn, LDSWn };
@@ -350,11 +350,11 @@ jtcop_video u_video(
     .LVBL_dly   ( LVBL_dly  ),
     .red        ( red       ),
     .green      ( green     ),
-    .blue       ( blue      )
+    .blue       ( blue      ),
     // debug
+    .st_addr    ( st_addr   ),
+    .st_dout    ( st_dout   )
     //.debug_bus  ( debug_bus ),
-    //.st_addr    ( st_addr   ),
-    //.st_dout    ( st_video  )
 );
 
 `ifndef NOSOUND

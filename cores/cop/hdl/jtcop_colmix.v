@@ -68,13 +68,13 @@ assign cpu_din = pal_cs[0] ? cpu_gr : {8'hff, cpu_b};
 always @(posedge clk) begin
     if( pxl_cen ) begin
         seladdr <= { prisel,
-                   ~|ba0_pxl[3:0],
+                   ~|ba0_pxl[3:0] | ~gfx_en[0],
                    obj_pxl[7],
-                   ~|obj_pxl[3:0],
+                   ~|obj_pxl[3:0] | ~gfx_en[3],
                    ba1_pxl[7],
                    obj_pxl[3],
-                   ~|ba1_pxl[2:0],
-                   ~|{ba2_pxl[7],ba2_pxl[2:0]}
+                   ~|ba1_pxl[2:0] | ~gfx_en[1],
+                   ~|{ba2_pxl[7],ba2_pxl[2:0] & {3{gfx_en[2]}}}
                 };
     end
     pal_addr[9:8] <= selbus;

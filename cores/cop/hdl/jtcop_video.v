@@ -96,13 +96,27 @@ module jtcop_video(
     output     [ 7:0]  blue,
 
     // Debug
-    input      [ 3:0]  gfx_en
+    input      [ 3:0]  gfx_en,
+    // Status
+    input      [ 7:0]  st_addr,
+    output reg [ 7:0]  st_dout
+
 );
 
 wire   [8:0]  vdump, vrender, hdump;
 wire   [7:0]  ba0_pxl, ba1_pxl, ba2_pxl, obj_pxl;
 wire          vload, hinit;
 reg           gmode_cs, gsft_cs, gmap_cs;
+wire   [7:0]  st_dout0, st_dout1, st_dout2;
+
+always @(posedge clk) begin
+    case( st_addr[4:3] )
+        0: st_dout <= st_dout0;
+        1: st_dout <= st_dout1;
+        2: st_dout <= st_dout2;
+        3: st_dout <= 8'hff;
+    endcase
+end
 
 jtcop_bac06 #(.MASTER(1),.RAM_AW(13)) u_ba0(
     .rst        ( rst           ),
@@ -144,7 +158,9 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(13)) u_ba0(
     .rom_data   ( b0rom_data    ),
     .rom_ok     ( b0rom_ok      ),
 
-    .pxl        ( ba0_pxl       )
+    .pxl        ( ba0_pxl       ),
+    .st_addr    ( st_addr[2:0]  ),
+    .st_dout    ( st_dout0      )
 );
 
 `ifndef NOBA1
@@ -188,7 +204,9 @@ jtcop_bac06 u_ba1(
     .rom_data   ( b1rom_data    ),
     .rom_ok     ( b1rom_ok      ),
 
-    .pxl        ( ba1_pxl       )
+    .pxl        ( ba1_pxl       ),
+    .st_addr    ( st_addr[2:0]  ),
+    .st_dout    ( st_dout1      )
 );
 `else
     assign b1ram_cs = 0;
@@ -237,7 +255,9 @@ jtcop_bac06 u_ba2(
     .rom_data   ( b2rom_data    ),
     .rom_ok     ( b2rom_ok      ),
 
-    .pxl        ( ba2_pxl       )
+    .pxl        ( ba2_pxl       ),
+    .st_addr    ( st_addr[2:0]  ),
+    .st_dout    ( st_dout2      )
 );
 `else
     assign b2ram_cs = 0;

@@ -87,7 +87,10 @@ module jtcop_bac06 #(
     input   [31:0] rom_data,
     input          rom_ok,
 
-    output  [ 7:0] pxl          // pixel output
+    output  [ 7:0] pxl,          // pixel output
+    // Status
+    input      [ 2:0]  st_addr,
+    output reg [ 7:0]  st_dout
 );
 
 
@@ -135,6 +138,16 @@ assign geometry  = mode[3][1:0];
     end
 `endif
 
+// Status report
+always @(posedge clk) begin
+    case(st_addr)
+        0,1,2,3: st_dout <= mode[st_addr[1:0]];
+        4: st_dout <= hscr[7:0];
+        5: st_dout <= hscr[15:8];
+        6: st_dout <= vscr[7:0];
+        7: st_dout <= vscr[15:8];
+    endcase
+end
 
 function [15:0] combine( input [15:0] din );
     combine = { cpu_dsn[1] ? din[15:8] : cpu_dout[15:8],
