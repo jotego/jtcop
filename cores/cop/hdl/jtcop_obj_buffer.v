@@ -25,7 +25,6 @@ module jtcop_obj_buffer(
     input              LVBL,
     input              vload,       // second last line during V blank
     input              hinit,       // called vcunt in schematics
-    input      [ 7:0]  vdump,
     input      [ 7:0]  hdump,
 
     // CPU interface

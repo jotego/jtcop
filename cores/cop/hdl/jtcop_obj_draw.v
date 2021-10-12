@@ -20,10 +20,11 @@ module jtcop_obj_draw(
     input              rst,
     input              clk,
     input              pxl_cen,
+    input              HS,
     input              LHBL,
     input              LVBL,
 
-    output     [ 7:0]  hdump,
+    input      [ 7:0]  hdump,
     input      [ 8:0]  vrender,
 
     // Object engine
@@ -40,18 +41,35 @@ module jtcop_obj_draw(
 );
 
 reg  [7:0] buf_pxl;
-reg  [8:0] buf_addr;
+reg  [8:0] buf_waddr;
 wire [7:0] buf_wdata;
 reg        buf_we;
 reg        cen2;
 reg  [1:0] nsize, msize; // n = horizontal tiles, m = vertical tiles, like in JTCPS1
 reg        hflip, vflip;
 
-wire [8:0] ypos;
-reg  [3:0] pal;
-reg        blink, frame, parse_busy;
+wire [ 8:0] ypos;
+reg  [ 8:0] xpos;
+reg  [ 8:0] veff, bottom;
+reg  [ 3:0] pal;
+reg  [15:0] id;
+reg         blink, frame, parse_busy, inzone,
+            draw, HSl, LVl,
+            draw_busy, rom_good;
 
 assign ypos = tbl_dout[8:0];
+
+always @* begin
+    inzone = 1;
+    case( tbl_dout[10:9] ) // msize
+        0: bottom = ypos + 9'h10;
+        1: bottom = ypos + 9'h20;
+        2: bottom = ypos + 9'h40;
+        3: bottom = ypos + 9'h80;
+    endcase
+    if( vrender < ypos || vrender >= bottom )
+        inzone = 0;
+end
 
 // Get the information
 always @(posedge clk, posedge rst) begin
@@ -61,6 +79,8 @@ always @(posedge clk, posedge rst) begin
         parse_busy <= 0;
         draw       <= 0;
         frame      <= 0;
+        nsize      <= 0;
+        msize      <= 0;
     end else begin
         HSl <= HS;
         LVl <= LVBL;
@@ -75,9 +95,10 @@ always @(posedge clk, posedge rst) begin
         if( parse_busy && !draw_busy && cen2 ) begin
             case( tbl_addr[1:0] )
                 0: begin
-                    { vflip, hflip } <= tbl_dout[14:13]
+                    { vflip, hflip } <= tbl_dout[14:13];
                     nsize <= tbl_dout[12:11];
                     msize <= tbl_dout[10:9];
+                    veff  <= vrender - ypos;
                     if( !inzone ) begin
                         tbl_addr <= tbl_addr + 10'd4;
                         if( &tbl_addr[9:2] ) begin
@@ -114,7 +135,7 @@ reg         half;
 
 assign draw_pxl  = hflip ? { draw_data[23], draw_data[31], draw_data[7], draw_data[15] } :
                            { draw_data[16], draw_data[24], draw_data[0], draw_data[ 8] };
-assign buf_wdata = { tile_pal, draw_pxl };
+assign buf_wdata = { pal, draw_pxl };
 
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
@@ -125,27 +146,16 @@ always @(posedge clk, posedge rst) begin
         buf_we    <= 0;
         rom_cs    <= 0;
         half      <= 0;
-        get_hsub  <= 0;
     end else begin
         rom_good <= rom_ok;
-        if( HSl && !HS ) get_hsub <= 1;
         if( draw ) begin
             draw_busy <= 1;
             half      <= 0;
-            if( tile16_en )
-                rom_addr <= { tile_id[10:0], 1'b1, veff[3:0], 1'b0 };
-            else
-                rom_addr <= { 2'd0, tile_id[10:0], veff[2:0], 1'b0 };
+            rom_addr <= { id[10:0], ~hflip, veff[3:0], 1'b0 }; // 17 bits
             draw_cnt <= 0;
             rom_cs   <= 1;
             rom_good <= 0;
-            get_hsub <= 0;
-            if( get_hsub ) begin // subtile scroll adjustment on first tile drawn
-                if(tile16_en)
-                    buf_waddr <= 9'd0 - {5'd0,hn[3:0]};
-                else
-                    buf_waddr <= 9'd0 - {6'd0,hn[2:0]};
-            end
+            buf_waddr<= xpos;
         end
         if( !buf_we && rom_cs && rom_good && rom_ok && draw_cnt==0 ) begin
             draw_data <= rom_data;
@@ -159,7 +169,7 @@ always @(posedge clk, posedge rst) begin
             buf_waddr<= buf_waddr+9'd1;
             if( draw_cnt==0 ) begin
                 buf_we    <= 0;
-                if( !tile16_en || half) begin
+                if( half) begin
                     draw_busy <= 0;
                     rom_cs    <= 0;
                 end else begin // second half of 16-pxl tile
@@ -180,7 +190,7 @@ u_buffer (
     .LHBL       ( LHBL      ),
     // New data writes
     .wr_data    ( buf_wdata ),
-    .wr_addr    (           ),
+    .wr_addr    ( buf_waddr ),
     .we         ( buf_we    ),
     // Old data reads (and erases)
     .rd_addr    ({1'b0, hdump}),

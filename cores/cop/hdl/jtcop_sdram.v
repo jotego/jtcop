@@ -103,7 +103,7 @@ module jtcop_sdram(
     // Obj
     output           obj_ok,
     input            obj_cs,
-    input    [13:0]  obj_addr,
+    input    [16:0]  obj_addr,
     output   [31:0]  obj_data,
 
     // Bank 0: allows R/W
@@ -421,9 +421,9 @@ jtframe_rom_3slots #(
 
 // Bank 3: objects
 
-jtframe_rom_3slots #(
+jtframe_rom_1slot #(
     .SLOT0_DW(  32),
-    .SLOT0_AW(  14)
+    .SLOT0_AW(  17)
 ) u_bank3(
     .rst        ( rst        ),
     .clk        ( clk        ),

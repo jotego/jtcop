@@ -269,8 +269,8 @@ always @* begin
             row_addr[4:0] = veff[7:3] >> tile16_en; // 32 or 16 rows
             col_addr[6:0] = hn[9:3]   >> tile16_en; //128 or 64 cols
             if( tile16_en )
-                pre_ram = msbrow_en ? { row_addr[3:0], col_addr[5:0] } : // 10 bits
-                                      { col_addr[5:0], row_addr[3:0] };
+                pre_ram = msbrow_en ? { 2'd0, row_addr[3:0], col_addr[5:0] } : // 10 bits
+                                      { 2'd0, col_addr[5:0], row_addr[3:0] };
             else
                 pre_ram = msbrow_en ? { row_addr[4:0], col_addr[6:0] } : // 12 bits
                                       { col_addr[6:0], row_addr[4:0] };
@@ -279,8 +279,8 @@ always @* begin
             row_addr[5:0] = veff[8:3] >> tile16_en; // 64 or 32 rows
             col_addr[5:0] = hn[8:3]   >> tile16_en; // 64 or 32 rows
             if( tile16_en )
-                pre_ram = msbrow_en ? { row_addr[4:0], col_addr[4:0] } : // 10 bits
-                                      { col_addr[4:0], row_addr[4:0] };
+                pre_ram = msbrow_en ? { 2'd0, row_addr[4:0], col_addr[4:0] } : // 10 bits
+                                      { 2'd0, col_addr[4:0], row_addr[4:0] };
             else
                 pre_ram = msbrow_en ? { row_addr[5:0], col_addr[5:0] } : // 12 bits
                                       { col_addr[5:0], row_addr[5:0] };
@@ -289,8 +289,8 @@ always @* begin
             row_addr[6:0] = veff[9:3] >> tile16_en; //128 or 64 rows
             col_addr[4:0] = hn[7:3]   >> tile16_en; // 32 or 16 cols
             if( tile16_en )
-                pre_ram = msbrow_en ? { row_addr[5:0], col_addr[3:0] } : // 10 bits
-                                      { col_addr[3:0], row_addr[5:0] };
+                pre_ram = msbrow_en ? { 2'd0, row_addr[5:0], col_addr[3:0] } : // 10 bits
+                                      { 2'd0, col_addr[3:0], row_addr[5:0] };
             else
                 pre_ram = msbrow_en ? { row_addr[6:0], col_addr[4:0] } : // 12 bits
                                       { col_addr[4:0], row_addr[6:0] };
@@ -331,7 +331,7 @@ always @(posedge clk, posedge rst) begin
             ram_good <= 0;
             pre_cs   <= 1;
             draw     <= 0;
-            veff     <= {2'd0, vrender} + vscr[9:0];
+            veff     <= {1'd0, vrender} + vscr[9:0];
             scan_busy<= 1;
             if( rowscr_en ) begin
                 rowscr_cs <= 1;

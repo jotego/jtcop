@@ -111,7 +111,7 @@ wire [16:0] b0rom_addr, b1rom_addr, b2rom_addr;
 wire [31:0] b0rom_data, b1rom_data, b2rom_data;
 
 wire        obj_ok, obj_cs, objram_cs, mixpsel, obj_copy;
-wire [13:0] obj_addr;
+wire [16:0] obj_addr;
 wire [31:0] obj_data;
 
 // CPU interface

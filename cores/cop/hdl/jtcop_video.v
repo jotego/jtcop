@@ -84,7 +84,7 @@ module jtcop_video(
 
     // Objects
     output             orom_cs,
-    output     [13:0]  orom_addr,
+    output     [16:0]  orom_addr,
     input      [31:0]  orom_data,
     input              orom_ok,
 
@@ -277,12 +277,13 @@ jtcop_obj u_obj(
     .clk_cpu    ( clk_cpu       ),
     .pxl_cen    ( pxl_cen       ),
 
+    .HS         ( HS            ),
     .LHBL       ( LHBL          ),
     .LVBL       ( LVBL          ),
     .vload      ( vload         ),
     .hinit      ( hinit         ),
     .hdump      ( hdump[7:0]    ),
-    .vdump      ( vdump[7:0]    ),
+    .vrender    ( vrender       ),
 
     // CPU interface
     .cpu_addr   ( cpu_addr[10:1]),
