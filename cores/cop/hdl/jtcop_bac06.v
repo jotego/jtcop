@@ -92,7 +92,7 @@ module jtcop_bac06 #(
 
 
 reg  [ 7:0] mode[0:3];
-reg  [15:0] hscr;
+reg  [15:0] hscr, hscr_eff;
 reg  [15:0] vscr;
 reg  [ 3:0] colscr_sh;
 reg  [ 3:0] rowscr_sh;
@@ -141,7 +141,6 @@ function [15:0] combine( input [15:0] din );
                 cpu_dsn[0] ? din[ 7:0] : cpu_dout[ 7:0]  };
 endfunction
 
-
 always @(posedge clk) begin
     if( rst ) begin
         mode[0] <= 0; mode[1] <= 0; mode[2] <= 0; mode[3] <= 0;
@@ -158,7 +157,7 @@ always @(posedge clk) begin
                     0: hscr <= combine( hscr );
                     1: vscr <= combine( vscr );
                     2: if( !cpu_dsn[0] ) colscr_sh <= cpu_dout[3:0];
-                    3: if( !cpu_dsn[1] ) rowscr_sh <= cpu_dout[3:0];
+                    3: if( !cpu_dsn[0] ) rowscr_sh <= cpu_dout[3:0];
                 endcase
             end
         end
@@ -230,18 +229,23 @@ jtframe_linebuf #(
 reg  draw, HSl;
 reg  scan_busy;
 reg [ 6:0] row_addr, col_addr;
-reg [ 9:0] veff;
+reg [ 9:0] veff, veff_row;
 reg [ 9:0] hn;
 reg [11:0] pre_ram;
 reg [11:0] tile_id;
 reg [ 3:0] tile_pal;
-reg        pre_cs;
+reg        pre_cs, rowscr_cs;
 reg [ 1:0] ram_good;
 reg [ 4:0] tilecnt;
 
 // drawing
 reg  draw_busy, rom_good;
 reg  hflip = 1;
+
+always @* begin
+    hscr_eff = msbrow_en ? hscr : (-hscr - 16'h100);
+    veff_row = veff >> rowscr_sh;
+end
 
 always @* begin
     row_addr = 0;
@@ -287,7 +291,10 @@ always @(posedge clk, posedge rst) begin
         ram_addr <= 0;
     end else begin
         ram_cs   <= pre_cs;
-        ram_addr <= { TILEMAP_AREA[0], pre_ram[RAM_AW-2:0] };
+        if( rowscr_cs )
+            ram_addr <= { ~TILEMAP_AREA[0], {RAM_AW-11{1'b0}}, 1'b1, veff_row[8:0] };
+        else
+            ram_addr <= {  TILEMAP_AREA[0], pre_ram[RAM_AW-2:0] };
     end
 end
 
@@ -295,6 +302,7 @@ end
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
         pre_cs <= 0;
+        rowscr_cs <= 0;
         scan_busy <= 0;
         HSl <= 0;
         hn  <= 0;
@@ -305,16 +313,25 @@ always @(posedge clk, posedge rst) begin
         HSl <= HS;
         draw <= 0;
         if( HSl && !HS ) begin
-            scan_busy <= 1;
-            hn       <= hscr[9:0];
+            hn       <= hscr_eff[9:0];
             tilecnt  <= 0;
             ram_good <= 0;
             pre_cs   <= 1;
             draw     <= 0;
             veff     <= {2'd0, vrender} + vscr[9:0];
+            scan_busy<= 1;
+            if( rowscr_en ) begin
+                rowscr_cs <= 1;
+            end else begin
+                rowscr_cs <= 0;
+            end
         end
-        if( scan_busy ) begin
-            if( ram_good[1] && ram_ok && !draw && !draw_busy ) begin
+        if( scan_busy && ram_good[1] && ram_ok ) begin
+            if( rowscr_cs ) begin
+                hn <= hn + ram_data[9:0]; // adds row scroll portion
+                rowscr_cs <= 0;
+                ram_good  <= 0;
+            end else if( !draw && !draw_busy ) begin
                 //tile_id  <= { vrender[8:3], hn[7:3] }; //ram_data[11:0];
                 tile_id  <= ram_data[11:0];
                 tile_pal <= ram_data[15:12];
