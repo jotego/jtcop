@@ -236,10 +236,10 @@ reg [11:0] tile_id;
 reg [ 3:0] tile_pal;
 reg        pre_cs, rowscr_cs;
 reg [ 1:0] ram_good;
-reg [ 4:0] tilecnt;
+reg [ 5:0] tilecnt;
 
 // drawing
-reg  draw_busy, rom_good;
+reg  draw_busy, rom_good, get_hsub;
 reg  hflip = 1;
 
 always @* begin
@@ -339,7 +339,7 @@ always @(posedge clk, posedge rst) begin
                 hn       <= hn + (10'd8 << tile16_en );
                 tilecnt  <= tilecnt + 1'd1;
                 ram_good <= 0;
-                if( (tile16_en || tilecnt[4]) && tilecnt[3:0]==4'hf ) begin
+                if( buf_waddr[8] && tilecnt > 1 ) begin
                     scan_busy <= 0;
                     pre_cs    <= 0;
                 end
@@ -367,8 +367,10 @@ always @(posedge clk, posedge rst) begin
         buf_we    <= 0;
         rom_cs    <= 0;
         half      <= 0;
+        get_hsub  <= 0;
     end else begin
         rom_good <= rom_ok;
+        if( HSl && !HS ) get_hsub <= 1;
         if( draw ) begin
             draw_busy <= 1;
             half      <= 0;
@@ -379,6 +381,13 @@ always @(posedge clk, posedge rst) begin
             draw_cnt <= 0;
             rom_cs   <= 1;
             rom_good <= 0;
+            get_hsub <= 0;
+            if( get_hsub ) begin // subtile scroll adjustment on first tile drawn
+                if(tile16_en)
+                    buf_waddr <= 9'd0 - {5'd0,hn[3:0]};
+                else
+                    buf_waddr <= 9'd0 - {6'd0,hn[2:0]};
+            end
         end
         if( !buf_we && rom_cs && rom_good && rom_ok && draw_cnt==0 ) begin
             draw_data <= rom_data;
@@ -395,7 +404,6 @@ always @(posedge clk, posedge rst) begin
                 if( !tile16_en || half) begin
                     draw_busy <= 0;
                     rom_cs    <= 0;
-                    if( !scan_busy ) buf_waddr <= 0;
                 end else begin // second half of 16-pxl tile
                     rom_addr[5] <= ~rom_addr[5];
                     rom_cs      <= 1;
