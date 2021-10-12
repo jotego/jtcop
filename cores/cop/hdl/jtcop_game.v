@@ -472,7 +472,7 @@ jtcop_video u_video(
         // ROM programming
         .clk_rom    ( clk           ),
         .prog_addr  ( prog_addr[11:0] ),
-        .prom_din   ( prog_data     ),
+        .prom_din   ( prog_data[7:0]),
         .prom_we    ( mcu_we        )
     );
 `else

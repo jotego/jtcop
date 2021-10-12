@@ -140,7 +140,7 @@ assign geometry  = mode[3][1:0];
 
 // Status report
 always @(posedge clk) begin
-    case(f)
+    case(st_addr)
         0,1,2,3: st_dout <= mode[st_addr[1:0]];
         4: st_dout <= hscr[7:0];
         5: st_dout <= hscr[15:8];
