@@ -82,6 +82,12 @@ module jtcop_video(
     input       [31:0] b2rom_data,
     input              b2rom_ok,
 
+    // Objects
+    output             orom_cs,
+    output     [16:0]  orom_addr,
+    input      [31:0]  orom_data,
+    input              orom_ok,
+
     // Video signal
     output             HS,
     output             VS,
@@ -271,6 +277,7 @@ jtcop_obj u_obj(
     .clk_cpu    ( clk_cpu       ),
     .pxl_cen    ( pxl_cen       ),
 
+    .LHBL       ( LHBL          ),
     .LVBL       ( LVBL          ),
     .vload      ( vload         ),
     .hinit      ( hinit         ),
@@ -288,6 +295,12 @@ jtcop_obj u_obj(
     // DMA trigger
     .obj_copy   ( obj_copy      ),
     .mixpsel    ( mixpsel       ),
+
+    // ROM interface
+    .rom_cs     ( orom_cs       ),
+    .rom_addr   ( orom_addr     ),
+    .rom_data   ( orom_data     ),
+    .rom_ok     ( orom_ok       ),
 
     .pxl        ( obj_pxl       )
 );

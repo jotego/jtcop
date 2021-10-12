@@ -23,11 +23,11 @@ module jtcop_obj(
     input              pxl_cen,
 
     input              LVBL,
+    input              LHBL,
     input              hinit,
     input              vload,
     input      [ 7:0]  vdump,
     input      [ 7:0]  hdump,
-
 
     // CPU interface
     input      [10:1]  cpu_addr,
@@ -36,6 +36,12 @@ module jtcop_obj(
     input      [ 1:0]  cpu_dsn,
     input              cpu_rnw,
     input              objram_cs,
+
+    // ROM interface
+    output reg         rom_cs,
+    output reg [16:0]  rom_addr,
+    input      [31:0]  rom_data,
+    input              rom_ok,
 
     // DMA trigger
     input              obj_copy,
@@ -75,5 +81,30 @@ jtcop_obj_buffer u_buffer(
     .obj_copy   ( obj_copy  ),
     .mixpsel    ( mixpsel   )
 );
+/*
+jtcop_obj_draw u_draw(
+    .rst        ( rst       ),
+    .clk        ( clk       ),
+    .pxl_cen    ( pxl_cen   ),
+    .LHBL       ( LHBL      ),
+
+    .hdump      ( hdump[7:0]),
+
+    // Object engine
+    .tbl_addr   ( tbl_addr  ),
+    .tbl_dout   ( tbl_dout  ),
+
+    // ROM interface
+    .rom_cs     ( rom_cs    ),
+    .rom_addr   ( rom_addr  ),
+    .rom_data   ( rom_data  ),
+    .rom_ok     ( rom_ok    ),
+
+    .pxl        ( pxl       )
+);
+*/
+assign pxl=0;
+assign rom_cs = 0;
+assign rom_addr = 0;
 
 endmodule

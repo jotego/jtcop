@@ -104,7 +104,7 @@ module jtcop_sdram(
     output           obj_ok,
     input            obj_cs,
     input    [19:0]  obj_addr,
-    output   [15:0]  obj_data,
+    output   [31:0]  obj_data,
 
     // Bank 0: allows R/W
     output    [21:0] ba0_addr,
@@ -418,6 +418,8 @@ jtframe_rom_3slots #(
     .data_rdy   ( ba_rdy[2]  ),
     .data_read  ( data_read  )
 );
+
+// Bank 3: objects
 
 assign ba_rd[3] = 0;
 assign ba3_addr = 0;

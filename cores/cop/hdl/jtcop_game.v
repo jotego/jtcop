@@ -112,7 +112,7 @@ wire [31:0] b0rom_data, b1rom_data, b2rom_data;
 
 wire        obj_ok, obj_cs, objram_cs, mixpsel, obj_copy;
 wire [19:0] obj_addr;
-wire [15:0] obj_data;
+wire [31:0] obj_data;
 
 // CPU interface
 wire [15:0] main_dout, pal_dout, obj_dout;
@@ -336,10 +336,10 @@ jtcop_video u_video(
     .b2rom_addr  ( b2rom_addr ),
     .b2rom_data  ( b2rom_data ),
 
-    //.obj_ok     ( obj_ok    ),
-    //.obj_cs     ( obj_cs    ),
-    //.obj_addr   ( obj_addr  ),
-    //.obj_data   ( obj_data  ),
+    .orom_ok     ( obj_ok     ),
+    .orom_cs     ( obj_cs     ),
+    .orom_addr   ( obj_addr   ),
+    .orom_data   ( obj_data   ),
 
     // Video signal
     .HS         ( HS        ),
