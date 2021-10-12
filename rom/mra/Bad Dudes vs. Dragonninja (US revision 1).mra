@@ -88,14 +88,14 @@
         <!-- gfx4 - starts at 0x190000 -->
         <interleave output="32">
             <part name="ei15.16c" crc="a38a7d30" map="0001"/>
-            <part name="ei16.17c" crc="17e42633" map="0010"/>
-            <part name="ei11.16a" crc="3a77326c" map="0100"/>
-            <part name="ei12.17a" crc="fea2a134" map="1000"/>
+            <part name="ei11.16a" crc="3a77326c" map="0010"/>
+            <part name="ei13.13c" crc="e5ae2751" map="0100"/>
+            <part name="ei09.13a" crc="6901e628" map="1000"/>
         </interleave>
         <interleave output="32">
-            <part name="ei13.13c" crc="e5ae2751" map="0001"/>
-            <part name="ei14.14c" crc="e83c760a" map="0010"/>
-            <part name="ei09.13a" crc="6901e628" map="0100"/>
+            <part name="ei16.17c" crc="17e42633" map="0001"/>
+            <part name="ei12.17a" crc="fea2a134" map="0010"/>
+            <part name="ei14.14c" crc="e83c760a" map="0100"/>
             <part name="ei10.14a" crc="eeee8a1a" map="1000"/>
         </interleave>
         <part repeat="0x20000"> FF</part>

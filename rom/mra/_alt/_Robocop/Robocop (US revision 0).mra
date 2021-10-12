@@ -77,14 +77,14 @@
         <!-- gfx4 - starts at 0x190000 -->
         <interleave output="32">
             <part name="ep07" crc="495d75cf" map="0001"/>
-            <part name="ep06" crc="a2ae32e2" map="0010"/>
-            <part name="ep11" crc="62fa425a" map="0100"/>
-            <part name="ep10" crc="cce3bd95" map="1000"/>
+            <part name="ep11" crc="62fa425a" map="0010"/>
+            <part name="ep09" crc="11bed656" map="0100"/>
+            <part name="ep13" crc="8fca9f28" map="1000"/>
         </interleave>
         <interleave output="32">
-            <part name="ep09" crc="11bed656" map="0001"/>
-            <part name="ep08" crc="c45c7b4c" map="0010"/>
-            <part name="ep13" crc="8fca9f28" map="0100"/>
+            <part name="ep06" crc="a2ae32e2" map="0001"/>
+            <part name="ep10" crc="cce3bd95" map="0010"/>
+            <part name="ep08" crc="c45c7b4c" map="0100"/>
             <part name="ep12" crc="3cd1d0c3" map="1000"/>
         </interleave>
         <part repeat="0x20000"> FF</part>
