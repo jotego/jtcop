@@ -85,14 +85,18 @@
             <part name="ec30.9h" crc="5855e8ef" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x190000 -->
-        <part name="ec15.16c" crc="21816707"/>
-        <part name="ec16.17c" crc="a5684574"/>
-        <part name="ec11.16a" crc="5c768315"/>
-        <part name="ec12.17a" crc="8b64d7a4"/>
-        <part name="ec13.13c" crc="56e3ed65"/>
-        <part name="ec14.14c" crc="bedfe7f3"/>
-        <part name="ec09.13a" crc="26240ea0"/>
-        <part name="ec10.14a" crc="47d95447"/>
+        <interleave output="32">
+            <part name="ec15.16c" crc="21816707" map="0001"/>
+            <part name="ec16.17c" crc="a5684574" map="0010"/>
+            <part name="ec11.16a" crc="5c768315" map="0100"/>
+            <part name="ec12.17a" crc="8b64d7a4" map="1000"/>
+        </interleave>
+        <interleave output="32">
+            <part name="ec13.13c" crc="56e3ed65" map="0001"/>
+            <part name="ec14.14c" crc="bedfe7f3" map="0010"/>
+            <part name="ec09.13a" crc="26240ea0" map="0100"/>
+            <part name="ec10.14a" crc="47d95447" map="1000"/>
+        </interleave>
         <!-- mcu - starts at 0x210000 -->
         <part name="ec31-e.9a" crc="bf93a2ec"/>
         <part repeat="0x17000"> FF</part>

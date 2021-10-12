@@ -103,7 +103,7 @@ module jtcop_sdram(
     // Obj
     output           obj_ok,
     input            obj_cs,
-    input    [19:0]  obj_addr,
+    input    [13:0]  obj_addr,
     output   [31:0]  obj_data,
 
     // Bank 0: allows R/W
@@ -421,14 +421,25 @@ jtframe_rom_3slots #(
 
 // Bank 3: objects
 
-assign ba_rd[3] = 0;
-assign ba3_addr = 0;
+jtframe_rom_3slots #(
+    .SLOT0_DW(  32),
+    .SLOT0_AW(  14)
+) u_bank3(
+    .rst        ( rst        ),
+    .clk        ( clk        ),
 
-/*
-wire [15:0] b2rom_eff;
+    .slot0_addr ( obj_addr   ),
+    .slot0_dout ( obj_data   ),
+    .slot0_cs   ( obj_cs     ),
+    .slot0_ok   ( obj_ok     ),
 
-assign b2rom_eff = BANKS ? :
-            { }
-            { ~b2cgsel[0], b2rom_addr[14:0] };
-*/
+    // SDRAM controller interface
+    .sdram_addr ( ba3_addr   ),
+    .sdram_req  ( ba_rd[3]   ),
+    .sdram_ack  ( ba_ack[3]  ),
+    .data_dst   ( ba_dst[3]  ),
+    .data_rdy   ( ba_rdy[3]  ),
+    .data_read  ( data_read  )
+);
+
 endmodule

@@ -75,18 +75,19 @@
         </interleave>
         <part repeat="0x20000"> FF</part>
         <!-- gfx4 - starts at 0x190000 -->
-        <part name="ep07" crc="495d75cf"/>
-        <part name="ep06" crc="a2ae32e2"/>
-        <part repeat="0x8000"> FF</part>
-        <part name="ep11" crc="62fa425a"/>
-        <part name="ep10" crc="cce3bd95"/>
-        <part repeat="0x8000"> FF</part>
-        <part name="ep09" crc="11bed656"/>
-        <part name="ep08" crc="c45c7b4c"/>
-        <part repeat="0x8000"> FF</part>
-        <part name="ep13" crc="8fca9f28"/>
-        <part name="ep12" crc="3cd1d0c3"/>
-        <part repeat="0x8000"> FF</part>
+        <interleave output="32">
+            <part name="ep07" crc="495d75cf" map="0001"/>
+            <part name="ep06" crc="a2ae32e2" map="0010"/>
+            <part name="ep11" crc="62fa425a" map="0100"/>
+            <part name="ep10" crc="cce3bd95" map="1000"/>
+        </interleave>
+        <interleave output="32">
+            <part name="ep09" crc="11bed656" map="0001"/>
+            <part name="ep08" crc="c45c7b4c" map="0010"/>
+            <part name="ep13" crc="8fca9f28" map="0100"/>
+            <part name="ep12" crc="3cd1d0c3" map="1000"/>
+        </interleave>
+        <part repeat="0x20000"> FF</part>
         <!-- sub - starts at 0x210000 -->
         <part repeat="0x1E00"> FF</part>
         <part name="en_24.a2" crc="b8e2ca98"/>

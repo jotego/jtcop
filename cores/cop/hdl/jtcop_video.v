@@ -84,7 +84,7 @@ module jtcop_video(
 
     // Objects
     output             orom_cs,
-    output     [16:0]  orom_addr,
+    output     [13:0]  orom_addr,
     input      [31:0]  orom_data,
     input              orom_ok,
 

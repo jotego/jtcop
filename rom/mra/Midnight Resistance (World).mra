@@ -66,10 +66,12 @@
             <part name="fl11" crc="b86b73b4" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x190000 -->
-        <part name="fl01" crc="2c8b35a7"/>
-        <part name="fl03" crc="1eefed3c"/>
-        <part name="fl00" crc="756fb801"/>
-        <part name="fl02" crc="54d2c120"/>
+        <interleave output="32">
+            <part name="fl01" crc="2c8b35a7" map="0001"/>
+            <part name="fl03" crc="1eefed3c" map="0010"/>
+            <part name="fl00" crc="756fb801" map="0100"/>
+            <part name="fl02" crc="54d2c120" map="1000"/>
+        </interleave>
         <part repeat="0x18000"> FF</part>
         <!-- proms - starts at 0x228000 -->
         <part name="7114.prm" crc="eb539ffb"/>

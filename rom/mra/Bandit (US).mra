@@ -78,14 +78,18 @@
             <part name="30.30" crc="6a5fe9a9" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x190000 -->
-        <part name="15.15" crc="84c03235"/>
-        <part name="16.16" crc="eaa35477"/>
-        <part name="11.11" crc="c9e6b57f"/>
-        <part name="12.12" crc="317f7e4a"/>
-        <part name="13.13" crc="0c063bec"/>
-        <part name="14.14" crc="2ebf06d3"/>
-        <part name="9.9" crc="046f9d58"/>
-        <part name="10.10" crc="3d2d704e"/>
+        <interleave output="32">
+            <part name="15.15" crc="84c03235" map="0001"/>
+            <part name="16.16" crc="eaa35477" map="0010"/>
+            <part name="11.11" crc="c9e6b57f" map="0100"/>
+            <part name="12.12" crc="317f7e4a" map="1000"/>
+        </interleave>
+        <interleave output="32">
+            <part name="13.13" crc="0c063bec" map="0001"/>
+            <part name="14.14" crc="2ebf06d3" map="0010"/>
+            <part name="9.9" crc="046f9d58" map="0100"/>
+            <part name="10.10" crc="3d2d704e" map="1000"/>
+        </interleave>
         <!-- mcu - starts at 0x210000 -->
         <part name="hb31.9a" crc="239d726f"/>
         <part repeat="0x17000"> FF</part>

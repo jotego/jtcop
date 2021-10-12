@@ -75,14 +75,18 @@
         </interleave>
         <part repeat="0x20000"> FF</part>
         <!-- gfx4 - starts at 0x190000 -->
-        <part name="ev15" crc="1d80f797"/>
-        <part name="ew16" crc="96233177"/>
-        <part name="ev10" crc="c4e7116b"/>
-        <part name="ew11" crc="f2e007fc"/>
-        <part name="ev06" crc="6c794f1a"/>
-        <part name="ew07" crc="470b6989"/>
-        <part name="ev17" crc="045509d4"/>
-        <part name="ew12" crc="a2d244bc"/>
+        <interleave output="32">
+            <part name="ev15" crc="1d80f797" map="0001"/>
+            <part name="ew16" crc="96233177" map="0010"/>
+            <part name="ev10" crc="c4e7116b" map="0100"/>
+            <part name="ew11" crc="f2e007fc" map="1000"/>
+        </interleave>
+        <interleave output="32">
+            <part name="ev06" crc="6c794f1a" map="0001"/>
+            <part name="ew07" crc="470b6989" map="0010"/>
+            <part name="ev17" crc="045509d4" map="0100"/>
+            <part name="ew12" crc="a2d244bc" map="1000"/>
+        </interleave>
         <!-- sub - starts at 0x210000 -->
         <part name="ew08" crc="53010534"/>
         <part repeat="0x8000"> FF</part>

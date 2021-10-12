@@ -69,10 +69,12 @@
             <part name="fn-09" crc="c2b27bd2" map="10"/>
         </interleave>
         <!-- gfx4 - starts at 0x190000 -->
-        <part name="fn-01" crc="9333121b"/>
-        <part name="fn-03" crc="254ba60f"/>
-        <part name="fn-00" crc="ec18d098"/>
-        <part name="fn-02" crc="4f060cba"/>
+        <interleave output="32">
+            <part name="fn-01" crc="9333121b" map="0001"/>
+            <part name="fn-03" crc="254ba60f" map="0010"/>
+            <part name="fn-00" crc="ec18d098" map="0100"/>
+            <part name="fn-02" crc="4f060cba" map="1000"/>
+        </interleave>
         <part repeat="0x58000"> FF</part>
         <!-- proms - starts at 0x228000 -->
         <part name="ta-16.21k" crc="ad26e8d4"/>

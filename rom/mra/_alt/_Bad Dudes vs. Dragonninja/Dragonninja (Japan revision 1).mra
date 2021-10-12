@@ -86,18 +86,19 @@
         </interleave>
         <part repeat="0x10000"> FF</part>
         <!-- gfx4 - starts at 0x190000 -->
-        <part name="eg15.16c" crc="5617d67f"/>
-        <part name="eg16.17c" crc="17e42633"/>
-        <part repeat="0x8000"> FF</part>
-        <part name="eg11.16a" crc="ba83e8d8"/>
-        <part name="eg12.17a" crc="fea2a134"/>
-        <part repeat="0x8000"> FF</part>
-        <part name="eg13.13c" crc="fd91e08e"/>
-        <part name="eg14.14c" crc="e83c760a"/>
-        <part repeat="0x8000"> FF</part>
-        <part name="eg09.13a" crc="601b7b23"/>
-        <part name="eg10.14a" crc="eeee8a1a"/>
-        <part repeat="0x8000"> FF</part>
+        <interleave output="32">
+            <part name="eg15.16c" crc="5617d67f" map="0001"/>
+            <part name="eg16.17c" crc="17e42633" map="0010"/>
+            <part name="eg11.16a" crc="ba83e8d8" map="0100"/>
+            <part name="eg12.17a" crc="fea2a134" map="1000"/>
+        </interleave>
+        <interleave output="32">
+            <part name="eg13.13c" crc="fd91e08e" map="0001"/>
+            <part name="eg14.14c" crc="e83c760a" map="0010"/>
+            <part name="eg09.13a" crc="601b7b23" map="0100"/>
+            <part name="eg10.14a" crc="eeee8a1a" map="1000"/>
+        </interleave>
+        <part repeat="0x20000"> FF</part>
         <!-- mcu - starts at 0x210000 -->
         <part name="eg31.9a" crc="657aab2d"/>
         <part repeat="0x17000"> FF</part>
