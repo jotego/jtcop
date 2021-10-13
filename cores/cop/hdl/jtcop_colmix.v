@@ -72,7 +72,7 @@ always @(posedge clk) begin
                    obj_pxl[7],
                    ~|obj_pxl[3:0] | ~gfx_en[3],
                    ba1_pxl[7],
-                   obj_pxl[3],
+                   ba1_pxl[3],
                    ~|ba1_pxl[2:0] | ~gfx_en[1],
                    ~|{ba2_pxl[7],ba2_pxl[2:0] & {3{gfx_en[2]}}}
                 };
