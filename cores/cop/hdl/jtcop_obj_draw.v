@@ -50,7 +50,7 @@ reg  [8:0] buf_waddr;
 reg  [11:0] id_eff;
 wire [7:0] buf_wdata;
 reg        buf_we;
-reg        cen2;
+reg  [1:0] cen2;
 reg  [2:0] nsize, ncnt;
 reg  [1:0] msize; // n = horizontal tiles, m = vertical tiles, like in JTCPS1
 reg        hflip, vflip;
@@ -101,7 +101,7 @@ always @(posedge clk, posedge rst) begin
     end else begin
         HSl <= HS;
         LVl <= LVBL;
-        cen2 <= ~cen2;
+        cen2 <= cen2==2 ? 0 : cen2+1'd1;
         draw <= 0;
         if( !LVBL && LVl ) frame <= ~frame; // used for sprite blinking
         if( HSl && !HS ) begin
@@ -110,7 +110,7 @@ always @(posedge clk, posedge rst) begin
             cen2 <= 0;
             line_cnt <= 0;
         end
-        if( parse_busy && !draw_busy && cen2 ) begin
+        if( parse_busy && !draw_busy && cen2[1] ) begin
             case( tbl_addr[1:0] )
                 0: begin
                     { vflip, hflip } <= tbl_dout[14:13]^{2{flip}};
@@ -134,7 +134,7 @@ always @(posedge clk, posedge rst) begin
                     xpos     <= flip ? tbl_dout[8:0] : 9'd240-tbl_dout[8:0];
                     pal      <= tbl_dout[15:12];
                     blink    <= tbl_dout[11];
-                    tbl_addr <= tbl_addr + 10'd1;
+                    tbl_addr <= tbl_addr + 10'd2;
                     draw     <= ~blink | frame;
                     line_cnt <= line_cnt + nsize + 1'd1;
                     if( &tbl_addr[9:2] ) begin
