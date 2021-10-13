@@ -151,7 +151,7 @@ localparam [24:0] BA1_START   = `BA1_START,
                   BA3_START   = `BA3_START,
                   PROM_START  = `PROM_START,
                   PRIO_START  = PROM_START+25'h200,
-                  PRIO_END    = PRIO_START+25'h200;
+                  PRIO_END    = PRIO_START+25'h400;
 
 localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   B0_OFFSET   = 22'h10_2000,
@@ -191,6 +191,8 @@ always @* begin
     if( is_gfx3 ) begin
         prog_addr = { GFX3_OFFSET[21:17], gfx3_offset[15:0], gfx3_offset[16] };
     end
+    if( prio_we )
+        prog_addr[9:8] = prog_addr[9:8]-2'd2;
 end
 
 

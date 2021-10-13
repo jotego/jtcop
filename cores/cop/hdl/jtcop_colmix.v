@@ -77,18 +77,13 @@ always @(posedge clk) begin
                    ~|{ba2_pxl[7],ba2_pxl[2:0] & {3{gfx_en[2]}}} // 0
                 };
     end
-    if( obj_pxl[3:0]!=0 ) begin
-        pal_addr[9:8] <= 1;
-        pal_addr[7:0] <= obj_pxl;
-    end else begin
-        pal_addr[9:8] <= selbus;
-        case( selbus )
-            0: pal_addr[7:0] <= ba0_pxl;
-            1: pal_addr[7:0] <= obj_pxl;
-            2: pal_addr[7:0] <= ba1_pxl;
-            3: pal_addr[7:0] <= ba2_pxl;
-        endcase
-    end
+    pal_addr[9:8] <= selbus;
+    case( selbus )
+        0: pal_addr[7:0] <= ba0_pxl;
+        1: pal_addr[7:0] <= obj_pxl;
+        2: pal_addr[7:0] <= ba1_pxl;
+        3: pal_addr[7:0] <= ba2_pxl;
+    endcase
 end
 
 jtframe_blank #(.DLY(2),.DW(24)) u_blank(
