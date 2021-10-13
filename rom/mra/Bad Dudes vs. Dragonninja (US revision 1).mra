@@ -75,14 +75,14 @@
         <part repeat="0x20000"> FF</part>
         <!-- gfx3 - starts at 0x150000 -->
         <interleave output="16">
-            <part name="ei28.9f" crc="f01ebb3b" map="01" length="0x8000"/>
-            <part name="ei30.9h" crc="982da0d1" map="10" length="0x8000"/>
+            <part name="ei30.9h" crc="982da0d1" map="01" length="0x8000"/>
+            <part name="ei28.9f" crc="f01ebb3b" map="10" length="0x8000"/>
         </interleave>
         <part repeat="0x10000"> FF</part>
         <!-- ROM split at 170000 (20000) -->
         <interleave output="16">
-            <part name="ei28.9f" crc="f01ebb3b" map="01" length="0x8000" offset="0x8000"/>
-            <part name="ei30.9h" crc="982da0d1" map="10" length="0x8000" offset="0x8000"/>
+            <part name="ei30.9h" crc="982da0d1" map="01" length="0x8000" offset="0x8000"/>
+            <part name="ei28.9f" crc="f01ebb3b" map="10" length="0x8000" offset="0x8000"/>
         </interleave>
         <part repeat="0x10000"> FF</part>
         <!-- gfx4 - starts at 0x190000 -->

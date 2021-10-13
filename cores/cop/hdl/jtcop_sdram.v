@@ -189,7 +189,7 @@ always @* begin
         prog_addr = { GFX2_OFFSET[21:18], gfx2_offset[16:0], gfx2_offset[17] };
     end
     if( is_gfx3 ) begin
-        prog_addr = { GFX3_OFFSET[21:17], gfx3_offset[15:0], gfx3_offset[16] };
+        prog_addr = { GFX3_OFFSET[21:17], gfx3_offset[15:0],~gfx3_offset[16] };
     end
     if( prio_we )
         prog_addr[9:8] = prog_addr[9:8]-2'd2;
