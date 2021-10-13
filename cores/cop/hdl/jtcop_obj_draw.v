@@ -27,6 +27,7 @@ module jtcop_obj_draw(
     input              HS,
     input              LHBL,
     input              LVBL,
+    input              flip,
 
     input      [ 8:0]  hdump,
     input      [ 8:0]  vrender,
@@ -63,7 +64,7 @@ reg         blink, frame, parse_busy, inzone,
             draw, HSl, LVl,
             draw_busy, rom_good;
 
-assign ypos = tbl_dout[8:0];
+assign ypos = flip ? 9'd240-tbl_dout[8:0] : tbl_dout[8:0];
 
 always @* begin
     inzone = 1;
@@ -102,7 +103,7 @@ always @(posedge clk, posedge rst) begin
         if( parse_busy && !draw_busy && cen2 ) begin
             case( tbl_addr[1:0] )
                 0: begin
-                    { vflip, hflip } <= tbl_dout[14:13];
+                    { vflip, hflip } <= tbl_dout[14:13]^{2{flip}};
                     nsize <= (4'd1 << tbl_dout[10:9])-4'd1;
                     msize <= tbl_dout[12:11];
                     veff  <= vrender - ypos;
@@ -120,7 +121,7 @@ always @(posedge clk, posedge rst) begin
                     tbl_addr <= tbl_addr + 10'd1;
                 end
                 2: begin
-                    xpos     <= tbl_dout[8:0];
+                    xpos     <= flip ? tbl_dout[8:0] : 9'd240-tbl_dout[8:0];
                     pal      <= tbl_dout[15:12];
                     blink    <= tbl_dout[11];
                     tbl_addr <= tbl_addr + 10'd1;

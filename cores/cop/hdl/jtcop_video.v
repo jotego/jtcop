@@ -280,6 +280,7 @@ jtcop_obj u_obj(
     .HS         ( HS            ),
     .LHBL       ( LHBL          ),
     .LVBL       ( LVBL          ),
+    .flip       ( flip          ),
     .vload      ( vload         ),
     .hinit      ( hinit         ),
     .hdump      ( hdump         ),

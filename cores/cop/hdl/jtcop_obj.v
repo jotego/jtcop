@@ -25,6 +25,7 @@ module jtcop_obj(
     input              HS,
     input              LVBL,
     input              LHBL,
+    input              flip,
     input              hinit,
     input              vload,
     input      [ 8:0]  vrender,
@@ -89,6 +90,7 @@ jtcop_obj_draw u_draw(
     .HS         ( HS        ),
     .LHBL       ( LHBL      ),
     .LVBL       ( LVBL      ),
+    .flip       ( flip      ),
 
     .hdump      ( hdump     ),
     .vrender    ( vrender   ),
