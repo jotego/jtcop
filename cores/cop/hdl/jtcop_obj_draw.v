@@ -50,14 +50,14 @@ reg  [8:0] buf_waddr;
 reg  [11:0] id_eff;
 wire [7:0] buf_wdata;
 reg        buf_we;
-reg  [1:0] cen2;
+reg        cen2;
 reg  [2:0] nsize, ncnt;
 reg  [1:0] msize; // n = horizontal tiles, m = vertical tiles, like in JTCPS1
 reg        hflip, vflip;
 
 wire [ 8:0] ypos;
 reg  [ 8:0] xpos;
-reg  [ 8:0] veff, bottom;
+reg  [ 8:0] veff, top, bottom;
 reg  [ 3:0] pal;
 reg  [11:0] id;
 reg  [ 5:0] line_cnt;   // number of drawn tiles in a line
@@ -69,13 +69,14 @@ assign ypos = !flip ? 9'd256-tbl_dout[8:0] : tbl_dout[8:0];
 
 always @* begin
     inzone = 1;
+    bottom = ypos;
     case( tbl_dout[12:11] ) // msize
-        0: bottom = ypos + 9'h10;
-        1: bottom = ypos + 9'h20;
-        2: bottom = ypos + 9'h40;
-        3: bottom = ypos + 9'h80;
+        0: top = ypos - 9'h10;
+        1: top = ypos - 9'h20;
+        2: top = ypos - 9'h40;
+        3: top = ypos - 9'h80;
     endcase
-    if( vrender < ypos || vrender >= bottom )
+    if( vrender < top || vrender >= bottom )
         inzone = 0;
 end
 
@@ -101,7 +102,7 @@ always @(posedge clk, posedge rst) begin
     end else begin
         HSl <= HS;
         LVl <= LVBL;
-        cen2 <= cen2==2 ? 0 : cen2+1'd1;
+        cen2 <= ~cen2;
         draw <= 0;
         if( !LVBL && LVl ) frame <= ~frame; // used for sprite blinking
         if( HSl && !HS ) begin
@@ -110,7 +111,7 @@ always @(posedge clk, posedge rst) begin
             cen2 <= 0;
             line_cnt <= 0;
         end
-        if( parse_busy && !draw_busy && cen2[1] ) begin
+        if( parse_busy && !draw_busy && cen2 ) begin
             case( tbl_addr[1:0] )
                 0: begin
                     { vflip, hflip } <= tbl_dout[14:13]^{2{flip}};
