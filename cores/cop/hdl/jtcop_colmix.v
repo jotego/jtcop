@@ -67,23 +67,28 @@ assign cpu_din = pal_cs[0] ? cpu_gr : {8'hff, cpu_b};
 
 always @(posedge clk) begin
     if( pxl_cen ) begin
-        seladdr <= { prisel,
-                   ~|ba0_pxl[3:0] | ~gfx_en[0],
-                   obj_pxl[7],
-                   ~|obj_pxl[3:0] | ~gfx_en[3],
-                   ba1_pxl[7],
-                   ba1_pxl[3],
-                   ~|ba1_pxl[2:0] | ~gfx_en[1],
-                   ~|{ba2_pxl[7],ba2_pxl[2:0] & {3{gfx_en[2]}}}
+        seladdr <= { prisel,                                    // 9:7
+                   ~|ba0_pxl[3:0] | ~gfx_en[0],                 // 6
+                   obj_pxl[7],                                  // 5
+                   ~|obj_pxl[3:0] | ~gfx_en[3],                 // 4
+                   ba1_pxl[7],                                  // 3
+                   ba1_pxl[3],                                  // 2
+                   ~|ba1_pxl[2:0] | ~gfx_en[1],                 // 1
+                   ~|{ba2_pxl[7],ba2_pxl[2:0] & {3{gfx_en[2]}}} // 0
                 };
     end
-    pal_addr[9:8] <= selbus;
-    case( selbus )
-        0: pal_addr[7:0] <= ba0_pxl;
-        1: pal_addr[7:0] <= obj_pxl;
-        2: pal_addr[7:0] <= ba1_pxl;
-        3: pal_addr[7:0] <= ba2_pxl;
-    endcase
+    if( obj_pxl[3:0]!=0 ) begin
+        pal_addr[9:8] <= 1;
+        pal_addr[7:0] <= obj_pxl;
+    end else begin
+        pal_addr[9:8] <= selbus;
+        case( selbus )
+            0: pal_addr[7:0] <= ba0_pxl;
+            1: pal_addr[7:0] <= obj_pxl;
+            2: pal_addr[7:0] <= ba1_pxl;
+            3: pal_addr[7:0] <= ba2_pxl;
+        endcase
+    end
 end
 
 jtframe_blank #(.DLY(2),.DW(24)) u_blank(

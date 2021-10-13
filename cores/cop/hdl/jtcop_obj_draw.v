@@ -64,7 +64,7 @@ reg         blink, frame, parse_busy, inzone,
             draw, HSl, LVl,
             draw_busy, rom_good;
 
-assign ypos = flip ? 9'd240-tbl_dout[8:0] : tbl_dout[8:0];
+assign ypos = !flip ? 9'd256-tbl_dout[8:0] : tbl_dout[8:0];
 
 always @* begin
     inzone = 1;
@@ -145,8 +145,8 @@ wire [ 3:0] draw_pxl;
 reg  [ 3:0] draw_cnt;
 reg         half;
 
-assign draw_pxl  = hflip ? { draw_data[23], draw_data[31], draw_data[7], draw_data[15] } :
-                           { draw_data[16], draw_data[24], draw_data[0], draw_data[ 8] };
+assign draw_pxl  = hflip ? { draw_data[16], draw_data[24], draw_data[0], draw_data[ 8] } :
+                           { draw_data[23], draw_data[31], draw_data[7], draw_data[15] };
 assign buf_wdata = { pal, draw_pxl };
 
 always @(posedge clk, posedge rst) begin
@@ -178,13 +178,13 @@ always @(posedge clk, posedge rst) begin
             draw_cnt  <= 7;
         end
         if( buf_we ) begin
-            draw_data <= hflip ? draw_data<<1 : draw_data>>1;
+            draw_data <= hflip ? draw_data>>1 : draw_data<<1;
             draw_cnt <= draw_cnt-1'd1;
             buf_waddr<= buf_waddr+9'd1;
             if( draw_cnt==0 ) begin
                 buf_we    <= 0;
                 if( half ) begin
-                    if( ncnt==1 ) begin
+                    if( ncnt==0 ) begin
                         draw_busy <= 0;
                         rom_cs    <= 0;
                     end else begin // next tile in the sequence
