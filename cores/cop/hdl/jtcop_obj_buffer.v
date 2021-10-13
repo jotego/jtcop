@@ -51,7 +51,7 @@ wire [ 7:0] dmapdb;
 wire [ 9:0] copy_addr;
 reg  [ 3:0] v14;
 reg  [ 7:0] buf_latch;
-reg         dma_on, dma_charged;
+reg         dma_on, dma_charged, LVBLl;
 
 assign buf_scan = { v14, hdump[7:4], ~hdump[3:2] };
 assign dmapdb   = mixpsel ? buf_latch : buf_scan[9:2];
@@ -63,9 +63,11 @@ always @(posedge clk, posedge rst) begin
         dma_charged <= 0;
         v14         <= 0;
         buf_latch   <= 0;
+        LVBLl       <= 0;
     end else begin
+        LVBLl <= LVBL;
         dma_charged <= dma_on ? 0 : (obj_copy ? 1 : dma_charged);
-        dma_on <= vload ? 0 : (!LVBL && v14==7 && pxl_cen ? dma_charged : dma_on);
+        dma_on <= vload ? 0 : (!LVBL && !v14[3] && LVBLl ? dma_charged : dma_on);
         v14    <= vload ? 8 : (hinit & pxl_cen ? (v14+1'd1) : v14);
         if( pxl_cen ) buf_latch <= buf_dout[7:0];
     end
