@@ -45,7 +45,8 @@ reg  [8:0] buf_waddr;
 wire [7:0] buf_wdata;
 reg        buf_we;
 reg        cen2;
-reg  [1:0] nsize, msize; // n = horizontal tiles, m = vertical tiles, like in JTCPS1
+reg  [2:0] nsize, ncnt;
+reg  [1:0] msize; // n = horizontal tiles, m = vertical tiles, like in JTCPS1
 reg        hflip, vflip;
 
 wire [ 8:0] ypos;
@@ -96,7 +97,7 @@ always @(posedge clk, posedge rst) begin
             case( tbl_addr[1:0] )
                 0: begin
                     { vflip, hflip } <= tbl_dout[14:13];
-                    nsize <= tbl_dout[12:11];
+                    nsize <= (4'd1 << tbl_dout[12:11])-4'd1;
                     msize <= tbl_dout[10:9];
                     veff  <= vrender - ypos;
                     if( !inzone ) begin
@@ -117,7 +118,7 @@ always @(posedge clk, posedge rst) begin
                     pal      <= tbl_dout[15:12];
                     blink    <= tbl_dout[11];
                     tbl_addr <= tbl_addr + 10'd2;
-                    draw     <= 1;
+                    draw     <= 1; // ~blink | frame;
                     if( &tbl_addr[9:2] ) begin
                         parse_busy <= 0; // done
                     end
@@ -146,6 +147,7 @@ always @(posedge clk, posedge rst) begin
         buf_we    <= 0;
         rom_cs    <= 0;
         half      <= 0;
+        ncnt      <= 0;
     end else begin
         rom_good <= rom_ok;
         if( draw ) begin
@@ -153,6 +155,7 @@ always @(posedge clk, posedge rst) begin
             half      <= 0;
             rom_addr <= { id[10:0], ~hflip, veff[3:0], 1'b0 }; // 17 bits
             draw_cnt <= 0;
+            ncnt     <= nsize;
             rom_cs   <= 1;
             rom_good <= 0;
             buf_waddr<= xpos;
@@ -169,9 +172,19 @@ always @(posedge clk, posedge rst) begin
             buf_waddr<= buf_waddr+9'd1;
             if( draw_cnt==0 ) begin
                 buf_we    <= 0;
-                if( half) begin
-                    draw_busy <= 0;
-                    rom_cs    <= 0;
+                if( half ) begin
+                    if( ncnt==1 ) begin
+                        draw_busy <= 0;
+                        rom_cs    <= 0;
+                    end else begin // next tile in the sequence
+                        rom_addr[5] <= ~hflip;
+                        rom_addr[16:6] <= rom_addr[16:6]+1'd1;
+                        rom_cs   <= 1;
+                        rom_good <= 0;
+                        half     <= 0;
+                        draw_cnt <= 0;
+                        ncnt     <= ncnt-1'd1;
+                    end
                 end else begin // second half of 16-pxl tile
                     rom_addr[5] <= ~rom_addr[5];
                     rom_cs      <= 1;
