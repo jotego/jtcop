@@ -61,11 +61,13 @@ reg  [ 8:0] veff, top, bottom;
 reg  [ 3:0] pal;
 reg  [11:0] id;
 reg  [ 5:0] line_cnt;   // number of drawn tiles in a line
-reg         blink, frame, parse_busy, inzone,
+reg         frame, parse_busy, inzone,
             draw, HSl, LVl,
             draw_busy, rom_good;
+wire        blink;
 
-assign ypos = !flip ? 9'd256-tbl_dout[8:0] : tbl_dout[8:0];
+assign ypos  = !flip ? 9'd256-tbl_dout[8:0] : tbl_dout[8:0];
+assign blink = tbl_dout[11];
 
 always @* begin
     inzone = 1;
@@ -109,7 +111,6 @@ always @(posedge clk, posedge rst) begin
             tbl_addr <= 0;
             parse_busy <= 1;
             cen2 <= 0;
-            line_cnt <= 0;
         end
         if( parse_busy && !draw_busy && cen2 ) begin
             case( tbl_addr[1:0] )
@@ -134,10 +135,8 @@ always @(posedge clk, posedge rst) begin
                 2: begin
                     xpos     <= flip ? tbl_dout[8:0] : 9'd240-tbl_dout[8:0];
                     pal      <= tbl_dout[15:12];
-                    blink    <= tbl_dout[11];
                     tbl_addr <= tbl_addr + 10'd2;
                     draw     <= ~blink | frame;
-                    line_cnt <= line_cnt + nsize + 1'd1;
                     if( &tbl_addr[9:2] ) begin
                         parse_busy <= 0; // done
                     end
@@ -170,8 +169,10 @@ always @(posedge clk, posedge rst) begin
         rom_cs    <= 0;
         half      <= 0;
         ncnt      <= 0;
+        line_cnt  <= 0;
     end else begin
         rom_good <= rom_ok;
+        if( !parse_busy ) line_cnt <= 0;
         if( draw ) begin
             draw_busy <= 1;
             half      <= 0;
@@ -195,6 +196,7 @@ always @(posedge clk, posedge rst) begin
             if( draw_cnt==0 ) begin
                 buf_we    <= 0;
                 if( half ) begin
+                    line_cnt <= line_cnt + 1'd1;
                     if( ncnt==0 ) begin
                         draw_busy <= 0;
                         rom_cs    <= 0;
