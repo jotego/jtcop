@@ -47,6 +47,7 @@ module jtcop_obj_draw(
 
 reg  [7:0] buf_pxl;
 reg  [8:0] buf_waddr;
+reg  [11:0] id_eff;
 wire [7:0] buf_wdata;
 reg        buf_we;
 reg        cen2;
@@ -58,7 +59,7 @@ wire [ 8:0] ypos;
 reg  [ 8:0] xpos;
 reg  [ 8:0] veff, bottom;
 reg  [ 3:0] pal;
-reg  [15:0] id;
+reg  [11:0] id;
 reg  [ 5:0] line_cnt;   // number of drawn tiles in a line
 reg         blink, frame, parse_busy, inzone,
             draw, HSl, LVl,
@@ -76,6 +77,15 @@ always @* begin
     endcase
     if( vrender < ypos || vrender >= bottom )
         inzone = 0;
+end
+
+always @* begin
+    id_eff = tbl_dout[11:0];
+    case( msize )
+        1: id_eff = id_eff+veff[4];
+        2: id_eff = id_eff+veff[5:4];
+        3: id_eff = id_eff+veff[6:4];
+    endcase
 end
 
 // Get the information
@@ -117,7 +127,7 @@ always @(posedge clk, posedge rst) begin
                     end
                 end
                 1: begin
-                    id <= tbl_dout;
+                    id <= id_eff;
                     tbl_addr <= tbl_addr + 10'd1;
                 end
                 2: begin
@@ -164,7 +174,7 @@ always @(posedge clk, posedge rst) begin
         if( draw ) begin
             draw_busy <= 1;
             half      <= 0;
-            rom_addr <= { id[11:0], ~hflip, veff[3:0]^{4{vflip}}, 1'b0 }; // 17 bits
+            rom_addr <= { id, ~hflip, veff[3:0]^{4{vflip}}, 1'b0 }; // 17 bits
             draw_cnt <= 0;
             ncnt     <= nsize;
             rom_cs   <= 1;
@@ -189,7 +199,7 @@ always @(posedge clk, posedge rst) begin
                         rom_cs    <= 0;
                     end else begin // next tile in the sequence
                         rom_addr[5] <= ~hflip;
-                        rom_addr[17:6] <= rom_addr[17:6]+1'd1;
+                        rom_addr[17:6] <= rom_addr[17:6]+(12'd1<<msize);
                         rom_cs   <= 1;
                         rom_good <= 0;
                         half     <= 0;
