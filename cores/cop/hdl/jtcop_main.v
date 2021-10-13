@@ -185,7 +185,7 @@ always @(*) begin
                         5: bmap_cs   = 1;   // 0x24'a000, tilemap
                         6: begin
                             nexrm0_cs = 1; // BAC06 chip on second PCB
-                            case( A[10:9])
+                            case( A[11:10])
                                 0: cmode_cs = 1; // these signals could go
                                 1: csft_cs  = 1; // in a different order
                                 2: cmap_cs  = 1;
