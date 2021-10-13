@@ -16,6 +16,10 @@
     Version: 1.0
     Date: 4-10-2021 */
 
+// The MXC-06 operates at 12MHz
+// That gives an absolute maximum of 48 16-pxl tiles per line
+// The actual number will be slightly below
+
 module jtcop_obj_draw(
     input              rst,
     input              clk,
@@ -54,6 +58,7 @@ reg  [ 8:0] xpos;
 reg  [ 8:0] veff, bottom;
 reg  [ 3:0] pal;
 reg  [15:0] id;
+reg  [ 5:0] line_cnt;   // number of drawn tiles in a line
 reg         blink, frame, parse_busy, inzone,
             draw, HSl, LVl,
             draw_busy, rom_good;
@@ -92,6 +97,7 @@ always @(posedge clk, posedge rst) begin
             tbl_addr <= 0;
             parse_busy <= 1;
             cen2 <= 0;
+            line_cnt <= 0;
         end
         if( parse_busy && !draw_busy && cen2 ) begin
             case( tbl_addr[1:0] )
@@ -117,13 +123,17 @@ always @(posedge clk, posedge rst) begin
                     xpos     <= tbl_dout[8:0];
                     pal      <= tbl_dout[15:12];
                     blink    <= tbl_dout[11];
-                    tbl_addr <= tbl_addr + 10'd2;
+                    tbl_addr <= tbl_addr + 10'd1;
                     draw     <= 1; // ~blink | frame;
+                    line_cnt <= line_cnt + nsize + 1'd1;
                     if( &tbl_addr[9:2] ) begin
                         parse_busy <= 0; // done
                     end
                 end
             endcase
+            if( line_cnt >= 48 ) begin
+                parse_busy <= 0; // per-line limit overrun
+            end
         end
     end
 end
