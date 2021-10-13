@@ -28,7 +28,7 @@ module jtcop_obj(
     input              hinit,
     input              vload,
     input      [ 8:0]  vrender,
-    input      [ 7:0]  hdump,
+    input      [ 8:0]  hdump,
 
     // CPU interface
     input      [10:1]  cpu_addr,
@@ -90,7 +90,7 @@ jtcop_obj_draw u_draw(
     .LHBL       ( LHBL      ),
     .LVBL       ( LVBL      ),
 
-    .hdump      ( hdump[7:0]),
+    .hdump      ( hdump     ),
     .vrender    ( vrender   ),
 
     // Object engine

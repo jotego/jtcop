@@ -28,7 +28,7 @@ module jtcop_obj_draw(
     input              LHBL,
     input              LVBL,
 
-    input      [ 7:0]  hdump,
+    input      [ 8:0]  hdump,
     input      [ 8:0]  vrender,
 
     // Object engine
@@ -216,7 +216,7 @@ u_buffer (
     .wr_addr    ( buf_waddr ),
     .we         ( buf_we    ),
     // Old data reads (and erases)
-    .rd_addr    ({1'b0, hdump}),
+    .rd_addr    ( hdump     ),
     .rd         ( pxl_cen   ),
     .rd_data    ( pxl       )
 );

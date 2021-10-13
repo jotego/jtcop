@@ -282,7 +282,7 @@ jtcop_obj u_obj(
     .LVBL       ( LVBL          ),
     .vload      ( vload         ),
     .hinit      ( hinit         ),
-    .hdump      ( hdump[7:0]    ),
+    .hdump      ( hdump         ),
     .vrender    ( vrender       ),
 
     // CPU interface
