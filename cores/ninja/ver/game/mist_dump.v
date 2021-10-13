@@ -50,10 +50,11 @@ module mist_dump(
             $shm_probe(frame_cnt);
             `ifndef LOADROM
                 `ifdef NOSOUND
-                    // $shm_probe(UUT.u_game,"A");
+                    $shm_probe(UUT.u_game,"A");
                     // $shm_probe(UUT.u_game.u_main,"A");
                     // $shm_probe(UUT.u_game.u_main.u_dtack,"A");
                     // $shm_probe(UUT.u_game.u_main.u_dtack.fave);
+                    $shm_probe(UUT.u_game.u_sdram,"A");
                     $shm_probe(UUT.u_game.u_video,"A");
                     $shm_probe(UUT.u_game.u_video.u_colmix,"A");
                     $shm_probe(UUT.u_game.u_video.u_ba0,"AS");

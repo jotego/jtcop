@@ -304,7 +304,7 @@ jtframe_ram_5slots #(
     .slot1_addr ( main_addr ),
     .slot2_addr ( b0ram_addr),
     .slot3_addr ( b1ram_addr),
-    .slot4_addr ( b2ram_addr),
+    .slot4_addr ( b2ram_addr | 11'b010_0000_0000 ),
 
     //  output data
     .slot0_dout ( ram_data  ),
