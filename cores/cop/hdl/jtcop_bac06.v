@@ -269,17 +269,17 @@ always @* begin
             row_addr[4:0] = veff[7:3]; // 32 or 16 rows
             col_addr[6:0] = hn[9:3];   //128 or 64 cols
             if( tile16_en )
-                pre_ram = msbrow_en ? { 2'd0, row_addr[4:1], col_addr[6:1] } : // 10 bits
+                pre_ram = msbrow_en ? { 2'd0, col_addr[6], row_addr[4:1], col_addr[5:1] } : // 10 bits
                                       { 2'd0, col_addr[6:1], row_addr[4:1] };
             else
-                pre_ram = msbrow_en ? { row_addr[4:0], col_addr[6:0] } : // 12 bits
+                pre_ram = msbrow_en ? { col_addr[6:5], row_addr[4:0], col_addr[4:0] } : // 12 bits
                                       { col_addr[6:0], row_addr[4:0] };
         end
         GEOM_2X2: begin
             row_addr[5:0] = veff[8:3]; // 64 or 32 rows
             col_addr[5:0] = hn[8:3];   // 64 or 32 rows
             if( tile16_en )
-                pre_ram = msbrow_en ? { 2'd0, row_addr[5:1], col_addr[4:1] } : // 10 bits
+                pre_ram = msbrow_en ? { 2'd0, col_addr[5], row_addr[5:1], col_addr[4:1] } : // 10 bits
                                       { 2'd0, col_addr[5:1], row_addr[5:1] };
             else
                 pre_ram = msbrow_en ? { row_addr[5:0], col_addr[5:0] } : // 12 bits
