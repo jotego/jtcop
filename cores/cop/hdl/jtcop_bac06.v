@@ -103,6 +103,7 @@ reg  [ 3:0] rowscr_sh;
 reg  [15:0] mmr_mux;
 wire [15:0] cpu_ram;
 wire [ 1:0] ncgsel;
+reg  [ 6:0] row_addr, col_addr;
 
 // aliases for mode bits
 wire        tile16_en,  // 16x16 tiles when high, 8x8 otherwise
@@ -144,8 +145,8 @@ always @(posedge clk) begin
         0,1,2,3: st_dout <= mode[st_addr[1:0]];
         4: st_dout <= hscr[7:0];
         5: st_dout <= hscr[15:8];
-        6: st_dout <= vscr[7:0];
-        7: st_dout <= vscr[15:8];
+        6: st_dout <= {1'b0, col_addr[6:0]}; //vscr[7:0];
+        7: st_dout <= 0; // vscr[15:8];
     endcase
 end
 
@@ -241,7 +242,6 @@ jtframe_linebuf #(
 
 reg  draw, HSl;
 reg  scan_busy;
-reg [ 6:0] row_addr, col_addr;
 reg [ 9:0] veff, veff_row;
 reg [ 9:0] hn;
 reg [11:0] pre_ram;
@@ -256,7 +256,7 @@ reg  draw_busy, rom_good, get_hsub;
 reg  hflip = 1;
 
 always @* begin
-    hscr_eff = msbrow_en ? hscr : (-hscr - 16'h100);
+    hscr_eff = hscr; // msbrow_en ? hscr : (-hscr - 16'h100);
     veff_row = veff >> rowscr_sh;
 end
 
@@ -264,33 +264,33 @@ always @* begin
     row_addr = 0;
     col_addr = 0;
     pre_ram  = 0;
-    case( ~geometry )
+    case( geometry )
         GEOM_4X1: begin
-            row_addr[4:0] = veff[7:3] >> tile16_en; // 32 or 16 rows
-            col_addr[6:0] = hn[9:3]   >> tile16_en; //128 or 64 cols
+            row_addr[4:0] = veff[7:3]; // 32 or 16 rows
+            col_addr[6:0] = hn[9:3];   //128 or 64 cols
             if( tile16_en )
-                pre_ram = msbrow_en ? { 2'd0, row_addr[3:0], col_addr[5:0] } : // 10 bits
-                                      { 2'd0, col_addr[5:0], row_addr[3:0] };
+                pre_ram = msbrow_en ? { 2'd0, row_addr[4:1], col_addr[6:1] } : // 10 bits
+                                      { 2'd0, col_addr[6:1], row_addr[4:1] };
             else
                 pre_ram = msbrow_en ? { row_addr[4:0], col_addr[6:0] } : // 12 bits
                                       { col_addr[6:0], row_addr[4:0] };
         end
         GEOM_2X2: begin
-            row_addr[5:0] = veff[8:3] >> tile16_en; // 64 or 32 rows
-            col_addr[5:0] = hn[8:3]   >> tile16_en; // 64 or 32 rows
+            row_addr[5:0] = veff[8:3]; // 64 or 32 rows
+            col_addr[5:0] = hn[8:3];   // 64 or 32 rows
             if( tile16_en )
-                pre_ram = msbrow_en ? { 2'd0, row_addr[4:0], col_addr[4:0] } : // 10 bits
-                                      { 2'd0, col_addr[4:0], row_addr[4:0] };
+                pre_ram = msbrow_en ? { 2'd0, row_addr[5:1], col_addr[4:1] } : // 10 bits
+                                      { 2'd0, col_addr[5:1], row_addr[5:1] };
             else
                 pre_ram = msbrow_en ? { row_addr[5:0], col_addr[5:0] } : // 12 bits
                                       { col_addr[5:0], row_addr[5:0] };
         end
         default: begin // GEOM_1X4
-            row_addr[6:0] = veff[9:3] >> tile16_en; //128 or 64 rows
-            col_addr[4:0] = hn[7:3]   >> tile16_en; // 32 or 16 cols
+            row_addr[6:0] = veff[9:3]; //128 or 64 rows
+            col_addr[4:0] = hn[7:3];   // 32 or 16 cols
             if( tile16_en )
-                pre_ram = msbrow_en ? { 2'd0, row_addr[5:0], col_addr[3:0] } : // 10 bits
-                                      { 2'd0, col_addr[3:0], row_addr[5:0] };
+                pre_ram = msbrow_en ? { 2'd0, row_addr[6:1], col_addr[4:1] } : // 10 bits
+                                      { 2'd0, col_addr[4:1], row_addr[6:1] };
             else
                 pre_ram = msbrow_en ? { row_addr[6:0], col_addr[4:0] } : // 12 bits
                                       { col_addr[4:0], row_addr[6:0] };
