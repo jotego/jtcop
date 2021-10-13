@@ -37,7 +37,7 @@ module jtcop_obj_draw(
 
     // ROM interface
     output reg         rom_cs,
-    output reg [16:0]  rom_addr,
+    output reg [17:0]  rom_addr,
     input      [31:0]  rom_data,
     input              rom_ok,    
 
@@ -67,7 +67,7 @@ assign ypos = tbl_dout[8:0];
 
 always @* begin
     inzone = 1;
-    case( tbl_dout[10:9] ) // msize
+    case( tbl_dout[12:11] ) // msize
         0: bottom = ypos + 9'h10;
         1: bottom = ypos + 9'h20;
         2: bottom = ypos + 9'h40;
@@ -103,10 +103,10 @@ always @(posedge clk, posedge rst) begin
             case( tbl_addr[1:0] )
                 0: begin
                     { vflip, hflip } <= tbl_dout[14:13];
-                    nsize <= (4'd1 << tbl_dout[12:11])-4'd1;
-                    msize <= tbl_dout[10:9];
+                    nsize <= (4'd1 << tbl_dout[10:9])-4'd1;
+                    msize <= tbl_dout[12:11];
                     veff  <= vrender - ypos;
-                    if( !inzone ) begin
+                    if( !inzone || !tbl_dout[15] ) begin
                         tbl_addr <= tbl_addr + 10'd4;
                         if( &tbl_addr[9:2] ) begin
                             parse_busy <= 0; // done
@@ -124,7 +124,7 @@ always @(posedge clk, posedge rst) begin
                     pal      <= tbl_dout[15:12];
                     blink    <= tbl_dout[11];
                     tbl_addr <= tbl_addr + 10'd1;
-                    draw     <= 1; // ~blink | frame;
+                    draw     <= ~blink | frame;
                     line_cnt <= line_cnt + nsize + 1'd1;
                     if( &tbl_addr[9:2] ) begin
                         parse_busy <= 0; // done
@@ -163,7 +163,7 @@ always @(posedge clk, posedge rst) begin
         if( draw ) begin
             draw_busy <= 1;
             half      <= 0;
-            rom_addr <= { id[10:0], ~hflip, veff[3:0], 1'b0 }; // 17 bits
+            rom_addr <= { id[11:0], ~hflip, veff[3:0]^{4{vflip}}, 1'b0 }; // 17 bits
             draw_cnt <= 0;
             ncnt     <= nsize;
             rom_cs   <= 1;
@@ -188,7 +188,7 @@ always @(posedge clk, posedge rst) begin
                         rom_cs    <= 0;
                     end else begin // next tile in the sequence
                         rom_addr[5] <= ~hflip;
-                        rom_addr[16:6] <= rom_addr[16:6]+1'd1;
+                        rom_addr[17:6] <= rom_addr[17:6]+1'd1;
                         rom_cs   <= 1;
                         rom_good <= 0;
                         half     <= 0;
