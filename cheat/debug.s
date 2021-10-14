@@ -121,10 +121,6 @@ SCREEN:
     load s3,ff
     load s5,0
     call WRITE_SDRAM
-    outputk 6, VRAM_ROW
-    load s0,2
-    input s1,FRAMECNT
-    call    PRINT_HEX
 .else3:
 
 CLOSE_FRAME:
