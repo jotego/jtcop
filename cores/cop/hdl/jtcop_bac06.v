@@ -96,6 +96,7 @@ module jtcop_bac06 #(
 
 reg  [ 7:0] mode[0:3];
 reg  [15:0] hscr, hscr_eff;
+wire [ 9:0] veff0;  // vrender + vscroll, without col scroll
 reg  [15:0] vscr;
 reg  [ 3:0] colscr_sh;
 reg  [ 3:0] rowscr_sh;
@@ -123,7 +124,7 @@ assign msbrow_en = mode[0][1];
 assign rowscr_en = mode[0][2];
 assign colscr_en = mode[0][3];
 assign geometry  = mode[3][1:0];
-
+assign veff0     = {1'd0, vrender} + vscr[9:0];
 
 `ifdef SIMULATION
     wire [7:0] mode0 = mode[0];
@@ -242,12 +243,12 @@ jtframe_linebuf #(
 
 reg  draw, HSl;
 reg  scan_busy;
-reg [ 9:0] veff, veff_row;
+reg [ 9:0] veff, veff_row, heff_col;
 reg [ 9:0] hn;
 reg [11:0] pre_ram;
 reg [11:0] tile_id;
 reg [ 3:0] tile_pal;
-reg        pre_cs, rowscr_cs;
+reg        pre_cs, rowscr_cs, colscr_cs;
 reg [ 1:0] ram_good;
 reg [ 5:0] tilecnt;
 
@@ -258,6 +259,7 @@ reg  hflip = 1;
 always @* begin
     hscr_eff = hscr; // msbrow_en ? hscr : (-hscr - 16'h100);
     veff_row = veff >> rowscr_sh;
+    heff_col = hn >> colscr_sh;
 end
 
 always @* begin
@@ -306,6 +308,8 @@ always @(posedge clk, posedge rst) begin
         ram_cs   <= pre_cs;
         if( rowscr_cs )
             ram_addr <= { ~TILEMAP_AREA[0], {RAM_AW-11{1'b0}}, 1'b1, veff_row[8:0] };
+        else if( colscr_cs )
+            ram_addr <= { ~TILEMAP_AREA[0], {RAM_AW-7{1'b0}},        heff_col[8:3] };
         else
             ram_addr <= {  TILEMAP_AREA[0], pre_ram[RAM_AW-2:0] };
     end
@@ -316,6 +320,7 @@ always @(posedge clk, posedge rst) begin
     if( rst ) begin
         pre_cs <= 0;
         rowscr_cs <= 0;
+        colscr_cs <= 0;
         scan_busy <= 0;
         HSl <= 0;
         hn  <= 0;
@@ -331,8 +336,9 @@ always @(posedge clk, posedge rst) begin
             ram_good <= 0;
             pre_cs   <= 1;
             draw     <= 0;
-            veff     <= {1'd0, vrender} + vscr[9:0];
+            veff     <= veff0;
             scan_busy<= 1;
+            colscr_cs<= 0;
             if( rowscr_en ) begin
                 rowscr_cs <= 1;
             end else begin
@@ -344,6 +350,11 @@ always @(posedge clk, posedge rst) begin
                 hn <= hn + ram_data[9:0]; // adds row scroll portion
                 rowscr_cs <= 0;
                 ram_good  <= 0;
+                if( colscr_en ) colscr_cs <= 1;
+            end else if( colscr_cs ) begin
+                veff <= veff0 + ram_data[9:0];
+                colscr_cs <= 0;
+                ram_good  <= 0;
             end else if( !draw && !draw_busy ) begin
                 //tile_id  <= { vrender[8:3], hn[7:3] }; //ram_data[11:0];
                 tile_id  <= ram_data[11:0];
@@ -352,6 +363,7 @@ always @(posedge clk, posedge rst) begin
                 hn       <= hn + (10'd8 << tile16_en );
                 tilecnt  <= tilecnt + 1'd1;
                 ram_good <= 0;
+                if( colscr_en ) colscr_cs <= 1;
                 if( buf_waddr[8] && tilecnt > 1 ) begin
                     scan_busy <= 0;
                     pre_cs    <= 0;
