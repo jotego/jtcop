@@ -146,8 +146,8 @@ always @(posedge clk) begin
         0,1,2,3: st_dout <= mode[st_addr[1:0]];
         4: st_dout <= hscr[7:0];
         5: st_dout <= hscr[15:8];
-        6: st_dout <= {1'b0, col_addr[6:0]}; //vscr[7:0];
-        7: st_dout <= 0; // vscr[15:8];
+        6: st_dout <= vscr[7:0];
+        7: st_dout <= vscr[15:8];
     endcase
 end
 
