@@ -21,17 +21,17 @@ The correct core is selected by the MRA files (MiSTer) or ARC files (MiST)
 
 # The Games
 
-Game                            | Popularity
---------------------------------|-------------
-Bad Dudes vs. Dragonninja       | 700
-Robocop                         | 691 
-Midnight Resistance             | 198
-Hippodrome / Fighting Fantasy   | 138
-Heavy Barrel                    |  42  
-Sly Spy                         |  13
-Bandit                          |   1
-Boulder Dash                    |   1
-Birdie Try                      |   0
+Game                            | Protection | Popularity
+--------------------------------|------------|--
+Bad Dudes vs. Dragonninja       | i8751      | 700
+Robocop                         | HuC6280    | 691
+Midnight Resistance             | HuC6280    | 198
+Hippodrome / Fighting Fantasy   | i8751      | 138
+Heavy Barrel                    | HuC6280    |  42
+Sly Spy                         | HuC6280    |  13
+Bandit                          | i8751      |   1
+Boulder Dash                    | HuC6280    |   1
+Birdie Try                      | i8751      |   0
 
 # BAC06
 
