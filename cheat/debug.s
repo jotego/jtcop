@@ -15,6 +15,7 @@ constant ST_DATA, D
 constant DEBUG_BUS, F
 constant GAMERAM, 12
 constant KEYS, 30
+constant FLAGS, 10
 
 ; RAM usage
 ; 0 = last LVBL
@@ -102,12 +103,29 @@ SCREEN:
     load s3,10
     load s5,2
     call WRITE_SDRAM
-    outputk 6, VRAM_ROW
-    load s0,2
-    load s1,1
-    call    PRINT_HEX
 .else2:
 
+    ; Next level flag
+    input sa,FLAGS
+    fetch sb,2
+    compare sb,sa
+    jump z,.else3
+    store sa,2
+    compare sa,1
+    jump nz,.else3
+    ; FF8216=FF
+    load s2,10
+    load s1,01
+    load s0,0b
+    load s4,ff
+    load s3,ff
+    load s5,0
+    call WRITE_SDRAM
+    outputk 6, VRAM_ROW
+    load s0,2
+    input s1,FRAMECNT
+    call    PRINT_HEX
+.else3:
 
 CLOSE_FRAME:
     output sb,6     ; LED
