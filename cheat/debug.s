@@ -16,16 +16,21 @@ constant DEBUG_BUS, F
 constant GAMERAM, 12
 constant KEYS, 30
 
+; RAM usage
+; 0 = last LVBL
+; 1 = enable invincibility
+
 ; Register use
-; SA = frame counter
 ; SB = LED
 
     ; enable interrupt
-    load sa,0   ; SA = frame counter, modulo 60
     load sb,0
-    load s0,3
+    load s0,1
     output s0,VRAM_CTRL ; enable display
     call CLS
+    ; Disable invincibility
+    load s0,0
+    store s0,1
 BEGIN:
     output s0,0x40
 
@@ -46,6 +51,7 @@ notblank:
     jump BEGIN
 
 ISR:
+    load sa,FRAMECNT
     compare sa,0
     jump nz,SCREEN
     ; invert LED signal
@@ -66,6 +72,7 @@ SCREEN:
     load    s7, 10      ; BA2
     call    PRINT_BADATA
 
+
     ; Debug byte
     ; load s0,5
     ; output s0,9 ; row
@@ -73,14 +80,37 @@ SCREEN:
     ; input  s1, DEBUG_BUS ; debug bus
     ; call PRINT_HEX
 
+    ; Invincibility
+    input sa,FRAMECNT
+    compare sa,30
+    jump nz,.else
+    fetch sa,1
+    compare sa,4
+    jump z,.else
+    add sa,1
+    store sa,1
+.else:
+
+    fetch sa,1
+    compare sa,4
+    jump nz,.else2
+    ; FFA386=10
+    load s2,10
+    load s1,11
+    load s0,c3
+    load s4,10
+    load s3,10
+    load s5,2
+    call WRITE_SDRAM
+    outputk 6, VRAM_ROW
+    load s0,2
+    load s1,1
+    call    PRINT_HEX
+.else2:
+
+
 CLOSE_FRAME:
     output sb,6     ; LED
-    ; Frame counter
-    add sa,1
-    compare sa,59'd
-    jump nz,.else
-    load sa,0
-.else:
     return
 
 ;-----------------------------------------------------------------
