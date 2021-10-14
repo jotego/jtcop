@@ -78,7 +78,7 @@ always @* begin
         2: top = ypos - 9'h40;
         3: top = ypos - 9'h80;
     endcase
-    if( vrender < top || vrender >= bottom )
+    if( (vrender < top && !top[8]) || vrender >= bottom || bottom < 8 || bottom[8] )
         inzone = 0;
 end
 
