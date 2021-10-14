@@ -103,6 +103,7 @@ module jtcop_video(
 
     // Debug
     input      [ 3:0]  gfx_en,
+    input      [ 7:0]  debug_bus,
     // Status
     input      [ 7:0]  st_addr,
     output reg [ 7:0]  st_dout

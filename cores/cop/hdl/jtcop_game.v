@@ -86,7 +86,7 @@ module jtcop_game(
     input           enable_fm,
     // Debug
     input   [3:0]   gfx_en,
-    // input   [7:0]   debug_bus,
+    input   [7:0]   debug_bus,
     // status dump
     input      [7:0] st_addr,
     output     [7:0] st_dout
@@ -353,8 +353,8 @@ jtcop_video u_video(
     .blue       ( blue      ),
     // debug
     .st_addr    ( st_addr   ),
-    .st_dout    ( st_dout   )
-    //.debug_bus  ( debug_bus ),
+    .st_dout    ( st_dout   ),
+    .debug_bus  ( debug_bus )
 );
 
 `ifndef NOSOUND

@@ -75,11 +75,10 @@ SCREEN:
 
 
     ; Debug byte
-    ; load s0,5
-    ; output s0,9 ; row
-    ; load s0,2
-    ; input  s1, DEBUG_BUS ; debug bus
-    ; call PRINT_HEX
+    outputk 6,VRAM_ROW
+    load s0,2
+    input  s1, DEBUG_BUS ; debug bus
+    call PRINT_HEX
 
     ; Invincibility
     input sa,FRAMECNT

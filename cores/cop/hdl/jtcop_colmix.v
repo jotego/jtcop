@@ -73,7 +73,7 @@ always @(posedge clk) begin
                ba1_pxl[7],                                  // 3
                ba1_pxl[3],                                  // 2
                ~|ba1_pxl[2:0] | ~gfx_en[1],                 // 1
-               ~|{ba2_pxl[7],ba2_pxl[2:0] & {3{gfx_en[2]}}} // 0
+               ~|{ba2_pxl[3:0] & {4{gfx_en[2]}}} // 0
             };
     if( pxl_cen ) begin
         pal_addr[9:8] <= selbus;
