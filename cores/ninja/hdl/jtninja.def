@@ -1,3 +1,4 @@
 include ../../cop/hdl/jtcop.def
 
+CORENAME=JTNINJA
 MCU=1

@@ -83,13 +83,10 @@
     <rom index="17" zip="jtbeta.zip" md5="None">
         <part name="beta.bin"/>
     </rom>
-    <rom index="16" zip="debug.zip" md5="None">
-        <part name="debug.bin"/>
-    </rom>
     <rom index="1">
         <part>00</part>
     </rom>
-    <switches base="16" default="7f">
+    <switches base="16" default="6f7f">
         <!-- DSW -->
         <dip name="Coin A" bits="0,2" ids="3/1,2/1,1/6,1/5,1/4,1/3,1/2,1/1"/>
         <dip name="Coin B" bits="3,5" ids="3/1,2/1,1/6,1/5,1/4,1/3,1/2,1/1"/>

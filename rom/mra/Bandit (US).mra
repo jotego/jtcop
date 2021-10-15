@@ -101,14 +101,11 @@
     <rom index="17" zip="jtbeta.zip" md5="None">
         <part name="beta.bin"/>
     </rom>
-    <rom index="16" zip="debug.zip" md5="None">
-        <part name="debug.bin"/>
-    </rom>
     <!-- Vertical game -->
     <rom index="1">
         <part>01</part>
     </rom>
-    <switches base="16" default="77">
+    <switches base="16" default="ff77">
         <!-- DSW -->
         <dip name="Analog controls?" bits="0" ids="On,Off"/>
         <dip name="L/R control related (keep off)" bits="1" ids="On,Off"/>
