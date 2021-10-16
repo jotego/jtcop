@@ -124,7 +124,7 @@ assign msbrow_en = mode[0][1];
 assign rowscr_en = mode[0][2];
 assign colscr_en = mode[0][3];
 assign geometry  = mode[3][1:0];
-assign veff0     = {1'd0, vrender} + vscr[9:0];
+assign veff0     = {1'd0, vrender^{9{flip}}} + vscr[9:0];
 
 `ifdef SIMULATION
     wire [7:0] mode0 = mode[0];
@@ -182,7 +182,7 @@ end
 generate
     if( MASTER ) begin
         wire [8:0] vrender1;
-        assign flip  = 0;
+        assign flip  = mode[0][7];
         assign vload = vrender1==0; // second last line before the end of V blank
 
         jtframe_cen48 u_cen(
@@ -284,7 +284,7 @@ always @* begin
                 pre_ram = msbrow_en ? { 2'd0, col_addr[5], row_addr[5:1], col_addr[4:1] } : // 10 bits
                                       { 2'd0, col_addr[5:1], row_addr[5:1] };
             else
-                pre_ram = msbrow_en ? { row_addr[5:0], col_addr[5:0] } : // 12 bits
+                pre_ram = msbrow_en ? { col_addr[5], row_addr[5:0], col_addr[4:0] } : // 12 bits
                                       { col_addr[5:0], row_addr[5:0] };
         end
         default: begin // GEOM_1X4
