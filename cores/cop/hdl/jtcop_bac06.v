@@ -60,6 +60,7 @@ module jtcop_bac06 #(
 
     // CPU interface
     input      [15:0] cpu_dout,
+    output reg [15:0] cpu_din,
     input      [12:1] cpu_addr,
     input             cpu_rnw,
     input      [ 1:0] cpu_dsn,
@@ -131,14 +132,16 @@ assign veff0     = {1'd0, vrender^{9{flip}}} + vscr[9:0];
     wire [7:0] mode1 = mode[1];
     wire [7:0] mode2 = mode[2];
     wire [7:0] mode3 = mode[3];
-
-    always @* begin
-        if( cpu_rnw && mode_cs ) begin
-            $display("ERROR: BAC06 registers read");
-            $finish;
-        end
-    end
 `endif
+
+always @* begin
+    case(cpu_addr)
+        0: cpu_din = mode[0];
+        1: cpu_din = mode[0];
+        2: cpu_din = mode[0];
+        3: cpu_din = mode[0];
+    endcase
+end
 
 // Status report
 always @(posedge clk) begin

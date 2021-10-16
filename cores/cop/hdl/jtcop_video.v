@@ -33,6 +33,10 @@ module jtcop_video(
     input              bmode_cs,
     input              cmode_cs,
 
+    output     [15:0]  ba0_dout,
+    output     [15:0]  ba1_dout,
+    output     [15:0]  ba2_dout,
+
     // Palette
     input      [ 1:0]  pal_cs,
     input      [ 2:0]  prisel,
@@ -140,7 +144,7 @@ jtcop_bac06 #(.MASTER(1),.RAM_AW(13)) u_ba0(
     .cpu_addr   ( cpu_addr      ),
     .cpu_rnw    ( cpu_rnw       ),
     .cpu_dsn    ( cpu_dsn       ),
-//    .cpu_din    ( cpu_din       ),
+    .cpu_din    ( ba0_dout      ),
 
     // Timer signals
     .vdump      ( vdump         ),
@@ -186,7 +190,7 @@ jtcop_bac06 u_ba1(
     .cpu_addr   ( cpu_addr      ),
     .cpu_rnw    ( cpu_rnw       ),
     .cpu_dsn    ( cpu_dsn       ),
-//    .cpu_din    ( cpu_din       ),
+    .cpu_din    ( ba1_dout      ),
 
     // Timer signals
     .vdump      ( vdump         ),
@@ -237,7 +241,7 @@ jtcop_bac06 u_ba2(
     .cpu_addr   ( cpu_addr      ),
     .cpu_rnw    ( cpu_rnw       ),
     .cpu_dsn    ( cpu_dsn       ),
-//    .cpu_din    ( cpu_din       ),
+    .cpu_din    ( ba2_dout      ),
 
     // Timer signals
     .vdump      ( vdump         ),

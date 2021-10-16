@@ -32,6 +32,11 @@ module jtcop_main(
     output             LDSWn,
     output             RnW,
 
+    // BA register reads
+    input       [15:0] ba0_dout,
+    input       [15:0] ba1_dout,
+    input       [15:0] ba2_dout,
+
     // MCU/SUB CPU
     input       [15:0] mcu_dout,
     output reg  [15:0] mcu_din,
@@ -309,6 +314,9 @@ always @(posedge clk) begin
                 pal_cs!=0 ? pal_dout :
                 obj_cs    ? obj_dout :
                 read_cs!=0? cab_dout :
+                fmode_cs  ? ba0_dout :
+                bmode_cs  ? ba1_dout :
+                cmode_cs  ? ba2_dout :
                 sec[1]    ? mcu_dout : 16'hffff;
 end
 

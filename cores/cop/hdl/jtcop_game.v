@@ -162,6 +162,8 @@ wire        flip;
 wire        cen_opl, cen_opn, cen_mcu;
 wire        mcu_we;
 
+wire [15:0] ba0_dout, ba1_dout, ba2_dout;
+
 reg  [15:0] mcu_dout;
 wire [15:0] mcu_din;
 wire [ 5:0] mcu_sel;
@@ -207,6 +209,10 @@ jtcop_main u_main(
     .sec2       ( mcu_sel2  ),
     .nexrm1     ( nexrm1    ),
     .nexrm0_cs  ( nexrm0_cs ),
+    // BA register reads
+    .ba0_dout   ( ba0_dout  ),
+    .ba1_dout   ( ba1_dout  ),
+    .ba2_dout   ( ba2_dout  ),
     // Sound communication
     .snd_latch  ( snd_latch ),
     .snreq      ( snreq     ),
@@ -280,6 +286,11 @@ jtcop_video u_video(
 //    .game_id    ( game_id   ),
     // CPU interface
     .cpu_addr   ( main_addr[12:1]  ),
+
+    // Register reads
+    .ba0_dout   ( ba0_dout  ),
+    .ba1_dout   ( ba1_dout  ),
+    .ba2_dout   ( ba2_dout  ),
 
     // Object
     .objram_cs  ( objram_cs ),
