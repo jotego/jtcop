@@ -232,7 +232,7 @@ jtframe_linebuf #(
     .clk        ( clk       ),
     .LHBL       ( LHBL      ),
     // New data writes
-    .wr_addr    ( buf_waddr ),
+    .wr_addr    ( buf_waddr^{1'b0,{8{flip}}} ),
     .wr_data    ( buf_wdata ),
     .we         ( buf_we    ),
     // Old data reads (and erases)

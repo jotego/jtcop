@@ -60,20 +60,20 @@
         </interleave>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
-            <part name="ec17.12d" crc="a4f186ac" map="01"/>
-            <part name="ec21.12f" crc="f01d75c5" map="10"/>
-        </interleave>
-        <interleave output="16">
             <part name="ec18.14d" crc="ef664373" map="01"/>
             <part name="ec22.14f" crc="50d6a1ad" map="10"/>
         </interleave>
         <interleave output="16">
-            <part name="ec19.15d" crc="d6b47869" map="01"/>
-            <part name="ec23.15f" crc="bbdaf771" map="10"/>
+            <part name="ec17.12d" crc="a4f186ac" map="01"/>
+            <part name="ec21.12f" crc="f01d75c5" map="10"/>
         </interleave>
         <interleave output="16">
             <part name="ec20.17d" crc="2fc13be0" map="01"/>
             <part name="ec24.17f" crc="ae377361" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="ec19.15d" crc="d6b47869" map="01"/>
+            <part name="ec23.15f" crc="bbdaf771" map="10"/>
         </interleave>
         <!-- gfx3 - starts at 0x150000 -->
         <interleave output="16">

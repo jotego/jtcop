@@ -26,7 +26,7 @@ Game                            | Protection | Popularity
 Bad Dudes vs. Dragonninja       | i8751      | 700
 Robocop                         | HuC6280    | 691
 Midnight Resistance             | HuC6280    | 198
-Hippodrome / Fighting Fantasy   | i8751      | 138
+Hippodrome / Fighting Fantasy   | HuC6280    | 138
 Heavy Barrel                    | HuC6280    |  42
 Sly Spy                         | HuC6280    |  13
 Bandit                          | i8751      |   1

@@ -56,8 +56,8 @@
         </interleave>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
-            <part name="ew18" crc="78d3d764" map="01"/>
-            <part name="ew19" crc="6b80d7a3" map="10"/>
+            <part name="ew19" crc="6b80d7a3" map="01"/>
+            <part name="ew18" crc="78d3d764" map="10"/>
         </interleave>
         <interleave output="16">
             <part name="ew20" crc="ce9f5de3" map="01"/>
