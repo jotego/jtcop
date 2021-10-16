@@ -85,9 +85,9 @@ end
 always @* begin
     id_eff = tbl_dout[11:0];
     case( msize )
-        1: id_eff = id_eff+veff[4];
-        2: id_eff = id_eff+veff[5:4];
-        3: id_eff = id_eff+veff[6:4];
+        1: id_eff = id_eff+vflip^veff[4];
+        2: id_eff = id_eff+{2{vflip}}^veff[5:4];
+        3: id_eff = id_eff+{3{vflip}}^veff[6:4];
     endcase
 end
 
