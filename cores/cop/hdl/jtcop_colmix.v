@@ -65,24 +65,21 @@ assign we_gr   = ~dsn & {2{pal_cs[0]}};
 assign we_b    = ~dsn[0] & pal_cs[1];
 assign cpu_din = pal_cs[0] ? cpu_gr : {8'hff, cpu_b};
 
-reg [7:0] obj_l;
-
 always @(posedge clk) begin
     seladdr <= { prisel,                                    // 9:7
                ~|ba0_pxl[3:0] | ~gfx_en[0],                 // 6
-               obj_l[7],                                  // 5
-               ~|obj_l[3:0] | ~gfx_en[3],                 // 4
+               obj_pxl[7],                                  // 5
+               ~|obj_pxl[3:0] | ~gfx_en[3],                 // 4
                ba1_pxl[7],                                  // 3
                ba1_pxl[3],                                  // 2
                ~|ba1_pxl[2:0] | ~gfx_en[1],                 // 1
                ~|{ba2_pxl[3:0] & {4{gfx_en[2]}}} // 0
             };
     if( pxl_cen ) begin
-        obj_l <= obj_pxl;
         pal_addr[9:8] <= selbus;
         case( selbus )
             0: pal_addr[7:0] <= ba0_pxl;
-            1: pal_addr[7:0] <= obj_l;
+            1: pal_addr[7:0] <= obj_pxl;
             2: pal_addr[7:0] <= ba1_pxl;
             3: pal_addr[7:0] <= ba2_pxl;
         endcase
