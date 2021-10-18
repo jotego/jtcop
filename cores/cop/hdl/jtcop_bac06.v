@@ -186,7 +186,7 @@ generate
     if( MASTER ) begin
         wire [8:0] vrender1;
         assign flip  = mode[0][7];
-        assign vload = vrender1==0; // second last line before the end of V blank
+        assign vload = vrender1==7; // second last line before the end of V blank
 
         jtframe_cen48 u_cen(
             .clk    ( clk       ),    // 48 MHz
