@@ -73,11 +73,12 @@ module jtcop_main(
     // cabinet I/O
     input       [ 8:0] joystick1,
     input       [ 8:0] joystick2,
+    input       [15:0] joyana1,
+    input       [15:0] joyana2,
 
     input       [ 1:0] start_button,
     input       [ 1:0] coin_input,
     input              service,
-    output reg         nexrm1,
 
     // RAM access
     output             ram_cs,
@@ -108,6 +109,7 @@ reg         disp_cs, sysram_cs,
 wire        pre_ram_cs;
 wire        cpu_cen, cpu_cenb;
 reg  [ 2:0] read_cs;
+wire [ 7:0] track_dout;
 
 `ifdef SIMULATION
 wire [23:0] A_full = {A,1'b0};
@@ -116,7 +118,8 @@ wire [23:0] A_full = {A,1'b0};
 reg         eep_cs,
             prisel_cs, mixpsel_cs,
             nexin_cs,       // this pin C15 of connector 2. It's unconnected in all games
-            nexout_cs;      // Connector 2, pin A16: unused
+            nexout_cs,      // Connector 2, pin A16: unused
+            nexrm1;         // used on Heavy Barrel PCB for the track balls
 
 assign UDSWn = RnW | UDSn;
 assign LDSWn = RnW | LDSn;
@@ -307,6 +310,29 @@ always @(posedge clk) begin
 end
 
 // input multiplexer
+reg  [1:0] track_xrst, track_yrst;
+wire [1:0] track_cf;
+reg  [23:0] track_cs;
+wire [7:0] track0_dout, track1_dout;
+reg  [11:0] rotary1;
+
+always @* begin
+    rotary1 = 0;
+    casez( joyana1[7:0] )
+        8'b1111_110?: rotary1 = 12'b000_001_000_000;
+        8'b1111_10??: rotary1 = 12'b000_010_000_000;
+        8'b1111_0???: rotary1 = 12'b000_100_000_000;
+        8'b1110_????: rotary1 = 12'b001_000_000_000;
+        8'b110?_????: rotary1 = 12'b010_000_000_000;
+        8'b10??_????: rotary1 = 12'b100_000_000_000;
+        8'b01??_????: rotary1 = 12'b000_000_100_000;
+        8'b001?_????: rotary1 = 12'b000_000_010_000;
+        8'b0001_????: rotary1 = 12'b000_000_001_000;
+        8'b0000_1???: rotary1 = 12'b000_000_000_100;
+        8'b0000_01??: rotary1 = 12'b000_000_000_010;
+        8'b0000_001?: rotary1 = 12'b000_000_000_001;
+    endcase
+end
 
 always @(posedge clk) begin
     cpu_din <=  ram_cs    ? ram_data :
@@ -317,7 +343,12 @@ always @(posedge clk) begin
                 fmode_cs  ? ba0_dout :
                 bmode_cs  ? ba1_dout :
                 cmode_cs  ? ba2_dout :
-                sec[1]    ? mcu_dout : 16'hffff;
+                sec[1]    ? mcu_dout :
+                track_cs[0] ? {8'hff, track0_dout } :
+                track_cs[1] ? {8'hff, track1_dout } :
+                track_cs[2] ? {track_cf[0], track_cf[1], 2'b11, ~joyana2[7:0], ~4'd0 } :
+                track_cs[3] ? { 4'hf, ~rotary1 } :
+                16'hffff;
 end
 
 
@@ -357,6 +388,63 @@ always @(posedge clk, posedge rst) begin
             disp_busy <= 0;
     end
 end
+
+// Track ball
+
+always @* begin
+    track_cs   = 0;
+    track_xrst = 0;
+    track_yrst = 0;
+    if( nexrm1 ) begin
+        if( RnW && !A[6] ) begin
+            case( A[5:3] )
+                0: track_cs[3] = 1; // rotary control
+                1: track_cs[2] = 1; // 4701's flags read in bits 15:14
+                2: track_cs[0] = 1;
+                3: track_cs[1] = 1;
+            endcase
+        end else if( !RnW && A[6] ) begin
+            case( A[5:3] )
+                0: track_xrst[0]=1;
+                1: track_yrst[0]=1;
+                2: track_xrst[1]=1;
+                3: track_yrst[1]=1;
+            endcase
+        end
+    end
+end
+
+jt4701_dialemu_2axis u_track0(
+    .rst    ( rst           ),
+    .clk    ( clk           ),
+    .LHBL   ( LHBL          ),
+    .inc    ( {1'b0, ~joystick1[6] } ),
+    .dec    ( {1'b0, ~joystick1[7] } ),
+    .x_rst  ( track_xrst[0] ),
+    .y_rst  ( track_yrst[0] ),
+    .uln    ( A[1]          ),
+    .cs     ( track_cs[0]   ),
+    .xn_y   ( A[2]          ),
+    .cfn    ( track_cf[0]   ),
+    .sfn    (               ),
+    .dout   ( track0_dout   )
+);
+
+jt4701_dialemu_2axis u_track1(
+    .rst    ( rst           ),
+    .clk    ( clk           ),
+    .LHBL   ( LHBL          ),
+    .inc    ( {1'b0, joystick2[6] } ),
+    .dec    ( {1'b0, joystick2[7] } ),
+    .x_rst  ( track_xrst[1] ),
+    .y_rst  ( track_yrst[1] ),
+    .uln    ( A[1]          ),
+    .cs     ( track_cs[1]   ),
+    .xn_y   ( A[2]          ),
+    .cfn    ( track_cf[1]   ),
+    .sfn    (               ),
+    .dout   ( track1_dout   )
+);
 
 jtframe_68kdtack #(.W(8)) u_dtack(
     .rst        ( rst       ),

@@ -35,6 +35,8 @@ module jtcop_game(
     input   [ 1:0]  coin_input,
     input   [ 8:0]  joystick1,
     input   [ 8:0]  joystick2,
+    input   [15:0]  joyana_l1,
+    input   [15:0]  joyana_l2,
 
     // SDRAM interface
     input           downloading,
@@ -132,7 +134,7 @@ wire [12:0] b0ram_addr;
 wire [10:0] b1ram_addr, b2ram_addr;
 wire [15:0] b0ram_data, b1ram_data, b2ram_data;
 
-wire        nexrm1, nexrm0_cs;
+wire        nexrm0_cs;
 
 // ROM banks
 wire     [ 2:1] sndflag, b1flg, mixflg;
@@ -207,7 +209,6 @@ jtcop_main u_main(
     .mcu_din    ( mcu_din   ),
     .sec        ( mcu_sel   ),
     .sec2       ( mcu_sel2  ),
-    .nexrm1     ( nexrm1    ),
     .nexrm0_cs  ( nexrm0_cs ),
     // BA register reads
     .ba0_dout   ( ba0_dout  ),
@@ -245,6 +246,8 @@ jtcop_main u_main(
     // cabinet I/O
     .joystick1   ( joystick1  ),
     .joystick2   ( joystick2  ),
+    .joyana1     ( joyana_l1  ),
+    .joyana2     ( joyana_l2  ),
     .start_button(start_button),
     .coin_input  ( coin_input ),
     .service     ( service    ),

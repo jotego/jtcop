@@ -10,7 +10,7 @@
 ../../../cop/hdl/jtcop_video.v
 
 $JTFRAME/hdl/jtframe_sh.v
-$JTFRAME/hdl/jtframe_ff.v
+$JTFRAME/hdl/keyboard/jt4701.v
 $JTFRAME/hdl/clocking/jtframe_frac_cen.v
 $JTFRAME/hdl/clocking/jtframe_cen24.v
 $JTFRAME/hdl/clocking/jtframe_cen48.v

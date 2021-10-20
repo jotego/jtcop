@@ -15,6 +15,7 @@ set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../.
 # RAM
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/ram/jtframe_dual_ram16.v      ]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/ram/jtframe_ram.v      ]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/keyboard/jt4701.v      ]
 
 # Clock enable
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../../../modules/jtframe/hdl/clocking/jtframe_cen24.v             ]

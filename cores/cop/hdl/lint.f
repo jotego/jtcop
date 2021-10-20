@@ -1,5 +1,6 @@
 -Wno-MULTIDRIVEN
 -y $JTFRAME/hdl/video
+$JTFRAME/hdl/keyboard/jt4701.v
 -y $JTFRAME/hdl/ram
 -y $JTFRAME/hdl/sound
 -y $JTFRAME/hdl/clocking
