@@ -10,6 +10,9 @@ sourcefile="dec0.cpp"
 
 [buttons]
 core=5
+Names = [
+    { machine="hbarrel", names="Shot,Bomb,Turn left,Turn right"}
+]
 
 [rbf]
 name="jtcop"

@@ -314,24 +314,27 @@ reg  [1:0] track_xrst, track_yrst;
 wire [1:0] track_cf;
 reg  [23:0] track_cs;
 wire [7:0] track0_dout, track1_dout;
-reg  [11:0] rotary1;
+reg  [11:0] rotary1, rotary2;
+reg  [ 2:0] frame_cnt;
 
-always @* begin
-    rotary1 = 0;
-    casez( joyana1[7:0] )
-        8'b1111_110?: rotary1 = 12'b000_001_000_000;
-        8'b1111_10??: rotary1 = 12'b000_010_000_000;
-        8'b1111_0???: rotary1 = 12'b000_100_000_000;
-        8'b1110_????: rotary1 = 12'b001_000_000_000;
-        8'b110?_????: rotary1 = 12'b010_000_000_000;
-        8'b10??_????: rotary1 = 12'b100_000_000_000;
-        8'b01??_????: rotary1 = 12'b000_000_100_000;
-        8'b001?_????: rotary1 = 12'b000_000_010_000;
-        8'b0001_????: rotary1 = 12'b000_000_001_000;
-        8'b0000_1???: rotary1 = 12'b000_000_000_100;
-        8'b0000_01??: rotary1 = 12'b000_000_000_010;
-        8'b0000_001?: rotary1 = 12'b000_000_000_001;
-    endcase
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        rotary1 <= 0;
+        rotary2 <= 0;
+        frame_cnt <= 0;
+    end else if( LVBL_l && !LVBL ) begin
+        frame_cnt <= frame_cnt+1'd1;
+        if(frame_cnt==0) begin
+            if( ~joystick1[6] )
+                rotary1 <= rotary1==0 ? 12'd1 : (rotary1<<1);
+            if( ~joystick1[7] )
+                rotary1 <= rotary1==0 ? 12'h800 : (rotary1>>1);
+            if( ~joystick2[6] )
+                rotary2 <= rotary2==0 ? 12'd1 : (rotary2<<1);
+            if( ~joystick2[7] )
+                rotary2 <= rotary2==0 ? 12'h800 : (rotary2>>1);
+        end
+    end
 end
 
 always @(posedge clk) begin
@@ -346,7 +349,7 @@ always @(posedge clk) begin
                 sec[1]    ? mcu_dout :
                 track_cs[0] ? {8'hff, track0_dout } :
                 track_cs[1] ? {8'hff, track1_dout } :
-                track_cs[2] ? {track_cf[0], track_cf[1], 2'b11, ~joyana2[7:0], ~4'd0 } :
+                track_cs[2] ? {track_cf[0], track_cf[1], 2'b11, ~rotary2 } :
                 track_cs[3] ? { 4'hf, ~rotary1 } :
                 16'hffff;
 end
@@ -434,8 +437,8 @@ jt4701_dialemu_2axis u_track1(
     .rst    ( rst           ),
     .clk    ( clk           ),
     .LHBL   ( LHBL          ),
-    .inc    ( {1'b0, joystick2[6] } ),
-    .dec    ( {1'b0, joystick2[7] } ),
+    .inc    ( {1'b0, ~joystick2[6] } ),
+    .dec    ( {1'b0, ~joystick2[7] } ),
     .x_rst  ( track_xrst[1] ),
     .y_rst  ( track_yrst[1] ),
     .uln    ( A[1]          ),

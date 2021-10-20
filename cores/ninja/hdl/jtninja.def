@@ -3,3 +3,4 @@ include ../../cop/hdl/jtcop.def
 CORENAME=JTNINJA
 JTFRAME_ANALOG
 MCU=1
+JTFRAME_AUTOFIRE0
