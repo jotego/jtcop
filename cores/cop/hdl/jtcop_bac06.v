@@ -125,7 +125,7 @@ assign msbrow_en = mode[0][1];
 assign rowscr_en = mode[0][2];
 assign colscr_en = mode[0][3];
 assign geometry  = mode[3][1:0];
-assign veff0     = {1'd0, vrender^{9{flip}}} + vscr[9:0];
+assign veff0     = {1'd0, vrender/*^{9{flip}}*/} + vscr[9:0];
 
 `ifdef SIMULATION
     wire [7:0] mode0 = mode[0];
@@ -227,6 +227,9 @@ endgenerate
 reg  [8:0] buf_waddr;
 wire [7:0] buf_wdata;
 reg        buf_we;
+wire [8:0] buf_waflip;
+
+assign buf_waflip = !flip ? buf_waddr : 9'h100-buf_waddr;
 
 jtframe_linebuf #(
     .DW (       8   ),
@@ -235,7 +238,7 @@ jtframe_linebuf #(
     .clk        ( clk       ),
     .LHBL       ( LHBL      ),
     // New data writes
-    .wr_addr    ( buf_waddr^{1'b0,{8{flip}}} ),
+    .wr_addr    ( buf_waflip),
     .wr_data    ( buf_wdata ),
     .we         ( buf_we    ),
     // Old data reads (and erases)
