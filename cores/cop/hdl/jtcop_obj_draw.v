@@ -134,7 +134,7 @@ always @(posedge clk, posedge rst) begin
                     tbl_addr <= tbl_addr + 10'd1;
                 end
                 2: begin
-                    xpos     <= 9'h100-tbl_dout[8:0];
+                    xpos     <= 9'd240-tbl_dout[8:0];
                     pal      <= tbl_dout[15:12];
                     tbl_addr <= tbl_addr + 10'd2;
                     draw     <= ~blink | frame;
