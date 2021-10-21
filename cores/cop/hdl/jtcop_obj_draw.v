@@ -57,7 +57,7 @@ reg        hflip, vflip;
 
 wire [ 8:0] ypos;
 reg  [ 8:0] xpos;
-reg  [ 8:0] veff, top, bottom;
+reg  [ 8:0] veff, vrf, top, bottom;
 reg  [ 3:0] pal;
 reg  [11:0] id;
 reg  [ 5:0] line_cnt;   // number of drawn tiles in a line
@@ -66,7 +66,7 @@ reg         frame, parse_busy, inzone,
             draw_busy, rom_good;
 wire        blink;
 
-assign ypos  = !flip ? 9'd256-tbl_dout[8:0] : tbl_dout[8:0];
+assign ypos  = 9'd256-tbl_dout[8:0];
 assign blink = tbl_dout[11];
 
 always @* begin
@@ -78,12 +78,13 @@ always @* begin
         2: top = ypos - 9'h40;
         3: top = ypos - 9'h80;
     endcase
-    if( (vrender < top && !top[8]) || vrender >= bottom || bottom < 8 || (top[8] && bottom[8]) )
+    if( (vrf < top && !top[8]) || vrf >= bottom || bottom < 8 || (top[8] && bottom[8]) )
         inzone = 0;
 end
 
 always @* begin
     id_eff = tbl_dout[11:0];
+    vrf    = flip ? 9'd256-vrender : vrender;
     case( msize )
         1: id_eff = id_eff+vflip^veff[4];
         2: id_eff = id_eff+{2{vflip}}^veff[5:4];
@@ -115,10 +116,10 @@ always @(posedge clk, posedge rst) begin
         if( parse_busy && !draw_busy && cen2 ) begin
             case( tbl_addr[1:0] )
                 0: begin
-                    { vflip, hflip } <= tbl_dout[14:13]^{flip,flip};
+                    { vflip, hflip } <= tbl_dout[14:13];
                     nsize <= (4'd1 << tbl_dout[10:9])-4'd1;
                     msize <= tbl_dout[12:11];
-                    veff  <= vrender - ypos;
+                    veff  <= vrf - ypos;
                     if( !inzone || !tbl_dout[15] ) begin
                         tbl_addr <= tbl_addr + 10'd4;
                         if( &tbl_addr[9:2] ) begin
@@ -133,7 +134,7 @@ always @(posedge clk, posedge rst) begin
                     tbl_addr <= tbl_addr + 10'd1;
                 end
                 2: begin
-                    xpos     <= flip ? tbl_dout[8:0]-9'd1 : 9'd240-tbl_dout[8:0];
+                    xpos     <= 9'h100-tbl_dout[8:0];
                     pal      <= tbl_dout[15:12];
                     tbl_addr <= tbl_addr + 10'd2;
                     draw     <= ~blink | frame;
@@ -154,10 +155,12 @@ reg  [31:0] draw_data;
 wire [ 3:0] draw_pxl;
 reg  [ 3:0] draw_cnt;
 reg         half;
+wire [ 8:0] buf_waflip;
 
 assign draw_pxl  = hflip ? { draw_data[ 8], draw_data[24], draw_data[0], draw_data[16] } :
                            { draw_data[15], draw_data[31], draw_data[7], draw_data[23] };
 assign buf_wdata = { pal, draw_pxl };
+assign buf_waflip= !flip ? buf_waddr : 9'h100-buf_waddr;
 
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
@@ -227,7 +230,7 @@ u_buffer (
     .LHBL       ( LHBL      ),
     // New data writes
     .wr_data    ( buf_wdata ),
-    .wr_addr    ( buf_waddr ),
+    .wr_addr    ( buf_waflip),
     .we         ( buf_we    ),
     // Old data reads (and erases)
     .rd_addr    ( hdump     ),
