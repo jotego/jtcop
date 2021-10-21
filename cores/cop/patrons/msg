@@ -1,11 +1,16 @@
  \B Bad Dudes\W core by \RJotego\W
   http://patreon.com/topapate
 
-     Beta 1 -- 14-October-21
+     Beta 2 -- 21-October-21
 Supervised by the \RJTAlpha team\W
 
 
-    No known issues
+    - Heavy Barrel support
+    - Fixed sprite DMA
+    - Screen flip support
+    - Better sound balance
+    - Volume control
+    - Autofire on shot button
 
         \BHardware\W
 
