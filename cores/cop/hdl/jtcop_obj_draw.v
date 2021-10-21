@@ -115,7 +115,7 @@ always @(posedge clk, posedge rst) begin
         if( parse_busy && !draw_busy && cen2 ) begin
             case( tbl_addr[1:0] )
                 0: begin
-                    { vflip, hflip } <= tbl_dout[14:13]^{flip,1'b0};
+                    { vflip, hflip } <= tbl_dout[14:13]^{flip,flip};
                     nsize <= (4'd1 << tbl_dout[10:9])-4'd1;
                     msize <= tbl_dout[12:11];
                     veff  <= vrender - ypos;
