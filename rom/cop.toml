@@ -22,6 +22,7 @@ dev = [
 
 [dipsw]
 bitcnt = 16
+base = 17
 delete = [ "Unused", "Unknown" ]
 
 [ROM]

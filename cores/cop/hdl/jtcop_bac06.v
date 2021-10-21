@@ -135,11 +135,11 @@ assign veff0     = {1'd0, vrender^{9{flip}}} + vscr[9:0];
 `endif
 
 always @* begin
-    case(cpu_addr)
-        0: cpu_din = mode[0];
-        1: cpu_din = mode[0];
-        2: cpu_din = mode[0];
-        3: cpu_din = mode[0];
+    case(cpu_addr[2:1])
+        0: cpu_din = {8'hff,mode[0]};
+        1: cpu_din = {8'hff,mode[0]};
+        2: cpu_din = {8'hff,mode[0]};
+        3: cpu_din = {8'hff,mode[0]};
     endcase
 end
 
