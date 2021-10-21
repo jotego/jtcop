@@ -74,7 +74,7 @@ module jtcop_sdram(
     output           b0ram_ok,
     //        B0 - ROM
     output           b0rom_ok,
-    input    [16:0]  b0rom_addr,
+    input    [17:0]  b0rom_addr,
     input            b0rom_cs,
     output   [31:0]  b0rom_data,
 
@@ -85,7 +85,7 @@ module jtcop_sdram(
     output           b1ram_ok,
     //        B1 - ROM
     output           b1rom_ok,
-    input    [16:0]  b1rom_addr,
+    input    [17:0]  b1rom_addr,
     input            b1rom_cs,
     output   [31:0]  b1rom_data,
 
@@ -96,7 +96,7 @@ module jtcop_sdram(
     output           b2ram_ok,
     //        B2 - ROM
     output           b2rom_ok,
-    input    [16:0]  b2rom_addr,
+    input    [17:0]  b2rom_addr,
     input            b2rom_cs,
     output   [31:0]  b2rom_data,
 
@@ -383,13 +383,13 @@ jtframe_rom_2slots #(
 
 jtframe_rom_3slots #(
     .SLOT0_DW(  32),
-    .SLOT0_AW(  17),
+    .SLOT0_AW(  18),
 
     .SLOT1_DW(  32),
-    .SLOT1_AW(  17),
+    .SLOT1_AW(  18),
 
     .SLOT2_DW(  32),
-    .SLOT2_AW(  17),
+    .SLOT2_AW(  18),
 
     .SLOT1_OFFSET( GFX2_OFFSET ),
     .SLOT2_OFFSET( GFX3_OFFSET )
