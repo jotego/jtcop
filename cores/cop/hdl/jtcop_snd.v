@@ -24,6 +24,7 @@ module jtcop_snd(
 
     input                enable_psg,
     input                enable_fm,
+    input         [ 1:0] fxlevel,
 
     // From main CPU
     input                snreq,  // sound interrupt from main CPU
@@ -49,14 +50,15 @@ module jtcop_snd(
 
 parameter BANKS=0;
 
-localparam [7:0] OPN_GAIN = 8'h10,
-                 OPL_GAIN = 8'h10,
+localparam [7:0] OPL_GAIN = 8'h10,
                  PCM_GAIN = 8'h10,
                  PSG_GAIN = 8'h10;
+
 
 wire [15:0] cpu_addr;
 wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout, oki_dout;
 reg  [ 7:0] cpu_din, dev_mux;
+reg  [ 7:0] opn_gain;
 reg         nmin, opl_cs, opn_cs, ram_cs, bank_cs,
             nmi_clr, oki_cs, dev_cs, cen_oki;
 wire        irqn, ram_we, cpu_rnw, oki_wrn,
@@ -75,6 +77,15 @@ assign oki_wrn  = ~(oki_cs & ~cpu_rnw);
 assign sample   = cen_opn;
 assign rom_addr = cpu_addr;
 assign rdy      = ~rom_cs | rom_ok;
+
+always @(posedge clk) begin
+    case( fxlevel )
+        0: opn_gain = 8'h18;
+        1: opn_gain = 8'h20;
+        2: opn_gain = 8'h28;
+        3: opn_gain = 8'h30;
+    endcase
+end
 
 always @(*) begin
     ram_cs  = 0;
@@ -257,7 +268,7 @@ jtframe_mixer #(.W3(10),.WOUT(16)) u_mixer(
     .ch2    ( adpcm_snd ),
     .ch3    ( psgac_snd ),
     // gain for each channel in 4.4 fixed point format
-    .gain0  ( enable_psg ? OPN_GAIN : 8'h0 ),
+    .gain0  ( enable_psg ? opn_gain : 8'h0 ),
     .gain1  ( enable_fm  ? OPL_GAIN : 8'h0 ),
     .gain2  ( PCM_GAIN  ),
     .gain3  ( PSG_GAIN  ),

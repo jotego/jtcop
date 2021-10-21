@@ -380,6 +380,7 @@ jtcop_video u_video(
 
         .enable_fm  ( enable_fm ),
         .enable_psg ( enable_psg),
+        .fxlevel    (dip_fxlevel),
 
         // From main CPU
         .snreq      ( snreq     ),
