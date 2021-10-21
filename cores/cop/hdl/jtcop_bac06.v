@@ -125,7 +125,7 @@ assign msbrow_en = mode[0][1];
 assign rowscr_en = mode[0][2];
 assign colscr_en = mode[0][3];
 assign geometry  = mode[3][1:0];
-assign veff0     = {1'd0, vrender/*^{9{flip}}*/} + vscr[9:0];
+assign veff0     = {1'd0, flip ? 9'd256-vrender : vrender } + vscr[9:0];
 
 `ifdef SIMULATION
     wire [7:0] mode0 = mode[0];
