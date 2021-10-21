@@ -181,7 +181,7 @@ wire [ 7:0] dipsw_a, dipsw_b;
 
 assign { dipsw_b, dipsw_a } = dipsw[15:0];
 assign dsn = { UDSWn, LDSWn };
-assign dip_flip = flip;
+assign dip_flip = ~flip;
 
 jtframe_cen24 u_cen(
     .clk    ( clk24     ),
