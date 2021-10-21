@@ -77,7 +77,7 @@ module jtcop_game(
     input   [31:0]  dipsw,
     input           service,
     input           dip_pause,
-    input           dip_flip,
+    output          dip_flip,
     input           dip_test,
     input   [ 1:0]  dip_fxlevel, // Not a DIP on the original PCB
     // Sound output
@@ -181,6 +181,7 @@ wire [ 7:0] dipsw_a, dipsw_b;
 
 assign { dipsw_b, dipsw_a } = dipsw[15:0];
 assign dsn = { UDSWn, LDSWn };
+assign dip_flip = flip;
 
 jtframe_cen24 u_cen(
     .clk    ( clk24     ),
