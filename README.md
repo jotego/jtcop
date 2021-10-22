@@ -33,6 +33,25 @@ Bandit                          | i8751      |   1
 Boulder Dash                    | HuC6280    |   1
 Birdie Try                      | i8751      |   0
 
+## Heavy Barrel
+
+The player orientation is stored as a byte with the following encoding
+
+```
+        0
+    1C     4
+  18         8
+    14     C
+       10
+```
+
+Player | RAM address | SDRAM address
+-------|-------------|---------------
+ 1P    | FF8066      | 10'0033
+ 2P    | FF80AA      | 10'0055
+
+The MSB part of the 16-bit value is used
+
 # BAC06
 
 Column scroll: 0x80 bytes -> 0x40 values

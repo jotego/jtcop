@@ -16,6 +16,8 @@ constant DEBUG_BUS, F
 constant GAMERAM, 12
 constant KEYS, 30
 constant FLAGS, 10
+constant ANA1RX, 1C
+constant ANA1RY, 1D
 
 ; RAM usage
 ; 0 = last LVBL
@@ -101,7 +103,7 @@ SCREEN:
     load s4,10
     load s3,10
     load s5,2
-    call WRITE_SDRAM
+    ; call WRITE_SDRAM
 .else2:
 
     ; Next level flag
@@ -122,9 +124,102 @@ SCREEN:
     call WRITE_SDRAM
 .else3:
 
+    ; Analog right stick
+    outputk 6,VRAM_ROW
+    load s0,6
+    input s1,ANA1RX
+    call PRINT_HEX
+    input s1,ANA1RY
+    call PRINT_HEX
+
+    ; Process Heavy Barrel input
+    call PROCESS_JOY1
+    ; FF8066=orientation
+    load s2,10
+    load s1,00
+    load s0,33
+    fetch s4,10
+    compare s4,ff
+    jump z,.else4
+    load s5,1
+    call WRITE_SDRAM
+.else4:
+
 CLOSE_FRAME:
     output sb,6     ; LED
     return
+
+;-----------------------------------------------------------------
+PROCESS_JOY1:
+    ; is it up?
+    input s0,ANA1RX     ; check that c0>X<40
+    and s0,80
+    jump nz,.cleft
+    input s0,ANA1RX
+    compare s0,40
+    jump nc,.right
+    jump .centre
+.cleft:
+    input s0,ANA1RX
+    compare s0,c0
+    jump c,.left
+.centre:
+    input s0,ANA1RY
+    compare s0,c0       ; check that y<c0
+    jump nc,keep_ret
+    and s0,80
+    jump z,.down
+    load s0,0           ; looking up
+    jump st_ret
+.down:
+    input s0,ANA1RY
+    compare s0,40
+    jump c,keep_ret
+    load s0,10
+    jump st_ret
+
+.right:
+    input s0,ANA1RY
+    and s0,80
+    jump nz,.rup
+    input s0,ANA1RY
+    compare s0,40
+    jump c,.fullright
+    load s0,c
+    jump st_ret
+.fullright:
+    load s0,8
+    jump st_ret
+.rup:
+    load s0,4
+    jump st_ret
+
+.left:
+    input s0,ANA1RY
+    and s0,80
+    jump nz,.lup
+    input s0,ANA1RY
+    compare s0,40
+    jump c,.fullleft
+    load s0,14
+    jump st_ret
+.fullleft:
+    load s0,18
+    jump st_ret
+.lup:
+    load s0,1c
+    jump st_ret
+
+keep_ret:
+    load s0,ff
+    store s0,10
+    return
+st_ret:
+    store s0,10
+    return
+
+
+
 
 ;-----------------------------------------------------------------
 
