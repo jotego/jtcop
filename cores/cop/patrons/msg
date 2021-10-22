@@ -4,13 +4,25 @@
      Beta 2 -- 21-October-21
 Supervised by the \RJTAlpha team\W
 
-
     - Heavy Barrel support
     - Fixed sprite DMA
     - Screen flip support
     - Better sound balance
     - Volume control
     - Autofire on shot button
+
+  \RHeavy Barrel controls\W
+
+    Use two buttons to
+    turn around.
+
+    Or use the 2nd analogue
+    stick of your gamepad.
+    (Only MiSTer)
+
+    Enabling the stick will
+    disable the button
+    control
 
         \BHardware\W
 

@@ -449,8 +449,8 @@ end
         .dout   ( track1_dout   )
     );
 `else
-    assign track0_dout=8'hff;
-    assign track1_dout=8'hff;
+    assign track0_dout=0;
+    assign track1_dout=0;
     assign track_cf=3;
 `endif
 

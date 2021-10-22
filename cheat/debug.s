@@ -2,22 +2,27 @@
 
 ; Shows the scroll settings and the debug bus
 
-constant LED, 6
-constant FRAMECNT, 0x2c
-constant WATCHDOG, 0x40
-constant STATUS, 0x80
-constant VRAM_CTRL, 0xB
+constant LED,      6
 constant VRAM_COL, 8
 constant VRAM_ROW, 9
-constant VRAM_DATA, A
-constant ST_ADDR, C
-constant ST_DATA, D
-constant DEBUG_BUS, F
-constant GAMERAM, 12
-constant KEYS, 30
-constant FLAGS, 10
-constant ANA1RX, 1C
-constant ANA1RY, 1D
+constant VRAM_DATA,A
+constant VRAM_CTRL,B
+constant ST_ADDR,  C
+constant ST_DATA,  D
+constant DEBUG_BUS,F
+constant FLAGS,    10
+constant BOARD_ST0,14
+constant BOARD_ST1,15
+constant BOARD_ST2,16
+constant BOARD_ST3,17
+constant ANA1RX,   1C
+constant ANA1RY,   1D
+constant FRAMECNT, 2c
+constant KEYS,     30
+constant WATCHDOG, 40
+constant ANA2RX,   4C
+constant ANA2RY,   4D
+constant STATUS,   80
 
 ; RAM usage
 ; 0 = last LVBL
@@ -35,16 +40,16 @@ constant ANA1RY, 1D
     load s0,0
     store s0,1
 BEGIN:
-    output s0,0x40
+    output s0,WATCHDOG
 
     ; Detect blanking
-    input s0,0x80
+    input s0,STATUS
     and   s0,0x20;   test for blanking
     jump z,inblank
     jump notblank
 inblank:
     fetch s1,0
-    test s1,0x20
+    test s1,20
     jump z,notblank
     store s0,0  ; stores last LVBL
     call ISR ; do blank procedure
@@ -124,6 +129,21 @@ SCREEN:
     call WRITE_SDRAM
 .else3:
 
+    ; Check game. Heavy Barrel starts with 0024
+    ;             Dragon Ninja starts with 00FF
+    load s2,00
+    load s1,00
+    load s0,01
+    call READ_SDRAM
+    outputk 7,VRAM_ROW
+    load s0, 1
+    load s1,s7
+    call PRINT_HEX
+    load s1,s6
+    call PRINT_HEX
+    compare s6,24
+    jump nz,NO_ANALOGUE_STICK
+
     ; Analog right stick
     outputk 6,VRAM_ROW
     load s0,6
@@ -132,8 +152,10 @@ SCREEN:
     input s1,ANA1RY
     call PRINT_HEX
 
-    ; Process Heavy Barrel input
-    call PROCESS_JOY1
+    ; Process Heavy Barrel input 1P
+    input s2,ANA1RX
+    input s3,ANA1RY
+    call PROCESS_JOY
     ; FF8066=orientation
     load s2,10
     load s1,00
@@ -145,26 +167,45 @@ SCREEN:
     call WRITE_SDRAM
 .else4:
 
+    ; Process Heavy Barrel input 2P
+    input s2,ANA2RX
+    input s3,ANA2RY
+    call PROCESS_JOY
+    ; FF80AA=orientation
+    load s2,10
+    load s1,00
+    load s0,55
+    fetch s4,10
+    compare s4,ff
+    jump z,.else5
+    load s5,1
+    call WRITE_SDRAM
+.else5:
+NO_ANALOGUE_STICK:
+
 CLOSE_FRAME:
     output sb,6     ; LED
     return
 
 ;-----------------------------------------------------------------
-PROCESS_JOY1:
+    ; s2 = X (input)
+    ; s3 = Y (input)
+    ; s0 = position or FF if no new position
+PROCESS_JOY:
     ; is it up?
-    input s0,ANA1RX     ; check that c0>X<40
+    load s0,s2     ; check that c0>X<40
     and s0,80
     jump nz,.cleft
-    input s0,ANA1RX
+    load s0,s2
     compare s0,40
     jump nc,.right
     jump .centre
 .cleft:
-    input s0,ANA1RX
+    load s0,s2
     compare s0,c0
     jump c,.left
 .centre:
-    input s0,ANA1RY
+    load s0,s3
     compare s0,c0       ; check that y<c0
     jump nc,keep_ret
     and s0,80
@@ -172,17 +213,17 @@ PROCESS_JOY1:
     load s0,0           ; looking up
     jump st_ret
 .down:
-    input s0,ANA1RY
+    load s0,s3
     compare s0,40
     jump c,keep_ret
     load s0,10
     jump st_ret
 
 .right:
-    input s0,ANA1RY
+    load s0,s3
     and s0,80
     jump nz,.rup
-    input s0,ANA1RY
+    load s0,s3
     compare s0,40
     jump c,.fullright
     load s0,c
@@ -195,10 +236,10 @@ PROCESS_JOY1:
     jump st_ret
 
 .left:
-    input s0,ANA1RY
+    load s0,s3
     and s0,80
     jump nz,.lup
-    input s0,ANA1RY
+    load s0,s3
     compare s0,40
     jump c,.fullleft
     load s0,14

@@ -50,7 +50,10 @@ Player | RAM address | SDRAM address
  1P    | FF8066      | 10'0033
  2P    | FF80AA      | 10'0055
 
-The MSB part of the 16-bit value is used
+The MSB part of the 16-bit value is used. The JTFRAME cheat engine
+is used to transfer the analogue right stick readings to the SDRAM
+so the game changes the player orientation correctly. This is done
+in [beta.s](cheat/beta.s)
 
 # BAC06
 

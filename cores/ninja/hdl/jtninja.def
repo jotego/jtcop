@@ -4,3 +4,10 @@ CORENAME=JTNINJA
 JTFRAME_ANALOG
 MCU=1
 JTFRAME_AUTOFIRE0
+-NOTRACKBALL
+
+[mister]
+# The second analogue stick
+# can be used in MiSTer to control
+# the player orientation, but it
+# overrides the rotate buttons
