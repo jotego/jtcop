@@ -393,61 +393,66 @@ always @(posedge clk, posedge rst) begin
 end
 
 // Track ball
-
-always @* begin
-    track_cs   = 0;
-    track_xrst = 0;
-    track_yrst = 0;
-    if( nexrm1 ) begin
-        if( RnW && !A[6] ) begin
-            case( A[5:3] )
-                0: track_cs[3] = 1; // rotary control
-                1: track_cs[2] = 1; // 4701's flags read in bits 15:14
-                2: track_cs[0] = 1;
-                3: track_cs[1] = 1;
-            endcase
-        end else if( !RnW && A[6] ) begin
-            case( A[5:3] )
-                0: track_xrst[0]=1;
-                1: track_yrst[0]=1;
-                2: track_xrst[1]=1;
-                3: track_yrst[1]=1;
-            endcase
+`ifndef NOTRACKBALL
+    always @* begin
+        track_cs   = 0;
+        track_xrst = 0;
+        track_yrst = 0;
+        if( nexrm1 ) begin
+            if( RnW && !A[6] ) begin
+                case( A[5:3] )
+                    0: track_cs[3] = 1; // rotary control
+                    1: track_cs[2] = 1; // 4701's flags read in bits 15:14
+                    2: track_cs[0] = 1;
+                    3: track_cs[1] = 1;
+                endcase
+            end else if( !RnW && A[6] ) begin
+                case( A[5:3] )
+                    0: track_xrst[0]=1;
+                    1: track_yrst[0]=1;
+                    2: track_xrst[1]=1;
+                    3: track_yrst[1]=1;
+                endcase
+            end
         end
     end
-end
 
-jt4701_dialemu_2axis u_track0(
-    .rst    ( rst           ),
-    .clk    ( clk           ),
-    .LHBL   ( LHBL          ),
-    .inc    ( {1'b0, ~joystick1[6] } ),
-    .dec    ( {1'b0, ~joystick1[7] } ),
-    .x_rst  ( track_xrst[0] ),
-    .y_rst  ( track_yrst[0] ),
-    .uln    ( A[1]          ),
-    .cs     ( track_cs[0]   ),
-    .xn_y   ( A[2]          ),
-    .cfn    ( track_cf[0]   ),
-    .sfn    (               ),
-    .dout   ( track0_dout   )
-);
+    jt4701_dialemu_2axis u_track0(
+        .rst    ( rst           ),
+        .clk    ( clk           ),
+        .LHBL   ( LHBL          ),
+        .inc    ( {1'b0, ~joystick1[6] } ),
+        .dec    ( {1'b0, ~joystick1[7] } ),
+        .x_rst  ( track_xrst[0] ),
+        .y_rst  ( track_yrst[0] ),
+        .uln    ( A[1]          ),
+        .cs     ( track_cs[0]   ),
+        .xn_y   ( A[2]          ),
+        .cfn    ( track_cf[0]   ),
+        .sfn    (               ),
+        .dout   ( track0_dout   )
+    );
 
-jt4701_dialemu_2axis u_track1(
-    .rst    ( rst           ),
-    .clk    ( clk           ),
-    .LHBL   ( LHBL          ),
-    .inc    ( {1'b0, ~joystick2[6] } ),
-    .dec    ( {1'b0, ~joystick2[7] } ),
-    .x_rst  ( track_xrst[1] ),
-    .y_rst  ( track_yrst[1] ),
-    .uln    ( A[1]          ),
-    .cs     ( track_cs[1]   ),
-    .xn_y   ( A[2]          ),
-    .cfn    ( track_cf[1]   ),
-    .sfn    (               ),
-    .dout   ( track1_dout   )
-);
+    jt4701_dialemu_2axis u_track1(
+        .rst    ( rst           ),
+        .clk    ( clk           ),
+        .LHBL   ( LHBL          ),
+        .inc    ( {1'b0, ~joystick2[6] } ),
+        .dec    ( {1'b0, ~joystick2[7] } ),
+        .x_rst  ( track_xrst[1] ),
+        .y_rst  ( track_yrst[1] ),
+        .uln    ( A[1]          ),
+        .cs     ( track_cs[1]   ),
+        .xn_y   ( A[2]          ),
+        .cfn    ( track_cf[1]   ),
+        .sfn    (               ),
+        .dout   ( track1_dout   )
+    );
+`else
+    assign track0_dout=8'hff;
+    assign track1_dout=8'hff;
+    assign track_cf=3;
+`endif
 
 jtframe_68kdtack #(.W(8)) u_dtack(
     .rst        ( rst       ),

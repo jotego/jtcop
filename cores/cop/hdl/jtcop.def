@@ -15,6 +15,9 @@ JTFRAME_CREDITS
 JTFRAME_DEBUG
 JTFRAME_MIST_DIPBASE=17
 
+# Cores specific
+NOTRACKBALL
+
 # ROM file layout
 # BA0, main CPU ROM
 # BA1, sound CPU and PCM
