@@ -10,5 +10,6 @@ JTFRAME_AUTOFIRE0
 [mister]
 # The second analogue stick
 # can be used in MiSTer to control
-# the player orientation, but it
-# overrides the rotate buttons
+# the player orientation. This
+# feature requires the cheat engine
+JTFRAME_CHEAT
