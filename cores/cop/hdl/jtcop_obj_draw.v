@@ -224,7 +224,7 @@ always @(posedge clk, posedge rst) begin
     end
 end
 
-jtframe_obj_buffer #(.ALPHA  ( 4'H0  ))
+jtframe_obj_buffer #(.ALPHA  ( 8'H0  ))
 u_buffer (
     .clk        ( clk       ),
     .LHBL       ( LHBL      ),

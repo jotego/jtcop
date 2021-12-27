@@ -1,0 +1,4 @@
+game:
+    - from: cop
+      get:
+        - game.yaml
