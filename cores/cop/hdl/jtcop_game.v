@@ -505,7 +505,7 @@ jtcop_video u_video(
     initial mcu_dout = 0;
 `endif
 
-`ifdef HUCCOP
+`ifndef NOHUC
     wire prot_prog = ioctl_addr>='h21_1e00 && ioctl_addr<'h21_2000 && ioctl_wr;
 
     jtcop_prot u_prot(
@@ -524,6 +524,7 @@ jtcop_video u_video(
         .prog_en    ( prot_prog         )
     );
 `else
+    wire prot_prog = ioctl_addr>='h21_1e00 && ioctl_addr<'h21_2000 && ioctl_wr;
     assign huc_dout = 0;
 `endif
 

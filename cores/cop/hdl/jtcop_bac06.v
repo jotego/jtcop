@@ -408,7 +408,7 @@ always @(posedge clk, posedge rst) begin
             if( tile16_en )
                 rom_addr <= { tile_id, 1'b1, veff[3:0], 1'b0 };
             else
-                rom_addr <= { 1'd0, tile_id, veff[2:0], 1'b0 };
+                rom_addr <= { 2'd0, tile_id, veff[2:0], 1'b0 };
             draw_cnt <= 0;
             rom_cs   <= 1;
             rom_good <= 0;

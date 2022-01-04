@@ -86,12 +86,14 @@ always @* begin
     id_eff = tbl_dout[11:0];
     vrf    = flip ? 9'd256-vrender : vrender;
     case( msize )
-        1: id_eff = id_eff+vflip^veff[4];
-        2: id_eff = id_eff+{2{vflip}}^veff[5:4];
-        3: id_eff = id_eff+{3{vflip}}^veff[6:4];
+        1: id_eff = id_eff+ {10'd0,     vflip^veff[4]    };
+        2: id_eff = id_eff+ { 9'd0, {2{vflip}}^veff[5:4] };
+        3: id_eff = id_eff+ { 8'd0, {3{vflip}}^veff[6:4] };
         default:;
     endcase
 end
+
+wire [3:0] nsize_aux = (4'd1 << tbl_dout[10:9])-4'd1;
 
 // Get the information
 always @(posedge clk, posedge rst) begin
@@ -118,7 +120,7 @@ always @(posedge clk, posedge rst) begin
             case( tbl_addr[1:0] )
                 0: begin
                     { vflip, hflip } <= tbl_dout[14:13];
-                    nsize <= (4'd1 << tbl_dout[10:9])-4'd1;
+                    nsize <= nsize_aux[2:0];
                     msize <= tbl_dout[12:11];
                     veff  <= vrf - ypos;
                     if( !inzone || !tbl_dout[15] ) begin
@@ -229,6 +231,7 @@ jtframe_obj_buffer #(.ALPHA  ( 8'H0  ))
 u_buffer (
     .clk        ( clk       ),
     .LHBL       ( LHBL      ),
+    .flip       ( 1'b0      ),
     // New data writes
     .wr_data    ( buf_wdata ),
     .wr_addr    ( buf_waflip),
