@@ -1,4 +1,8 @@
 game:
-    - from: cop
-      get:
-        - common.yaml
+  - from: cop
+    get:
+      - common.yaml
+jtframe:
+  - from: cpu
+    get:
+      - 8051/mc8051.qip
