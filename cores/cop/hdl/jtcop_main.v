@@ -64,6 +64,10 @@ module jtcop_main(
     output reg         csft_cs,
     output reg         cmap_cs,
 
+    // HuC6820 protection
+    input       [ 7:0] huc_dout,
+    output reg         huc_cs,      // shared memory with HuC6820
+
     // Objects
     output reg         obj_cs,       // called MIX in the schematics
     output reg         obj_copy,     // called *DM in the schematics
@@ -176,11 +180,17 @@ always @(*) begin
     sec[2]     = sec2;
     sec[1:0]   = 0;
     disp_cs    = 0;
+    huc_cs     = 0;
 
     if( !ASn ) begin
         case( A[21:20] )
             0: rom_cs = A[19:16]<6 && RnW;
-            1: eep_cs = ~A[19]; // connects to an EEPROM, but it isn't on the PCB
+            1: begin
+                eep_cs = ~A[19]; // connects to an EEPROM, but it isn't on the PCB
+            `ifdef HUCCOP
+                huc_cs = A[19:12]==0;
+            `endif
+            end
             2: begin
                 disp_cs = 1;
                 if( A[19:18]==2'b01 ) begin // 0x24'???? DSP - DiSPlay (?)
@@ -215,6 +225,7 @@ always @(*) begin
                                 2: read_cs[2] = 1;
                                 3: nexin_cs   = 1;
                                 4: sec[1]     = 1;
+                                default:;
                             endcase
                         end
                         if( !RnW && A[4] ) begin // 0x30'C010
@@ -234,6 +245,7 @@ always @(*) begin
                     5: pal_cs[1] = 1; // 0x31'4000
                     6: sysram_cs = 1;   // 0x31'8000
                     7: obj_cs    = 1;   // 0x31'C000 sprites
+                    default:;
                 endcase
             end
         endcase
@@ -347,6 +359,7 @@ always @(posedge clk) begin
                 bmode_cs  ? ba1_dout :
                 cmode_cs  ? ba2_dout :
                 sec[1]    ? mcu_dout :
+                huc_cs    ? { 8'hff, huc_dout }  :
                 track_cs[0] ? {8'hff, track0_dout } :
                 track_cs[1] ? {8'hff, track1_dout } :
                 track_cs[2] ? {track_cf[0], track_cf[1], 2'b11, ~rotary2 } :
@@ -400,14 +413,14 @@ end
         track_yrst = 0;
         if( nexrm1 ) begin
             if( RnW && !A[6] ) begin
-                case( A[5:3] )
+                case( A[4:3] )
                     0: track_cs[3] = 1; // rotary control
                     1: track_cs[2] = 1; // 4701's flags read in bits 15:14
                     2: track_cs[0] = 1;
                     3: track_cs[1] = 1;
                 endcase
             end else if( !RnW && A[6] ) begin
-                case( A[5:3] )
+                case( A[4:3] )
                     0: track_xrst[0]=1;
                     1: track_yrst[0]=1;
                     2: track_xrst[1]=1;

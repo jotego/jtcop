@@ -6,6 +6,7 @@ JTFRAME_VERTICAL
 MCU=1
 JTFRAME_AUTOFIRE0
 -NOTRACKBALL
+-HUCCOP
 
 [mister]
 # The second analogue stick

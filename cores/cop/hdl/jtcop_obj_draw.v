@@ -89,6 +89,7 @@ always @* begin
         1: id_eff = id_eff+vflip^veff[4];
         2: id_eff = id_eff+{2{vflip}}^veff[5:4];
         3: id_eff = id_eff+{3{vflip}}^veff[6:4];
+        default:;
     endcase
 end
 

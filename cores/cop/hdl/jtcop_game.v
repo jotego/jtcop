@@ -171,6 +171,11 @@ wire [15:0] mcu_din;
 wire [ 5:0] mcu_sel;
 wire        mcu_sel2;   // this funny name is to keep the schematics' naming
 wire        nexirq;
+wire        shd_cs;
+
+// HuC Protection
+wire [ 7:0] huc_dout;
+wire        huc_cs;
 
 // Cabinet inputs
 wire [ 7:0] dipsw_a, dipsw_b;
@@ -211,6 +216,9 @@ jtcop_main u_main(
     .sec        ( mcu_sel   ),
     .sec2       ( mcu_sel2  ),
     .nexrm0_cs  ( nexrm0_cs ),
+    // HuC6820
+    .huc_cs     ( huc_cs    ),
+    .huc_dout   ( huc_dout  ),
     // BA register reads
     .ba0_dout   ( ba0_dout  ),
     .ba1_dout   ( ba1_dout  ),
@@ -495,6 +503,28 @@ jtcop_video u_video(
     assign { sndflag, b1flg, b0flg, mixflg } = 0;
     assign crback = 0;
     initial mcu_dout = 0;
+`endif
+
+`ifdef HUCCOP
+    wire prot_prog = ioctl_addr>='h21_1e00 && ioctl_addr<'h21_2000;
+
+    jtcop_prot u_prot(
+        .rst        ( rst24     ),
+        .clk        ( clk24     ),
+        .clk_cpu    ( clk       ),
+
+        .main_addr  ( main_addr[11:1] ),  // only 2kB are shared
+        .main_dout  ( main_dout[ 7:0] ),
+        .main_din   ( huc_dout  ),
+        .main_cs    ( huc_cs    ),
+        .main_wrn   ( main_rnw  ),
+
+        .prog_addr  ( ioctl_addr[8:0]   ),
+        .prog_data  ( ioctl_dout        ),
+        .prog_en    ( prot_prog         )
+    );
+`else
+    assign huc_dout = 0;
 `endif
 
 jtcop_sdram u_sdram(

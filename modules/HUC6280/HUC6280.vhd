@@ -287,19 +287,21 @@ begin
 	
 	-- PSG
 	PSG_SEL <= '1' when CPU_A(20 downto 13) = x"FF" and CPU_A(12 downto 10) = "010" else '0'; -- PSG : $0800 - $0BFF
-	PSG : entity work.psg port map (
-		CLK		=> CLK,
-		CLKEN		=> IO_CE,	-- 7.16 Mhz clock
-		RESET_N	=> RST_N,
-		
-		DI			=> CPU_DO,
-		A			=> CPU_A(3 downto 0),
-		WE			=> not CPU_WE_N and EN and PSG_SEL,
-		
-		DAC_LATCH=> '1',
-		LDATA		=> AUD_LDATA,
-		RDATA		=> AUD_RDATA
-	);
+	-- PSG unused in Robocop, I remove it so I don't have to deal
+	-- with the dpram module, which is mapped to an Altera primitive
+-- 	PSG : entity work.psg port map (
+-- 		CLK		=> CLK,
+-- 		CLKEN		=> IO_CE,	-- 7.16 Mhz clock
+-- 		RESET_N	=> RST_N,
+--
+-- 		DI			=> CPU_DO,
+-- 		A			=> CPU_A(3 downto 0),
+-- 		WE			=> not CPU_WE_N and EN and PSG_SEL,
+--
+-- 		DAC_LATCH=> '1',
+-- 		LDATA		=> AUD_LDATA,
+-- 		RDATA		=> AUD_RDATA
+-- 	);
 		
 	IO_SEL <= IOP_SEL or INT_SEL or TMR_SEL or PSG_SEL;
 	process(CLK, RST_N)
