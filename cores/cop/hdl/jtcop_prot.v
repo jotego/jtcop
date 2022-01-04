@@ -60,15 +60,17 @@ wire        ce, cek_n, ce7_n, cer_n;
             //hdpsel_n;
 wire        main_we;
 
-wire        irqn, rdy;
+wire        set_irq, irqn;
 reg         rom_cs, ram_cs, shd_cs;
 wire [ 7:0] rom_dout, ram_dout, shd_dout;
-wire        shd_we;
+wire        shd_we, ram_we;
 
 assign main_we = main_cs & ~main_wrn;
 assign waitn   = 1; // no bus contention for now
 assign set_irq = main_cs && main_addr==11'h7ff;
 assign irqn    = ~set_irq;
+assign ram_we  = ram_cs & ~wrn;
+assign shd_we  = shd_cs & ~wrn;
 
 always @* begin
     rom_cs = A[20:16]==0 && !rdn;
@@ -79,8 +81,8 @@ end
 
 always @(posedge clk) begin
     din <=
-        ram_cs   ? ram_dout :
-        shd_dout ? shd_dout :
+        ram_cs ? ram_dout :
+        shd_cs ? shd_dout :
         rom_cs && A[15:9]==~7'b0 ? rom_dout : 8'hff;
 end
 /*
@@ -96,15 +98,14 @@ jtframe_ff u_ff (
     .sigedge( set_irq   )
 );*/
 
-
 jtframe_prom #(.aw(9)) u_rom(
-    .clk    ( clk               ),
-    .cen    ( 1'b1              ),
-    .data   ( prog_data         ),
-    .rd_addr( A[8:0]            ),
-    .wr_addr( prog_addr[8:0]    ),
-    .we     ( prog_en           ),
-    .q      ( rom_dout          )
+    .clk    ( clk       ),
+    .cen    ( 1'b1      ),
+    .data   ( prog_data ),
+    .rd_addr( A[8:0]    ),
+    .wr_addr( prog_addr ),
+    .we     ( prog_en   ),
+    .q      ( rom_dout  )
 );
 
 jtframe_ram #(.aw(11)) u_ram(
@@ -142,7 +143,7 @@ HUC6280 u_huc(
     .WR_N       ( wrn       ),
     .RD_N       ( rdn       ),
 
-    .RDY        ( rdy       ),
+    .RDY        ( 1'b1      ),
     .NMI_N      ( 1'b1      ),
     .IRQ1_N     ( irqn      ),
     .IRQ2_N     ( 1'b1      ),

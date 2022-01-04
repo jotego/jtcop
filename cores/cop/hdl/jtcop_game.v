@@ -506,7 +506,7 @@ jtcop_video u_video(
 `endif
 
 `ifdef HUCCOP
-    wire prot_prog = ioctl_addr>='h21_1e00 && ioctl_addr<'h21_2000;
+    wire prot_prog = ioctl_addr>='h21_1e00 && ioctl_addr<'h21_2000 && ioctl_wr;
 
     jtcop_prot u_prot(
         .rst        ( rst24     ),
@@ -517,7 +517,7 @@ jtcop_video u_video(
         .main_dout  ( main_dout[ 7:0] ),
         .main_din   ( huc_dout  ),
         .main_cs    ( huc_cs    ),
-        .main_wrn   ( main_rnw  ),
+        .main_wrn   ( main_rnw | LDSWn  ),
 
         .prog_addr  ( ioctl_addr[8:0]   ),
         .prog_data  ( ioctl_dout        ),

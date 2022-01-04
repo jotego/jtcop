@@ -66,9 +66,9 @@ always @(posedge clk, posedge rst) begin
         v14l        <= 0;
     end else begin
         v14l  <= v14[3];
-        dma_charged <= dma_on ? 0 : (obj_copy ? 1 : dma_charged);
-        dma_on <= vload ? 0 : (!LVBL && v14==8 && !v14l ? dma_charged : dma_on);
-        v14    <= vload ? 8 : (hinit & pxl_cen ? (v14+1'd1) : v14);
+        dma_charged <= dma_on ? 1'b0 : (obj_copy ? 1'b1 : dma_charged);
+        dma_on <= vload ? 1'b0 : (!LVBL && v14==8 && !v14l ? dma_charged : dma_on);
+        v14    <= vload ? 4'd8 : (hinit & pxl_cen ? (v14+1'd1) : v14);
         if( pxl_cen ) buf_latch <= buf_dout[7:0];
     end
 end

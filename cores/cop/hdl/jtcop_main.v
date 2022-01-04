@@ -324,7 +324,7 @@ end
 // input multiplexer
 reg  [1:0] track_xrst, track_yrst;
 wire [1:0] track_cf;
-reg  [23:0] track_cs;
+reg  [3:0] track_cs;
 wire [7:0] track0_dout, track1_dout;
 reg  [11:0] rotary1, rotary2;
 reg  [ 2:0] frame_cnt;
@@ -462,9 +462,10 @@ end
         .dout   ( track1_dout   )
     );
 `else
-    assign track0_dout=0;
-    assign track1_dout=0;
-    assign track_cf=3;
+    assign track0_dout = 0;
+    assign track1_dout = 0;
+    assign track_cf    = 3;
+    initial track_cs   = 0;
 `endif
 
 jtframe_68kdtack #(.W(8)) u_dtack(
