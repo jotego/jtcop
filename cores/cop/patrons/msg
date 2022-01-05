@@ -1,71 +1,61 @@
- \B Bad Dudes\W core by \RJotego\W
+ \B Robocop\W core by \RJotego\W
   http://patreon.com/topapate
 
-     Beta 2 -- 21-October-21
+     Beta 3 -- 5-January-22
 Supervised by the \RJTAlpha team\W
 
-    - Heavy Barrel support
-    - Fixed sprite DMA
-    - Screen flip support
-    - Better sound balance
-    - Volume control
-    - Autofire on shot button
-
-  \RHeavy Barrel controls\W
-
-    Use two buttons to
-    turn around.
-
-    Or use the 2nd analogue
-    stick of your gamepad.
-    (Only MiSTer)
-
-    Enabling the stick will
-    disable the button
-    control
+    - Support for HuC6280
+    - Robocop is playable
 
         \BHardware\W
 
   Thanks to Gabriel DiGennaro
   for donating a Robocop PCB
 
-      \RDirectors\W
+      \BDirectors\W
 
+      Antonio Villena
 80's spaceman   AnotherJoe
-Antonio Villena Ben Roeder
-Bender          Chris Gelatt
+Ben Roeder      Bender
+Boogermann      Chris Gelatt
 DJ Hard Rich    Filip Kindt
 Frederic Mahe   James D
 Jeffrey Pierce  John Biscevic
 John Lange      Kevin finisterre
-Louis Martinez  Martin Birkeldh
-Porkchop Express Purple Tinker
-Rysha           Shawn Henderson
-TT_Hipster1941  atrac17
+Louis Martinez  Mark DeRidder
+Martin Birkeldh Porkchop Express
+Purple Tinker   Rysha
+Shawn Henderson TT_Hipster1941
+Ulf Skutnabba   atrac17
 
-       \RThanks to\W
+    \B * Thanks to *\R
 
-Arcade Express  Brian Sallee
-Daniel Bauza    Eduard Rozenberg
-Javier Rodas    Jo Tomiyori
-Phillip McMahon Cohge
+      Eduard Rozenberg
+Andrea Bogazzi  Arcade Express
+Brian Sallee    Daniel Bauza
+Jacinto Lozano  Javi Rodas G
+Jo Tomiyori     Phillip McMahon
+birdybro      GiRo SiNToRNiLLoS
+
+       \BThanks to\W
+
 ARCADEAGES      Adam Davis
-Anders Rensberg Andreas Wester
+Adrian Nabarro  Anders Rensberg
 Andrew Francomb Andy Palmer
 Andyways        Arjan de Lang
-BeardMonsterGames Bob Gallardo
-Chi Wai Tran    Chris Doyle
-Chris Harvey    Chris Jardine
-Christian       Connor Glynn
+Bob Gallardo    Chi Wai Tran
+Chris Doyle     Chris Harvey
+Chris Jardine   Christian
 D.J. Estreito   DMG
-Darren Chell    David Ashby
-David Mills Jr. David Moylan
-Dean Winger     Derick2k
-Don Gafford     Ed Balan
-Eduardo Javier  Edward Rana
-EmperorStorky   Gladius
-Gus Douboulidis Gwaland
-H. Osterholz    Henrik Nordstrom
+Daniel Cortes   Darren Chell
+David Ashby     David Mills Jr.
+David Moylan    Dean Winger
+Derick2k        Don Gafford
+Ed Balan        Eduardo Javier
+Edward Rana     EmperorStorky
+Gladius         Gus Douboulidis
+Gwaland         H. Osterholz
+Henrik Nordstrom INAKI ECHEVARRIA
 Ian Court       Ivo
 JPS (RetroFPGA) James Trautner
 James Williams  Jason Nagy
@@ -82,18 +72,18 @@ Michael Johnson MoonZ
 Oliver Jaksch   Oliver Wndmth
 Oscar Laguna    Per Sweden
 Peter Bray      PsyFX
-RetroPrez       Retroludo
-Richard MS      Robert MacLean
-Robert Mullings Roman Buser
-Simon Johnstone Steven Wilson
+Retroludo       Richard MS
+Robert MacLean  Robert Mullings
+Roman Buser     Simon Johnstone
+Steven Wilson   SuperCowabunga
 The Collector   Theodore Huber
 Toby Boreham    Tony Richardson
 Torren Beitler  Tym Whitney
-Ulf Skutnabba   Ultrarobotninja
-Victor Gomariz  Vitor Duarte
-Younghoon Gong  Zachary Muske
-asdfgasfhsn     elrobertocarlos
-hyp36rmax       nullobject
+Ultrarobotninja Victor Gomariz
+Vitor Duarte    Younghoon Gong
+Zachary Muske   asdfgasfhsn
+elrobertocarlos hyp36rmax
+nullobject
 
          Beta version
      \RDo not distribute\W
