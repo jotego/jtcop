@@ -83,7 +83,7 @@ always @(posedge clk) begin
     din <=
         ram_cs ? ram_dout :
         shd_cs ? shd_dout :
-        rom_cs && A[15:9]==~7'b0 ? rom_dout : 8'hff;
+        rom_cs ? rom_dout : 8'hff;
 end
 /*
 jtframe_ff u_ff (
@@ -98,14 +98,19 @@ jtframe_ff u_ff (
     .sigedge( set_irq   )
 );*/
 
-jtframe_prom #(.aw(9)) u_rom(
-    .clk    ( clk       ),
-    .cen    ( 1'b1      ),
-    .data   ( prog_data ),
-    .rd_addr( A[8:0]    ),
-    .wr_addr( prog_addr ),
-    .we     ( prog_en   ),
-    .q      ( rom_dout  )
+jtframe_dual_ram #(.aw(9)) u_rom(
+    .clk0   ( clk_cpu   ),
+    .clk1   ( clk       ),
+    // Programming
+    .data0  ( prog_data ),
+    .addr0  ( prog_addr ), // upper most 2 bits are floating!
+    .we0    ( prog_en   ),
+    .q0     (           ),
+    // HuC6280
+    .data1  (           ),
+    .addr1  ( A[8:0]    ),
+    .we1    ( 1'b0      ),
+    .q1     ( rom_dout  )
 );
 
 jtframe_ram #(.aw(11)) u_ram(

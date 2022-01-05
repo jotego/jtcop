@@ -35,11 +35,11 @@ if [ ! -z "$SCENE" ]; then
     echo "Scene simulation not supported"
     exit 1
 else
-    export YM2203=1
-    export YM3812=1
-    export MC6502=1
+    # export YM2203=1
+    # export YM3812=1
+    # export MC6502=1
     # export I8051=1
-    export MSM6295=1
+    # export MSM6295=1
     rm -f char_*.bin pal_*.bin obj_*.bin scr.bin
 fi
 
