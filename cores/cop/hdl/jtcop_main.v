@@ -187,7 +187,7 @@ always @(*) begin
             0: rom_cs = A[19:16]<6 && RnW;
             1: begin
                 eep_cs = ~A[19]; // connects to an EEPROM, but it isn't on the PCB
-            `ifndef NOHCU
+            `ifndef NOHUC
                 huc_cs = A[19] && A[18:12]==0;
             `endif
             end
