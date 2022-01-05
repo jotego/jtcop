@@ -3,6 +3,9 @@ game:
     get:
       - jtcop_prot.v
       - common.yaml
+jtframe:
+  - get:
+      - jtframe_ff.v
 modules:
   other:
     - get:

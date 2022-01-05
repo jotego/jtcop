@@ -68,7 +68,7 @@ wire        shd_we, ram_we;
 assign main_we = main_cs & ~main_wrn;
 assign waitn   = 1; // no bus contention for now
 assign set_irq = main_cs && main_addr==11'h7ff;
-assign irqn    = ~set_irq;
+//assign irqn    = ~set_irq;
 assign ram_we  = ram_cs & ~wrn;
 assign shd_we  = shd_cs & ~wrn;
 
@@ -85,18 +85,31 @@ always @(posedge clk) begin
         shd_cs ? shd_dout :
         rom_cs ? rom_dout : 8'hff;
 end
-/*
+
+// Not sure how long I need to wait
+// This is buried inside the DEM-01 chip
+// Maybe the IRQ clear is set by HDPSEL simply
+reg [7:0] cnt;
+wire irq_clr = cnt==1;
+
+always @(posedge clk_cpu ) begin
+    if( set_irq )
+        cnt <= 8'hff;
+    else
+        if(cnt!=0) cnt<=cnt-8'd1;
+end
+
 jtframe_ff u_ff (
-    .clk    ( clk       ),
+    .clk    ( clk_cpu   ),
     .rst    ( rst       ),
     .cen    ( 1'b1      ),
     .din    ( 1'b1      ),
     .q      (           ),
     .qn     ( irqn      ),
     .set    (           ),    // active high
-    .clr,    // active high
+    .clr    ( irq_clr   ),    // active high
     .sigedge( set_irq   )
-);*/
+);
 
 jtframe_dual_ram #(.aw(9)) u_rom(
     .clk0   ( clk_cpu   ),
