@@ -8,9 +8,7 @@ HEXDUMP=-nohex
 SIMULATOR=-verilator
 SDRAM_SNAP=
 
-AUXTMP=/tmp/$RANDOM$RANDOM
-jtcfgstr -target=mist -output=bash -parse ../../hdl/jtninja.def |grep _START > $AUXTMP
-source $AUXTMP
+eval `jtcfgstr -output=bash -core ninja | grep _START`
 
 while [ $# -gt 0 ]; do
     case $1 in

@@ -8,6 +8,8 @@ JTFRAME_AUTOFIRE0
 NOHCU
 -NOTRACKBALL
 
+JTFRAME_CREDITS
+
 [mister]
 # The second analogue stick
 # can be used in MiSTer to control

@@ -8,9 +8,7 @@ HEXDUMP=-nohex
 SIMULATOR=-verilator
 SDRAM_SNAP=
 
-AUXTMP=/tmp/$RANDOM$RANDOM
-jtcfgstr -target=mist -output=bash -parse ../../hdl/jtcop.def |grep _START > $AUXTMP
-source $AUXTMP
+eval `jtcfgstr -output=bash -core cop | grep _START`
 
 while [ $# -gt 0 ]; do
     case $1 in
