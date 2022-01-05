@@ -12,7 +12,8 @@ sourcefile="dec0.cpp"
 [buttons]
 core=5
 Names = [
-    { machine="hbarrel", names="Shot,Bomb,Turn left,Turn right"}
+    { machine="hbarrel", names="Shot,Bomb,Turn left,Turn right"},
+    { machine="robocop", names="Shot,Jump"}
 ]
 
 [rbf]
@@ -55,5 +56,7 @@ splits = [
 ]
 
 blanks = [
-    { machine="baddudes", region="gfx2", offset=0x20000, len=0x20000 }
+    { machine="baddudes", region="gfx2", offset=0x20000, len=0x20000 },
+    { machine="robocop",  region="gfx2", offset=0x20000, len=0x20000 },
+    { machine="robocop",  region="gfx3", offset=0x10000, len=0x10000 },
 ]

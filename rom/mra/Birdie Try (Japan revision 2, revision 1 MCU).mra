@@ -5,7 +5,7 @@
               This work is not mantained by the MiSTer project. Please contact the
               core author for issues and updates.
 
-              (c) Jose Tejada, 2021. Please support the author
+              (c) Jose Tejada, 2022. Please support the author
               Patreon: https://patreon.com/topapate
               Paypal:  https://paypal.me/topapate
 
@@ -115,7 +115,7 @@
     <rom index="1">
         <part>01</part>
     </rom>
-    <switches base="17" default="3f7f">
+    <switches base="17" default="3fff">
         <!-- DSW -->
         <dip name="Coin A" bits="0,1" ids="3/1,2/1,1/2,1/1"/>
         <dip name="Coin B" bits="2,3" ids="3/1,2/1,1/2,1/1"/>
@@ -128,5 +128,5 @@
         <dip name="Timer" bits="13" ids="Fast,Normal"/>
         <dip name="Control Panel Type" bits="14,15" ids="Type C - Upright,Unused,Type B - Cocktail 2,Type A - Cocktail"/>
     </switches>
-    <buttons names="Shot,Jump,-,-,-,Start,Coin,Core credits" default="Y,X,B,A,R,Start,Select,-" count="2"/>
+    <buttons names="button 1,button 2,-,-,-,Start,Coin,Core credits" default="Y,X,B,A,R,Start,Select,-" count="2"/>
 </misterromdescription>
