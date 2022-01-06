@@ -33,8 +33,14 @@ regions = [
     { name="audiocpu", start=$BA1_START, No_offset=true  },
     { name="oki",      start=$PCM_START },
     { name="gfx1",     start=$BA2_START, width=16, No_offset=true },
+
+    { machine="robocop", name="gfx2",     start=$GFX2_START,width=16, No_offset=true,  name_sort=[
+    "ep20", "ep18", "ep21", "ep19"] },
     { name="gfx2",     start=$GFX2_START,width=16, No_offset=true,  ext_sort=[
-    "14d","14f","12d","12f","17d","17f","15d","15f","9h","9f","8h","8f"]},
+    "14d","14f","12d","12f","17d","17f","15d","15f","9h","9f","8h","8f"], sort_even=true },
+
+    { machine="robocop", name="gfx3", start=$GFX3_START,width=16, No_offset=true, name_sort=[
+       "ep15", "ep17", "ep14", "ep16" ] },
     { name="gfx3",     start=$GFX3_START,width=16, No_offset=true, sort_byext=true, sort_alpha=true, sort_reverse=true  },
     { name="gfx4",     start=$BA3_START, width=32, No_offset=true, sort_even=true },
     { name="sub",      start=$MCU_START },
