@@ -13,7 +13,8 @@ sourcefile="dec0.cpp"
 core=5
 Names = [
     { machine="hbarrel", names="Shot,Bomb,Turn left,Turn right"},
-    { machine="robocop", names="Shot,Jump"}
+    { machine="robocop", names="Shot,Jump"},
+    { machine="baddudes", names="Attack,Jump"}
 ]
 
 [rbf]
