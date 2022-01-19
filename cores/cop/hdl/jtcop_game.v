@@ -91,7 +91,7 @@ module jtcop_game(
     input   [7:0]   debug_bus,
     // status dump
     input      [7:0] st_addr,
-    output     [7:0] st_dout
+    output reg [7:0] st_dout
 );
 
 // video signals
@@ -182,11 +182,20 @@ wire [ 7:0] dipsw_a, dipsw_b;
 //wire [ 7:0] game_id;
 
 // Status report
-// wire [7:0] st_video, st_main;
+wire [7:0] st_video; //, st_main;
 
 assign { dipsw_b, dipsw_a } = dipsw[15:0];
 assign dsn = { UDSWn, LDSWn };
 assign dip_flip = ~flip;
+
+always @(posedge clk) begin
+    st_dout <= 0;
+    case( st_addr[7:6] )
+        0: st_dout <= st_video;
+        1: st_dout <= snd_latch;
+        // 2,3: st_dout <= st_main;
+    endcase
+end
 
 jtframe_cen24 u_cen(
     .clk    ( clk24     ),
@@ -376,7 +385,7 @@ jtcop_video u_video(
     .blue       ( blue      ),
     // debug
     .st_addr    ( st_addr   ),
-    .st_dout    ( st_dout   ),
+    .st_dout    ( st_video  ),
     .debug_bus  ( debug_bus )
 );
 

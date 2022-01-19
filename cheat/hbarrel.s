@@ -80,19 +80,187 @@ SCREEN:
     load    s7, 10      ; BA2
     call    PRINT_BADATA
 
+
     ; Debug byte
     outputk 6,VRAM_ROW
     load s0,2
     input  s1, DEBUG_BUS ; debug bus
     call PRINT_HEX
 
-    add s0,2
-    load s3,40      ; sound latch
-    call PRINT_ST8
+    ; Invincibility
+    input sa,FRAMECNT
+    compare sa,30
+    jump nz,.else
+    fetch sa,1
+    compare sa,4
+    jump z,.else
+    add sa,1
+    store sa,1
+.else:
+
+    fetch sa,1
+    compare sa,4
+    jump nz,.else2
+    ; FFA386=10
+    load s2,10
+    load s1,11
+    load s0,c3
+    load s4,10
+    load s3,10
+    load s5,2
+    ; call WRITE_SDRAM
+.else2:
+
+    ; Next level flag
+    input sa,FLAGS
+    fetch sb,2
+    compare sb,sa
+    jump z,.else3
+    store sa,2
+    compare sa,1
+    jump nz,.else3
+    ; FF8216=FF
+    load s2,10
+    load s1,01
+    load s0,0b
+    load s4,ff
+    load s3,ff
+    load s5,0
+    call WRITE_SDRAM
+.else3:
+
+    ; Check game. Heavy Barrel starts with 0024
+    ;             Dragon Ninja starts with 00FF
+    load s2,00
+    load s1,00
+    load s0,01
+    call READ_SDRAM
+    outputk 7,VRAM_ROW
+    load s0, 1
+    load s1,s7
+    call PRINT_HEX
+    load s1,s6
+    call PRINT_HEX
+    compare s6,24
+    jump nz,NO_ANALOGUE_STICK
+
+    ; Analog right stick
+    outputk 6,VRAM_ROW
+    load s0,6
+    input s1,ANA1RX
+    call PRINT_HEX
+    input s1,ANA1RY
+    call PRINT_HEX
+
+    ; Process Heavy Barrel input 1P
+    input s2,ANA1RX
+    input s3,ANA1RY
+    call PROCESS_JOY
+    ; FF8066=orientation
+    load s2,10
+    load s1,00
+    load s0,33
+    fetch s4,10
+    compare s4,ff
+    jump z,.else4
+    load s5,1
+    call WRITE_SDRAM
+.else4:
+
+    ; Process Heavy Barrel input 2P
+    input s2,ANA2RX
+    input s3,ANA2RY
+    call PROCESS_JOY
+    ; FF80AA=orientation
+    load s2,10
+    load s1,00
+    load s0,55
+    fetch s4,10
+    compare s4,ff
+    jump z,.else5
+    load s5,1
+    call WRITE_SDRAM
+.else5:
+NO_ANALOGUE_STICK:
 
 CLOSE_FRAME:
     output sb,6     ; LED
     return
+
+;-----------------------------------------------------------------
+    ; s2 = X (input)
+    ; s3 = Y (input)
+    ; s0 = position or FF if no new position
+PROCESS_JOY:
+    ; is it up?
+    load s0,s2     ; check that c0>X<40
+    and s0,80
+    jump nz,.cleft
+    load s0,s2
+    compare s0,40
+    jump nc,.right
+    jump .centre
+.cleft:
+    load s0,s2
+    compare s0,c0
+    jump c,.left
+.centre:
+    load s0,s3
+    compare s0,c0       ; check that y<c0
+    jump nc,keep_ret
+    and s0,80
+    jump z,.down
+    load s0,0           ; looking up
+    jump st_ret
+.down:
+    load s0,s3
+    compare s0,40
+    jump c,keep_ret
+    load s0,10
+    jump st_ret
+
+.right:
+    load s0,s3
+    and s0,80
+    jump nz,.rup
+    load s0,s3
+    compare s0,40
+    jump c,.fullright
+    load s0,c
+    jump st_ret
+.fullright:
+    load s0,8
+    jump st_ret
+.rup:
+    load s0,4
+    jump st_ret
+
+.left:
+    load s0,s3
+    and s0,80
+    jump nz,.lup
+    load s0,s3
+    compare s0,40
+    jump c,.fullleft
+    load s0,14
+    jump st_ret
+.fullleft:
+    load s0,18
+    jump st_ret
+.lup:
+    load s0,1c
+    jump st_ret
+
+keep_ret:
+    load s0,ff
+    store s0,10
+    return
+st_ret:
+    store s0,10
+    return
+
+
+
 
 ;-----------------------------------------------------------------
 
