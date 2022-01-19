@@ -86,9 +86,9 @@ always @* begin
     id_eff = tbl_dout[11:0];
     vrf    = flip ? 9'd256-vrender : vrender;
     case( msize )
-        1: id_eff = id_eff+ {10'd0,     vflip^veff[4]    };
-        2: id_eff = id_eff+ { 9'd0, {2{vflip}}^veff[5:4] };
-        3: id_eff = id_eff+ { 8'd0, {3{vflip}}^veff[6:4] };
+        1: id_eff = { id_eff[11:1],     vflip^veff[4]    };
+        2: id_eff = { id_eff[11:2], {2{vflip}}^veff[5:4] };
+        3: id_eff = { id_eff[11:3], {3{vflip}}^veff[6:4] };
         default:;
     endcase
 end
