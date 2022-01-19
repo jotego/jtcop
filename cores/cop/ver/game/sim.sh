@@ -8,7 +8,7 @@ HEXDUMP=-nohex
 SIMULATOR=-verilator
 SDRAM_SNAP=
 
-eval `jtcfgstr -output=bash -core cop | grep _START`
+eval `jtcfgstr -output=bash -core cop`
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -31,9 +31,18 @@ done
 
 ln -sf $ROM/$GAME.rom rom.bin
 
-if [ ! -z "$SCENE" ]; then
-    echo "Scene simulation not supported"
-    exit 1
+if [ -n "$SCENE" ]; then
+    if [ ! -d "$SCENE" ]; then
+        echo "Scene folder $SCENE not found"
+        exit 1
+    fi
+    # only support for pal + objects
+    cat $SCENE/pal0.bin | drop1 -l > pal0_hi.bin
+    cat $SCENE/pal0.bin | drop1    > pal0_lo.bin
+    cat $SCENE/pal1.bin | drop1    > pal1_lo.bin
+    cat $SCENE/obj.bin  | drop1 -l > obj_hi.bin
+    cat $SCENE/obj.bin  | drop1    > obj_lo.bin
+    OTHER="$OTHER -d NOSOUND -d NOMAIN"
 else
     # export YM2203=1
     # export YM3812=1
