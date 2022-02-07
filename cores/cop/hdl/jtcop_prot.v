@@ -46,9 +46,10 @@ module jtcop_prot(
     input           main_cs,
     input           main_wrn,
 
-    input     [8:0] prog_addr,
-    input     [7:0] prog_data,
-    input           prog_en
+    output   [15:0] mcu_addr,
+    input     [7:0] mcu_data,
+    output          mcu_cs,
+    input           mcu_ok
 );
 
 wire [20:0] A;
@@ -62,11 +63,13 @@ wire        main_we;
 
 wire        set_irq, irqn;
 reg         rom_cs, ram_cs, shd_cs;
-wire [ 7:0] rom_dout, ram_dout, shd_dout;
+wire [ 7:0] ram_dout, shd_dout;
 wire        shd_we, ram_we;
 
+assign mcu_cs  = rom_cs;
+assign mcu_addr = A[15:0];
 assign main_we = main_cs & ~main_wrn;
-assign waitn   = 1; // no bus contention for now
+assign waitn   = ~(mcu_cs & ~mcu_ok);
 assign set_irq = main_cs && main_addr==11'h7ff;
 //assign irqn    = ~set_irq;
 assign ram_we  = ram_cs & ~wrn;
@@ -83,7 +86,7 @@ always @(posedge clk) begin
     din <=
         ram_cs ? ram_dout :
         shd_cs ? shd_dout :
-        rom_cs ? rom_dout : 8'hff;
+        rom_cs ? mcu_data : 8'hff;
 end
 
 // Not sure how long I need to wait
@@ -109,21 +112,6 @@ jtframe_ff u_ff (
     .set    (           ),    // active high
     .clr    ( irq_clr   ),    // active high
     .sigedge( set_irq   )
-);
-
-jtframe_dual_ram #(.aw(9)) u_rom(
-    .clk0   ( clk_cpu   ),
-    .clk1   ( clk       ),
-    // Programming
-    .data0  ( prog_data ),
-    .addr0  ( prog_addr ), // upper most 2 bits are floating!
-    .we0    ( prog_en   ),
-    .q0     (           ),
-    // HuC6280
-    .data1  (           ),
-    .addr1  ( A[8:0]    ),
-    .we1    ( 1'b0      ),
-    .q1     ( rom_dout  )
 );
 
 jtframe_ram #(.aw(11)) u_ram(

@@ -134,6 +134,11 @@ wire [12:0] b0ram_addr;
 wire [10:0] b1ram_addr, b2ram_addr;
 wire [15:0] b0ram_data, b1ram_data, b2ram_data;
 
+// MCU access to SDRAM
+wire [15:0] mcu_addr;
+wire [ 7:0] mcu_data;
+wire        mcu_cs, mcu_ok;
+
 wire        nexrm0_cs;
 
 // ROM banks
@@ -515,8 +520,6 @@ jtcop_video u_video(
 `endif
 
 `ifndef NOHUC
-    wire prot_prog = ioctl_addr>='h21_1e00 && ioctl_addr<'h21_2000 && ioctl_wr;
-
     jtcop_prot u_prot(
         .rst        ( rst24     ),
         .clk        ( clk24     ),
@@ -528,13 +531,15 @@ jtcop_video u_video(
         .main_cs    ( huc_cs    ),
         .main_wrn   ( main_rnw | LDSWn  ),
 
-        .prog_addr  ( ioctl_addr[8:0]   ),
-        .prog_data  ( ioctl_dout        ),
-        .prog_en    ( prot_prog         )
+        .mcu_addr   ( mcu_addr  ),
+        .mcu_data   ( mcu_data  ),
+        .mcu_cs     ( mcu_cs    ),
+        .mcu_ok     ( mcu_ok    )
     );
 `else
-    wire prot_prog = ioctl_addr>='h21_1e00 && ioctl_addr<'h21_2000 && ioctl_wr;
     assign huc_dout = 0;
+    assign mcu_cs   = 0;
+    assign mcu_addr = 0;
 `endif
 
 jtcop_sdram u_sdram(
@@ -604,6 +609,12 @@ jtcop_sdram u_sdram(
     .adpcm_cs   (adpcm_cs   ),
     .adpcm_data (adpcm_data ),
     .adpcm_ok   (adpcm_ok   ),
+
+    // MCU
+    .mcu_addr   ( mcu_addr  ),
+    .mcu_cs     ( mcu_cs    ),
+    .mcu_data   ( mcu_data  ),
+    .mcu_ok     ( mcu_ok    ),
 
     // BG 0
     .b0rom_ok    ( b0rom_ok   ),

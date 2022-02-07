@@ -52,7 +52,7 @@ module jtcop_sdram(
     input            sndbank,
 
     // PROM
-    output           mcu_we,
+    output           mcu_we,    // for i8751 only
     output           prio_we,
 
     // Sound CPU
@@ -105,6 +105,12 @@ module jtcop_sdram(
     input            obj_cs,
     input    [17:0]  obj_addr,
     output   [31:0]  obj_data,
+
+    // MCU
+    output           mcu_ok,
+    input            mcu_cs,
+    input    [15:0]  mcu_addr,
+    output   [ 7:0]  mcu_data,
 
     // Bank 0: allows R/W
     output    [21:0] ba0_addr,
@@ -161,6 +167,7 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   ZERO_OFFSET = 0,
                   GFX2_OFFSET = 22'h10_0000,
                   GFX3_OFFSET = 22'h20_0000,
+                  MCU_OFFSET  = 22'h4_0000,
                   GFX1_LEN    = 22'h1_0000,
                   GFX2_LEN    = 22'h4_0000,
                   GFX3_LEN    = 22'h2_0000;
@@ -207,7 +214,11 @@ jtframe_dwnld #(
     .BA1_START ( BA1_START ), // sound
     .BA2_START ( BA2_START ), // tiles
     .BA3_START ( BA3_START ), // obj
-    .PROM_START( MCU_START ), // MCU
+`ifdef NOHUC
+    .PROM_START( MCU_START ), // i8751
+`else
+    .PROM_START( PROM_START),
+`endif
     .SWAB      ( 1         )
 ) u_dwnld(
     .clk          ( clk            ),
@@ -346,7 +357,7 @@ jtframe_ram_5slots #(
     .data_read   ( data_read )
 );
 
-// Bank 1: Sound
+// Bank 1: Sound & HuC
 
 jtframe_rom_2slots #(
     .SLOT0_DW(   8),
@@ -423,9 +434,12 @@ jtframe_rom_3slots #(
 
 // Bank 3: objects
 
-jtframe_rom_1slot #(
-    .SLOT0_DW(  32),
-    .SLOT0_AW(  18)
+jtframe_rom_2slots #(
+    .SLOT0_DW    (  32        ),
+    .SLOT0_AW    (  18        ),
+    .SLOT1_DW    (   8        ),
+    .SLOT1_AW    (  16        ),
+    .SLOT1_OFFSET( MCU_OFFSET )
 ) u_bank3(
     .rst        ( rst        ),
     .clk        ( clk        ),
@@ -434,6 +448,11 @@ jtframe_rom_1slot #(
     .slot0_dout ( obj_data   ),
     .slot0_cs   ( obj_cs     ),
     .slot0_ok   ( obj_ok     ),
+
+    .slot1_addr ( mcu_addr   ),
+    .slot1_dout ( mcu_data   ),
+    .slot1_cs   ( mcu_cs     ),
+    .slot1_ok   ( mcu_ok     ),
 
     // SDRAM controller interface
     .sdram_addr ( ba3_addr   ),
