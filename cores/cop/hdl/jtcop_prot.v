@@ -54,6 +54,11 @@ module jtcop_prot(
     input           main_wrn,
     input    [ 1:0] game_id,
 
+    // BA2 control - Hippodrome
+    output          ba2mcu_mode,
+    output          ba2mcu_sft,
+    output          ba2mcu_map,
+
     output   [15:0] mcu_addr,
     input     [7:0] mcu_data,
     output          mcu_cs,
@@ -95,11 +100,18 @@ always @* begin
             shd_cs  = A[20:16]==5'h18;   // 180000-18ffff
             prot_cs = A[20:16]==5'h1d;
             bac_cs  = A[20:16]==5'h1a;
+            ba2mcu_mode = ba_cs && A[12:11]==2'b0;
+            ba2mcu_sft  = ba_cs && A[12:11]==2'b1;
+            ba2mcu_map  = ba_cs && A[12:11]==2'b2;
+            ba2mcu_dsn  = { ~A[0], A[0] };
         end
         default: begin
             shd_cs = A[20] &  A[13];    // 1f2000-1f3fff
-            prot_cs = 0;
-            bac_cs = 0;
+            prot_cs     = 0;
+            bac_cs      = 0;
+            ba2mcu_mode = 0;
+            ba2mcu_sft  = 0;
+            ba2mcu_map  = 0;
         end
     endcase
     // hdpsel_n = A[13] | rdn | wrn | ~A[20];

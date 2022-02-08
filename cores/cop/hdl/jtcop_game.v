@@ -537,6 +537,7 @@ jtcop_video u_video(
         .rst        ( rst24     ),
         .clk        ( clk24     ),
         .clk_cpu    ( clk       ),
+        .game_id    ( game_id   ),
 
         .main_addr  ( main_addr[11:1] ),  // only 2kB are shared
         .main_dout  ( main_dout[ 7:0] ),
@@ -545,9 +546,9 @@ jtcop_video u_video(
         .main_wrn   ( main_rnw | LDSWn  ),
 
         // BA2 interfcae
-
-
-        .game_id    ( game_id   ),
+        .b2mode     ( ba2mcu_mode   ),
+        .b2sft      ( ba2mcu_sft    ),
+        .b2map      ( ba2mcu_map    ),
 
         .mcu_addr   ( mcu_addr  ),
         .mcu_data   ( mcu_data  ),
@@ -563,8 +564,7 @@ jtcop_video u_video(
 jtcop_sdram u_sdram(
     .rst        ( rst       ),
     .clk        ( clk       ),
-
-//    .game_id    ( game_id   ),
+    .game_id    ( game_id   ),
 
     // Video RAM
     .fsft_cs    ( fsft_cs   ),
@@ -573,6 +573,8 @@ jtcop_sdram u_sdram(
     .bmap_cs    ( bmap_cs   ),
     .csft_cs    ( csft_cs   ),
     .cmap_cs    ( cmap_cs   ),
+    .b2mcu_sft  ( b2mcu_sft ),
+    .b2mcu_map  ( b2mcu_map ),
 
     .b0ram_cs   ( b0ram_cs  ),
     .b0ram_addr ( b0ram_addr),
@@ -633,7 +635,6 @@ jtcop_sdram u_sdram(
     .mcu_cs     ( mcu_cs    ),
     .mcu_data   ( mcu_data  ),
     .mcu_ok     ( mcu_ok    ),
-    .game_id    ( game_id   ),
 
     // BG 0
     .b0rom_ok    ( b0rom_ok   ),
