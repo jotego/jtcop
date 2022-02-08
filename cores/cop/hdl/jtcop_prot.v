@@ -55,9 +55,10 @@ module jtcop_prot(
     input    [ 1:0] game_id,
 
     // BA2 control - Hippodrome
-    output          ba2mcu_mode,
-    output          ba2mcu_sft,
-    output          ba2mcu_map,
+    output            ba2mcu_mode,
+    output            ba2mcu_cs,
+    output reg [10:0] ba2mcu_addr,
+    output reg [ 1:0] ba2mcu_dsn,
 
     output   [15:0] mcu_addr,
     input     [7:0] mcu_data,
@@ -78,6 +79,7 @@ wire        main_we;
 
 wire        set_irq, irqn;
 reg         rom_cs, ram_cs, shd_cs;
+reg         ba2mcu_map, ba2mcu_sft;
 wire [ 7:0] ram_dout, shd_dout;
 wire        shd_we, ram_we;
 reg         mcu_good, prot_cs, bac_cs;
@@ -100,10 +102,12 @@ always @* begin
             shd_cs  = A[20:16]==5'h18;   // 180000-18ffff
             prot_cs = A[20:16]==5'h1d;
             bac_cs  = A[20:16]==5'h1a;
-            ba2mcu_mode = ba_cs && A[12:11]==2'b0;
-            ba2mcu_sft  = ba_cs && A[12:11]==2'b1;
-            ba2mcu_map  = ba_cs && A[12:11]==2'b2;
+            ba2mcu_mode = ba_cs && A[12:11]==2'd0;
+            ba2mcu_sft  = ba_cs && A[12:11]==2'd1;
+            ba2mcu_map  = ba_cs && A[12:11]==2'd2;
             ba2mcu_dsn  = { ~A[0], A[0] };
+            ba2mcu_addr = { ba2mcu_map, A[11:1] };
+            ba2mcu_cs   = ba2mcu_map | ba2mcu_sft;
         end
         default: begin
             shd_cs = A[20] &  A[13];    // 1f2000-1f3fff
@@ -112,6 +116,7 @@ always @* begin
             ba2mcu_mode = 0;
             ba2mcu_sft  = 0;
             ba2mcu_map  = 0;
+            ba2mcu_addr = 0;
         end
     endcase
     // hdpsel_n = A[13] | rdn | wrn | ~A[20];

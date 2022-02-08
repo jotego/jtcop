@@ -113,6 +113,14 @@ module jtcop_sdram(
     output   [ 7:0]  mcu_data,
     output reg [1:0] game_id=0, // 1 for hippodrm, 0 for the rest
 
+    // BA2 - MCU
+    input            ba2mcu_cs,
+    output           ba2mcu_ok,
+    input     [ 7:0] mcu_dout,
+    input     [10:0] ba2mcu_addr,
+    output    [ 7:0] ba2mcu_data,
+    input     [ 1:0] ba2mcu_dsn,
+
     // Bank 0: allows R/W
     output    [21:0] ba0_addr,
     output    [21:0] ba1_addr,
@@ -178,8 +186,9 @@ localparam [ 1:0] HIPPODROME  = 2'd1;
 wire        prom_we, is_gfx1, is_gfx2, is_gfx3;
 wire [21:0] pre_prog, gfx2_offset, gfx3_offset;
 reg  [ 7:0] rom_test=0;
-wire [15:0] prog_raw;
+wire [15:0] prog_raw, ba2mcu_raw;
 
+assign ba2mcu_data = mcu_addr[0] ? ba2mcu_raw[15:8] : ba2mcu_raw[7:0];
 assign mcu_we  = prom_we && pre_prog >= MCU_START  && pre_prog < MCU_END;
 assign prog_data = (game_id==HIPPODROME && prog_addr>=MCU_OFFSET && prog_ba==3 && !prom_we) ?
     {   prog_raw[8], prog_raw[14:9], prog_raw[15],
@@ -298,69 +307,82 @@ always @* begin
         ram_maddr[14:10] = 5'b1100_1;
 end
 
-jtframe_ram_5slots #(
+jtframe_ram2_6slots #(
     // VRAM/RAM
     .SLOT0_DW(16),
     .SLOT0_AW(15),  // 64 kB (only 40 used)
 
-    // Game ROM
+    // MCU access to B2
     .SLOT1_DW(16),
-    .SLOT1_AW(18),  // 512kB temptative value
+    .SLOT1_AW(10),  // 2 kB
+
+    // Game ROM
+    .SLOT2_DW(16),
+    .SLOT2_AW(18),  // 512kB temptative value
 
     // VRAM access by B0
-    .SLOT2_DW(16),
-    .SLOT2_AW(13),
+    .SLOT3_DW(16),
+    .SLOT3_AW(13),
 
     // VRAM access by B1
-    .SLOT3_DW(16),
-    .SLOT3_AW(11),
+    .SLOT4_DW(16),
+    .SLOT4_AW(11),
 
     // VRAM access by B2
-    .SLOT4_DW(16),
-    .SLOT4_AW(11)
+    .SLOT5_DW(16),
+    .SLOT5_AW(11)
 ) u_bank0(
     .rst        ( rst       ),
     .clk        ( clk       ),
 
     .offset0    ( RAM_OFFSET),
-    .offset1    (ZERO_OFFSET),
-    .offset2    ( B0_OFFSET ),
-    .offset3    ( B1_OFFSET ),
-    .offset4    ( B2_OFFSET ),
+    .offset1    ( B2_OFFSET ),
+    .offset2    (ZERO_OFFSET),
+    .offset3    ( B0_OFFSET ),
+    .offset4    ( B1_OFFSET ),
+    .offset5    ( B2_OFFSET ),
 
     .slot0_addr ( ram_maddr ),
-    .slot1_addr ( main_addr ),
-    .slot2_addr ( b0ram_addr),
-    .slot3_addr ( b1ram_addr),
-    .slot4_addr ( b2ram_addr /*| 11'b010_0000_0000*/ ),
+    .slot1_addr ( ba2mcu_addr  ),
+    .slot2_addr ( main_addr ),
+    .slot3_addr ( b0ram_addr),
+    .slot4_addr ( b1ram_addr),
+    .slot5_addr ( b2ram_addr /*| 11'b010_0000_0000*/ ),
 
     //  output data
     .slot0_dout ( ram_data  ),
-    .slot1_dout ( main_data ),
-    .slot2_dout ( b0ram_data),
-    .slot3_dout ( b1ram_data),
-    .slot4_dout ( b2ram_data),
+    .slot1_dout ( ba2mcu_raw ),
+    .slot2_dout ( main_data ),
+    .slot3_dout ( b0ram_data),
+    .slot4_dout ( b1ram_data),
+    .slot5_dout ( b2ram_data),
 
     .slot0_cs   ( ram_cs    ),
-    .slot1_cs   ( main_cs   ),
-    .slot2_cs   ( b0ram_cs  ),
-    .slot3_cs   ( b1ram_cs  ),
-    .slot4_cs   ( b2ram_cs  ),
+    .slot1_cs   ( ba2mcu_cs ),
+    .slot2_cs   ( main_cs   ),
+    .slot3_cs   ( b0ram_cs  ),
+    .slot4_cs   ( b1ram_cs  ),
+    .slot5_cs   ( b2ram_cs  ),
 
     .slot0_wen  ( ~main_rnw ),
     .slot0_din  ( main_dout ),
     .slot0_wrmask( dsn      ),
 
-    .slot1_clr  ( 1'b0      ),
+    .slot1_wen  ( ~ba2mcu_rnw ),
+    .slot1_din  ({2{mcu_dout}}),
+    .slot1_wrmask( ba2mcu_dsn ),
+
     .slot2_clr  ( 1'b0      ),
     .slot3_clr  ( 1'b0      ),
     .slot4_clr  ( 1'b0      ),
+    .slot5_clr  ( 1'b0      ),
 
     .slot0_ok   ( ram_ok    ),
-    .slot1_ok   ( main_ok   ),
-    .slot2_ok   ( b0ram_ok  ),
-    .slot3_ok   ( b1ram_ok  ),
-    .slot4_ok   ( b2ram_ok  ),
+    .slot1_ok   ( ba2mcu_ok ),
+    .slot2_ok   ( main_ok   ),
+    .slot3_ok   ( b0ram_ok  ),
+    .slot4_ok   ( b1ram_ok  ),
+    .slot5_ok   ( b2ram_ok  ),
 
     // SDRAM controller interface
     .sdram_ack   ( ba_ack[0] ),
