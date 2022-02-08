@@ -65,12 +65,13 @@ wire        set_irq, irqn;
 reg         rom_cs, ram_cs, shd_cs;
 wire [ 7:0] ram_dout, shd_dout;
 wire        shd_we, ram_we;
+reg         mcu_good;
 
 assign mcu_cs  = rom_cs;
 assign mcu_addr = A[15:0];
 assign main_we = main_cs & ~main_wrn;
 // no bus access allowed while MAIN is accessing
-assign waitn   = ~main_cs & ~(mcu_cs & ~mcu_ok);
+assign waitn   = ~main_cs & mcu_good;
 assign set_irq = main_cs && main_addr==11'h7ff;
 //assign irqn    = ~set_irq;
 assign ram_we  = ram_cs & ~wrn;
@@ -84,6 +85,7 @@ always @* begin
 end
 
 always @(posedge clk) begin
+    mcu_good <= !mcu_cs || mcu_ok;
     din <=
         ram_cs ? ram_dout :
         shd_cs ? shd_dout :

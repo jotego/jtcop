@@ -357,7 +357,7 @@ jtframe_ram_5slots #(
     .data_read   ( data_read )
 );
 
-// Bank 1: Sound & HuC
+// Bank 1: Sound
 
 jtframe_rom_2slots #(
     .SLOT0_DW(   8),
@@ -432,7 +432,7 @@ jtframe_rom_3slots #(
     .data_read  ( data_read  )
 );
 
-// Bank 3: objects
+// Bank 3: objects & HuC
 
 jtframe_rom_2slots #(
     .SLOT0_DW    (  32        ),
