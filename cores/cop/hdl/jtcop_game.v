@@ -188,6 +188,7 @@ wire [ 7:0] dipsw_a, dipsw_b;
 
 // Status report
 wire [7:0] st_video; //, st_main;
+wire [1:0] game_id;
 
 assign { dipsw_b, dipsw_a } = dipsw[15:0];
 assign dsn = { UDSWn, LDSWn };
@@ -531,6 +532,8 @@ jtcop_video u_video(
         .main_cs    ( huc_cs    ),
         .main_wrn   ( main_rnw | LDSWn  ),
 
+        .game_id    ( game_id   ),
+
         .mcu_addr   ( mcu_addr  ),
         .mcu_data   ( mcu_data  ),
         .mcu_cs     ( mcu_cs    ),
@@ -615,6 +618,7 @@ jtcop_sdram u_sdram(
     .mcu_cs     ( mcu_cs    ),
     .mcu_data   ( mcu_data  ),
     .mcu_ok     ( mcu_ok    ),
+    .game_id    ( game_id   ),
 
     // BG 0
     .b0rom_ok    ( b0rom_ok   ),

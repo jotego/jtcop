@@ -20,6 +20,13 @@
 // used on Robocop. It consists of a Hud6280 and some logic
 // This is not used in Bad Dudes, where a i8051 replaces it.
 
+// Hippodrome uses the same Hud6280 but it adds some protection mechanisms:
+// - The ROM bits are twisted
+// - There is a protection chip labelled "49" in page 26 of sch.
+//   its details are unknown but the game seems to do a very rudimentary
+//   use of it, so it is emulated with a very short LUT here
+// - The MCU can access the BAC-06 chip on the same board
+
 /* Equations in PAL16L8B in location 9A
 /rom_a9 = A13 +
        rdn +
@@ -45,6 +52,7 @@ module jtcop_prot(
     output   [ 7:0] main_din,
     input           main_cs,
     input           main_wrn,
+    input    [ 1:0] game_id,
 
     output   [15:0] mcu_addr,
     input     [7:0] mcu_data,
@@ -52,9 +60,11 @@ module jtcop_prot(
     input           mcu_ok
 );
 
+localparam [ 1:0] HIPPODROME  = 2'd1;
+
 wire [20:0] A;
 wire [ 7:0] dout;
-reg  [ 7:0] din;
+reg  [ 7:0] din, prot_st;
 wire        waitn, wrn, rdn, SX;
 
 wire        ce, cek_n, ce7_n, cer_n;
@@ -65,7 +75,7 @@ wire        set_irq, irqn;
 reg         rom_cs, ram_cs, shd_cs;
 wire [ 7:0] ram_dout, shd_dout;
 wire        shd_we, ram_we;
-reg         mcu_good;
+reg         mcu_good, prot_cs;
 
 assign mcu_cs  = rom_cs;
 assign mcu_addr = A[15:0];
@@ -80,8 +90,27 @@ assign shd_we  = shd_cs & ~wrn;
 always @* begin
     rom_cs = A[20:16]==0 && !rdn;
     ram_cs = A[20] & ~A[13];    // 1f0000-1f1fff
-    shd_cs = A[20] &  A[13];    // 1f2000-1f3fff
+    case( game_id )
+        HIPPODROME: begin
+            shd_cs  = A[20:16]==5'h18;   // 180000-18ffff
+            prot_cs = A[20:16]==5'h1d;
+            bac_s   = A[20:16]==5'h1a;
+        end
+        default: begin
+            shd_cs = A[20] &  A[13];    // 1f2000-1f3fff
+            prot_cs = 0;
+            bac_cs = 0;
+        end
+    endcase
     // hdpsel_n = A[13] | rdn | wrn | ~A[20];
+end
+
+always @(posedge clk,posedge rst) begin
+    if( rst ) begin
+        prot_st <= 0;
+    end else begin
+        if( prot_cs && !wrn ) prot_st <= dout;
+    end
 end
 
 always @(posedge clk) begin
@@ -89,6 +118,7 @@ always @(posedge clk) begin
     din <=
         ram_cs ? ram_dout :
         shd_cs ? shd_dout :
+        prot_cs? (prot_st==8'h45 ? 8'h4e : prot_st==8'h92 ? 8'h15 : 8'h0) :
         rom_cs ? mcu_data : 8'hff;
 end
 

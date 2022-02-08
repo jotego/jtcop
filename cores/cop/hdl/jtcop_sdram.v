@@ -111,6 +111,7 @@ module jtcop_sdram(
     input            mcu_cs,
     input    [15:0]  mcu_addr,
     output   [ 7:0]  mcu_data,
+    output reg [1:0] game_id=0, // 1 for hippodrm, 0 for the rest
 
     // Bank 0: allows R/W
     output    [21:0] ba0_addr,
@@ -136,9 +137,9 @@ module jtcop_sdram(
     input    [ 7:0]  ioctl_dout,
     input            ioctl_wr,
     output reg [21:0] prog_addr,
-    output   [15:0]  prog_data,
-    output   [ 1:0]  prog_mask,
-    output   [ 1:0]  prog_ba,
+    output    [15:0] prog_data,
+    output    [ 1:0] prog_mask,
+    output    [ 1:0] prog_ba,
     output           prog_we,
     output           prog_rd,
     input            prog_ack,
@@ -172,10 +173,17 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   GFX2_LEN    = 22'h4_0000,
                   GFX3_LEN    = 22'h2_0000;
 
+localparam [ 1:0] HIPPODROME  = 2'd1;
+
 wire        prom_we, is_gfx1, is_gfx2, is_gfx3;
 wire [21:0] pre_prog, gfx2_offset, gfx3_offset;
+reg  [ 7:0] rom_test=0;
+wire [15:0] prog_raw;
 
 assign mcu_we  = prom_we && pre_prog >= MCU_START  && pre_prog < MCU_END;
+assign prog_data = (game_id==HIPPODROME && prog_addr>=MCU_OFFSET && prog_ba==3 && !prom_we) ?
+    {   prog_raw[8], prog_raw[14:9], prog_raw[15],
+        prog_raw[0], prog_raw[ 6:1], prog_raw[ 7] } : prog_raw;
 // priority PROM is meant to be the second one in the MRA file
 assign prio_we = prom_we && pre_prog >= PRIO_START && pre_prog < PRIO_END;
 assign is_gfx1 = prog_ba==2'd2 && pre_prog < GFX1_LEN;
@@ -202,6 +210,15 @@ always @* begin
         prog_addr[9:8] = prog_addr[9:8]-2'd2;
 end
 
+always @(posedge clk) begin
+    if( !downloading ) rom_test <= 0;
+    if( ioctl_wr ) begin
+        if( ioctl_addr < 8 )
+            rom_test <= rom_test + ioctl_dout;
+        if( ioctl_addr==8 )
+            game_id <= (rom_test==8'hc || rom_test==8'hf4) ? HIPPODROME : 2'd0; // Detects Fighting Fantasy
+    end
+end
 
 `ifdef JTFRAME_DWNLD_PROM_ONLY
     assign dwnld_busy = downloading | prom_we; // keep the game in reset while
@@ -227,7 +244,7 @@ jtframe_dwnld #(
     .ioctl_dout   ( ioctl_dout     ),
     .ioctl_wr     ( ioctl_wr       ),
     .prog_addr    ( pre_prog       ),
-    .prog_data    ( prog_data      ),
+    .prog_data    ( prog_raw       ),
     .prog_mask    ( prog_mask      ), // active low
     .prog_we      ( prog_we        ),
     .prog_rd      ( prog_rd        ),
