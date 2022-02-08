@@ -9,6 +9,7 @@ entity HUC6280 is
 		CLK		: in std_logic;
 		RST_N		: in std_logic;
 		WAIT_N	: in std_logic;
+		SX      : out std_logic;
 		  
 		A			: out std_logic_vector(20 downto 0);
 		DI			: in std_logic_vector(7 downto 0);
@@ -92,8 +93,14 @@ begin
 			CPU_CER <= '0';
 			IO_CLK_CNT <= (others=>'0');
 			IO_CE <= '0';
+			SX    <= '0';
 		elsif rising_edge(CLK) then
 			CPU_CE <= '0';
+			if (CPU_CLK_CNT = 2 and CPU_CS = '1') or (CPU_CLK_CNT = 11 and CPU_CS = '0') then
+				SX <= '1';
+			else
+				SX <= '0';
+			end if;
 			if (CPU_CLK_CNT = 5 and CPU_CS = '1') or (CPU_CLK_CNT = 23 and CPU_CS = '0') then
 				if WAIT_N = '1' then
 					CPU_CLK_CNT <= (others=>'0');

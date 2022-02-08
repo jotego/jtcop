@@ -55,7 +55,7 @@ module jtcop_prot(
 wire [20:0] A;
 wire [ 7:0] dout;
 reg  [ 7:0] din;
-wire        waitn, wrn, rdn;
+wire        waitn, wrn, rdn, SX;
 
 wire        ce, cek_n, ce7_n, cer_n;
             //hdpsel_n;
@@ -69,7 +69,8 @@ wire        shd_we, ram_we;
 assign mcu_cs  = rom_cs;
 assign mcu_addr = A[15:0];
 assign main_we = main_cs & ~main_wrn;
-assign waitn   = ~(mcu_cs & ~mcu_ok);
+// no bus access allowed while MAIN is accessing
+assign waitn   = ~main_cs & ~(mcu_cs & ~mcu_ok);
 assign set_irq = main_cs && main_addr==11'h7ff;
 //assign irqn    = ~set_irq;
 assign ram_we  = ram_cs & ~wrn;
@@ -143,6 +144,7 @@ HUC6280 u_huc(
     .CLK        ( clk       ),
     .RST_N      ( ~rst      ),
     .WAIT_N     ( waitn     ),
+    .SX         ( SX        ),
 
     .A          ( A         ),
     .DI         ( din       ),
