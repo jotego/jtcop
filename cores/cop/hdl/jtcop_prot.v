@@ -55,8 +55,12 @@ module jtcop_prot(
     input    [ 1:0] game_id,
 
     // BA2 control - Hippodrome
-    output            ba2mcu_mode,
-    output            ba2mcu_cs,
+    output     [ 7:0] ba2mcu_dout,
+    output reg        ba2mcu_mode,
+    input      [ 7:0] ba2mcu_mode_din,
+    output reg        ba2mcu_cs,
+    input             ba2mcu_ok,
+    input      [ 7:0] ba2mcu_data,
     output reg [10:0] ba2mcu_addr,
     output reg [ 1:0] ba2mcu_dsn,
 
@@ -82,13 +86,14 @@ reg         rom_cs, ram_cs, shd_cs;
 reg         ba2mcu_map, ba2mcu_sft;
 wire [ 7:0] ram_dout, shd_dout;
 wire        shd_we, ram_we;
-reg         mcu_good, prot_cs, bac_cs;
+reg         mcu_good, ba_good, prot_cs, bac_cs;
 
+assign ba2mcu_dout = dout;
 assign mcu_cs  = rom_cs;
 assign mcu_addr = A[15:0];
 assign main_we = main_cs & ~main_wrn;
 // no bus access allowed while MAIN is accessing
-assign waitn   = ~main_cs & mcu_good;
+assign waitn   = ~main_cs & mcu_good & ba_good;
 assign set_irq = main_cs && main_addr==11'h7ff;
 //assign irqn    = ~set_irq;
 assign ram_we  = ram_cs & ~wrn;
@@ -102,21 +107,23 @@ always @* begin
             shd_cs  = A[20:16]==5'h18;   // 180000-18ffff
             prot_cs = A[20:16]==5'h1d;
             bac_cs  = A[20:16]==5'h1a;
-            ba2mcu_mode = ba_cs && A[12:11]==2'd0;
-            ba2mcu_sft  = ba_cs && A[12:11]==2'd1;
-            ba2mcu_map  = ba_cs && A[12:11]==2'd2;
+            ba2mcu_mode = bac_cs && A[12:11]==2'd0;
+            ba2mcu_sft  = bac_cs && A[12:11]==2'd1;
+            ba2mcu_map  = bac_cs && A[12:11]==2'd2;
             ba2mcu_dsn  = { ~A[0], A[0] };
-            ba2mcu_addr = { ba2mcu_map, A[11:1] };
+            ba2mcu_addr = { ba2mcu_map, A[10:1] };
             ba2mcu_cs   = ba2mcu_map | ba2mcu_sft;
         end
         default: begin
-            shd_cs = A[20] &  A[13];    // 1f2000-1f3fff
+            shd_cs = A[20] & A[13]; // 1f2000-1f3fff
             prot_cs     = 0;
             bac_cs      = 0;
             ba2mcu_mode = 0;
             ba2mcu_sft  = 0;
             ba2mcu_map  = 0;
+            ba2mcu_dsn  = 3;
             ba2mcu_addr = 0;
+            ba2mcu_cs   = 0;
         end
     endcase
     // hdpsel_n = A[13] | rdn | wrn | ~A[20];
@@ -132,10 +139,13 @@ end
 
 always @(posedge clk) begin
     mcu_good <= !mcu_cs || mcu_ok;
+    ba_good  <= !ba2mcu_cs || ba2mcu_ok;
     din <=
         ram_cs ? ram_dout :
         shd_cs ? shd_dout :
         prot_cs? (prot_st==8'h45 ? 8'h4e : prot_st==8'h92 ? 8'h15 : 8'h0) :
+        ba2mcu_cs ? ba2mcu_data :
+        ba2mcu_mode ? ba2mcu_mode_din :
         rom_cs ? mcu_data : 8'hff;
 end
 

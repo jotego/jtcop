@@ -31,10 +31,12 @@ module jtcop_video(
     input              cpu_rnw,
 
     // MCU interface
-    input      [12:0]  mcu_addr,
+    input      [10:0]  mcu_addr,
     input      [ 7:0]  mcu_dout,
     output     [ 7:0]  mcu_din,
+    input      [ 1:0]  mcu_dsn,
     input              mcu_rnw,
+    input              mcu_mode,
 
     input              fmode_cs,
     input              bmode_cs,
@@ -239,18 +241,21 @@ jtcop_bac06 u_ba1(
 wire [12:1] ba2_addr;
 wire [15:0] ba2_din;
 wire [ 1:0] ba2_dsn;
-wire        ba2_rnw;
+wire        ba2_rnw, ba2_mode;
 
 `ifdef NOHUC
     assign ba2_addr = cpu_addr;
     assign ba2_din  = cpu_dout;
     assign ba2_dsn  = cpu_dsn;
     assign ba2_rnw  = cpu_rnw;
+    assign ba2_mode = cmode_cs;
+    assign mcu_din  = 0;
 `else
-    assign ba2_addr = game_id==HIPPODROME ? mcu_addr[12:1] : cpu_addr;
+    assign ba2_addr = game_id==HIPPODROME ? {1'b0,mcu_addr} : cpu_addr;
     assign ba2_din  = game_id==HIPPODROME ? {2{mcu_dout}} : cpu_dout;
-    assign ba2_dsn  = game_id==HIPPODROME ? {~mcu_addr[0], mcu_addr[0] }  : cpu_dsn;
+    assign ba2_dsn  = game_id==HIPPODROME ? mcu_dsn  : cpu_dsn;
     assign ba2_rnw  = game_id==HIPPODROME ? mcu_rnw  : cpu_rnw;
+    assign ba2_mode = game_id==HIPPODROME ? mcu_mode : cmode_cs;
     assign mcu_din  = mcu_addr[0] ? ba2_dout[15:8] : ba2_dout[7:0];
 `endif
 
@@ -261,7 +266,7 @@ jtcop_bac06 u_ba2(
     .pxl2_cen   ( pxl2_cen      ),
     .pxl_cen    ( pxl_cen       ),
 
-    .mode_cs    ( cmode_cs      ),
+    .mode_cs    ( ba2_mode      ),
     .flip       ( flip          ),
 
     // CPU interface

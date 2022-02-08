@@ -183,10 +183,13 @@ wire [ 7:0] huc_dout;
 wire        huc_cs;
 
 // BA2 - MCU interface
-wire [12:0] ba2mcu_addr;
-wire [ 7:0] ba2mcu_dout, ba2mcu_din;
+wire [ 7:0] ba2mcu_mode_din, ba2mcu_dout;
 wire        ba2mcu_rnw;
-
+wire        ba2mcu_cs, ba2mcu_mode;
+wire        ba2mcu_ok;
+wire [10:0] ba2mcu_addr;
+wire [ 7:0] ba2mcu_data;
+wire [ 1:0] ba2mcu_dsn;
 // Cabinet inputs
 wire [ 7:0] dipsw_a, dipsw_b;
 //wire [ 7:0] game_id;
@@ -320,11 +323,12 @@ jtcop_video u_video(
     .cpu_addr   ( main_addr[12:1]  ),
 
     // MCU interface
-    .mcu_
-    .mcu_addr   ( mcu_addr[12:0] ),
+    .mcu_addr   ( ba2mcu_addr  ),
     .mcu_dout   ( ba2mcu_dout  ),
-    .mcu_din    ( ba2mcu_din   ),
+    .mcu_din    ( ba2mcu_mode_din ),
     .mcu_rnw    ( ba2mcu_rnw   ),
+    .mcu_dsn    ( ba2mcu_dsn   ),
+    .mcu_mode   ( ba2mcu_mode  ),
 
     // Register reads
     .ba0_dout   ( ba0_dout  ),
@@ -546,9 +550,14 @@ jtcop_video u_video(
         .main_wrn   ( main_rnw | LDSWn  ),
 
         // BA2 interfcae
-        .b2mode     ( ba2mcu_mode   ),
-        .b2sft      ( ba2mcu_sft    ),
-        .b2map      ( ba2mcu_map    ),
+        .ba2mcu_mode( ba2mcu_mode   ),
+        .ba2mcu_mode_din(ba2mcu_mode_din),
+        .ba2mcu_cs  ( ba2mcu_cs     ),
+        .ba2mcu_ok  ( ba2mcu_ok     ),
+        .ba2mcu_dout( ba2mcu_dout   ),
+        .ba2mcu_addr( ba2mcu_addr   ),
+        .ba2mcu_data( ba2mcu_data   ),
+        .ba2mcu_dsn ( ba2mcu_dsn    ),
 
         .mcu_addr   ( mcu_addr  ),
         .mcu_data   ( mcu_data  ),
@@ -573,8 +582,6 @@ jtcop_sdram u_sdram(
     .bmap_cs    ( bmap_cs   ),
     .csft_cs    ( csft_cs   ),
     .cmap_cs    ( cmap_cs   ),
-    .b2mcu_sft  ( b2mcu_sft ),
-    .b2mcu_map  ( b2mcu_map ),
 
     .b0ram_cs   ( b0ram_cs  ),
     .b0ram_addr ( b0ram_addr),
@@ -635,6 +642,15 @@ jtcop_sdram u_sdram(
     .mcu_cs     ( mcu_cs    ),
     .mcu_data   ( mcu_data  ),
     .mcu_ok     ( mcu_ok    ),
+
+    // BA2 - MCU
+    .ba2mcu_cs  ( ba2mcu_cs     ),
+    .ba2mcu_ok  ( ba2mcu_ok     ),
+    .ba2mcu_rnw ( ba2mcu_rnw    ),
+    .mcu_dout   ( ba2mcu_dout   ),
+    .ba2mcu_addr( ba2mcu_addr   ),
+    .ba2mcu_data( ba2mcu_data   ),
+    .ba2mcu_dsn ( ba2mcu_dsn    ),
 
     // BG 0
     .b0rom_ok    ( b0rom_ok   ),

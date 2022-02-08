@@ -115,6 +115,7 @@ module jtcop_sdram(
 
     // BA2 - MCU
     input            ba2mcu_cs,
+    input            ba2mcu_rnw,
     output           ba2mcu_ok,
     input     [ 7:0] mcu_dout,
     input     [10:0] ba2mcu_addr,
