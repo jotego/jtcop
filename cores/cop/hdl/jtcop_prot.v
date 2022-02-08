@@ -75,7 +75,7 @@ wire        set_irq, irqn;
 reg         rom_cs, ram_cs, shd_cs;
 wire [ 7:0] ram_dout, shd_dout;
 wire        shd_we, ram_we;
-reg         mcu_good, prot_cs;
+reg         mcu_good, prot_cs, bac_cs;
 
 assign mcu_cs  = rom_cs;
 assign mcu_addr = A[15:0];
@@ -94,7 +94,7 @@ always @* begin
         HIPPODROME: begin
             shd_cs  = A[20:16]==5'h18;   // 180000-18ffff
             prot_cs = A[20:16]==5'h1d;
-            bac_s   = A[20:16]==5'h1a;
+            bac_cs  = A[20:16]==5'h1a;
         end
         default: begin
             shd_cs = A[20] &  A[13];    // 1f2000-1f3fff

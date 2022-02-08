@@ -182,6 +182,11 @@ wire        shd_cs;
 wire [ 7:0] huc_dout;
 wire        huc_cs;
 
+// BA2 - MCU interface
+wire [12:0] ba2mcu_addr;
+wire [ 7:0] ba2mcu_dout, ba2mcu_din;
+wire        ba2mcu_rnw;
+
 // Cabinet inputs
 wire [ 7:0] dipsw_a, dipsw_b;
 //wire [ 7:0] game_id;
@@ -213,7 +218,6 @@ jtframe_cen24 u_cen(
     .cen3q(), .cen12b(), .cen6b(),
     .cen3b(), .cen3qb(), .cen1p5b()
 );
-
 
 `ifndef NOMAIN
 jtcop_main u_main(
@@ -310,9 +314,17 @@ jtcop_video u_video(
     .pxl_cen    ( pxl_cen   ),
     .gfx_en     ( gfx_en    ),
 
-//    .game_id    ( game_id   ),
+    .game_id    ( game_id   ),
+
     // CPU interface
     .cpu_addr   ( main_addr[12:1]  ),
+
+    // MCU interface
+    .mcu_
+    .mcu_addr   ( mcu_addr[12:0] ),
+    .mcu_dout   ( ba2mcu_dout  ),
+    .mcu_din    ( ba2mcu_din   ),
+    .mcu_rnw    ( ba2mcu_rnw   ),
 
     // Register reads
     .ba0_dout   ( ba0_dout  ),
@@ -531,6 +543,9 @@ jtcop_video u_video(
         .main_din   ( huc_dout  ),
         .main_cs    ( huc_cs    ),
         .main_wrn   ( main_rnw | LDSWn  ),
+
+        // BA2 interfcae
+
 
         .game_id    ( game_id   ),
 

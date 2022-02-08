@@ -22,12 +22,19 @@ module jtcop_video(
     input              clk_cpu,
     output             pxl2_cen,  // pixel clock enable (2x)
     output             pxl_cen,   // pixel clock enable
+    input       [ 1:0] game_id,
 
     // CPU interface
     input      [12:1]  cpu_addr,
     input      [15:0]  cpu_dout,
     input      [ 1:0]  cpu_dsn,
     input              cpu_rnw,
+
+    // MCU interface
+    input      [12:0]  mcu_addr,
+    input      [ 7:0]  mcu_dout,
+    output     [ 7:0]  mcu_din,
+    input              mcu_rnw,
 
     input              fmode_cs,
     input              bmode_cs,
@@ -113,6 +120,8 @@ module jtcop_video(
     output reg [ 7:0]  st_dout
 
 );
+
+localparam [ 1:0] HIPPODROME  = 2'd1;
 
 wire   [8:0]  vdump, vrender, hdump;
 wire   [7:0]  ba0_pxl, ba1_pxl, ba2_pxl, obj_pxl;
@@ -226,6 +235,25 @@ jtcop_bac06 u_ba1(
 `endif
 
 `ifndef NOBA2
+
+wire [12:1] ba2_addr;
+wire [15:0] ba2_din;
+wire [ 1:0] ba2_dsn;
+wire        ba2_rnw;
+
+`ifdef NOHUC
+    assign ba2_addr = cpu_addr;
+    assign ba2_din  = cpu_dout;
+    assign ba2_dsn  = cpu_dsn;
+    assign ba2_rnw  = cpu_rnw;
+`else
+    assign ba2_addr = game_id==HIPPODROME ? mcu_addr[12:1] : cpu_addr;
+    assign ba2_din  = game_id==HIPPODROME ? {2{mcu_dout}} : cpu_dout;
+    assign ba2_dsn  = game_id==HIPPODROME ? {~mcu_addr[0], mcu_addr[0] }  : cpu_dsn;
+    assign ba2_rnw  = game_id==HIPPODROME ? mcu_rnw  : cpu_rnw;
+    assign mcu_din  = mcu_addr[0] ? ba2_dout[15:8] : ba2_dout[7:0];
+`endif
+
 jtcop_bac06 u_ba2(
     .rst        ( rst           ),
     .clk        ( clk           ),
@@ -237,10 +265,10 @@ jtcop_bac06 u_ba2(
     .flip       ( flip          ),
 
     // CPU interface
-    .cpu_dout   ( cpu_dout      ),
-    .cpu_addr   ( cpu_addr      ),
-    .cpu_rnw    ( cpu_rnw       ),
-    .cpu_dsn    ( cpu_dsn       ),
+    .cpu_dout   ( ba2_din       ),
+    .cpu_addr   ( ba2_addr      ),
+    .cpu_rnw    ( ba2_rnw       ),
+    .cpu_dsn    ( ba2_dsn       ),
     .cpu_din    ( ba2_dout      ),
 
     // Timer signals
