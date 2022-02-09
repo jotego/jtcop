@@ -94,10 +94,6 @@
         <part name="mb7116e_a-1.12c" crc="86e775f8"/>
         <part name="mb7122e_a-2.17e" crc="a5cda23e"/>
         <!-- Total 0x228600 bytes - 2209 kBytes -->
-        <patch offset="0x210189"> 60</patch>
-        <patch offset="0x2101af"> 60</patch>
-        <patch offset="0x2101db"> 60</patch>
-        <patch offset="0x21021a"> 60</patch>
     </rom>
     <rom index="17" zip="jtbeta.zip" md5="None">
         <part name="beta.bin"/>
