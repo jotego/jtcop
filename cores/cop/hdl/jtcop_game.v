@@ -541,6 +541,7 @@ jtcop_video u_video(
         .rst        ( rst24     ),
         .clk        ( clk24     ),
         .clk_cpu    ( clk       ),
+        .LVBL       ( LVBL      ),
         .game_id    ( game_id   ),
 
         .main_addr  ( main_addr[11:1] ),  // only 2kB are shared

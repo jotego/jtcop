@@ -46,6 +46,7 @@ module jtcop_prot(
     input           rst,
     input           clk,
     input           clk_cpu,
+    input           LVBL,
 
     input    [11:1] main_addr,  // only 2kB are shared
     input    [ 7:0] main_dout,
@@ -84,10 +85,11 @@ wire        main_we;
 
 wire        set_irq, irqn;
 reg         rom_cs, ram_cs, shd_cs;
-reg         ba2mcu_map, ba2mcu_sft;
+wire        ba2mcu_map, ba2mcu_sft;
 wire [ 7:0] ram_dout, shd_dout;
-wire        shd_we, ram_we;
-reg         mcu_good, ba_good, prot_cs, bac_cs;
+wire        shd_we, ram_we, bac_cs;
+reg         mcu_good, ba_good, prot_cs;
+wire        irq2n;
 
 assign ba2mcu_dout = dout;
 assign ba2mcu_rnw  = wrn;
@@ -100,36 +102,53 @@ assign set_irq = main_cs && main_addr==11'h7ff;
 //assign irqn    = ~set_irq;
 assign ram_we  = ram_cs & ~wrn;
 assign shd_we  = shd_cs & ~wrn;
+assign bac_cs  = A[20:16]==5'h1a && game_id==HIPPODROME;
+assign ba2mcu_sft = bac_cs && A[12:11]==2'd1;
+assign ba2mcu_map = bac_cs && A[12:11]==2'd2;
+assign irq2n = !(game_id==HIPPODROME && !LVBL);
 
-always @* begin
-    rom_cs = A[20:16]==0;
-    case( game_id )
-        HIPPODROME: begin
-            ram_cs  = A[20:16]==5'h1f;
-            shd_cs  = A[20:16]==5'h18;   // 180000-18ffff
-            prot_cs = A[20:16]==5'h1d;
-            bac_cs  = A[20:16]==5'h1a;
-            ba2mcu_mode = bac_cs && A[12:11]==2'd0;
-            ba2mcu_sft  = bac_cs && A[12:11]==2'd1;
-            ba2mcu_map  = bac_cs && A[12:11]==2'd2;
-            ba2mcu_dsn  = { ~A[0], A[0] };
-            ba2mcu_addr = { ba2mcu_map, A[10:1] };
-            ba2mcu_cs   = ba2mcu_map | ba2mcu_sft;
-        end
-        default: begin
-            ram_cs = A[20] & ~A[13]; // 1f0000-1f1fff
-            shd_cs = A[20] & A[13];  // 1f2000-1f3fff
-            prot_cs     = 0;
-            bac_cs      = 0;
-            ba2mcu_mode = 0;
-            ba2mcu_sft  = 0;
-            ba2mcu_map  = 0;
-            ba2mcu_dsn  = 3;
-            ba2mcu_addr = 0;
-            ba2mcu_cs   = 0;
-        end
-    endcase
-    // hdpsel_n = A[13] | rdn | wrn | ~A[20];
+// Unless SX is used, you can create a SDRAM
+// request before knowing whether it is a read or write
+// rdn and wrn are asserted with SX
+// the address changes with CE
+// One approach is to latch CS signals with SX
+// and clear them with CE
+// Another approach is a combinational assign including
+// rdn and wrn to validate the _cs signals
+// There are three clock cycles between SX and CE
+always @(posedge clk) begin
+    if(SX) begin
+        rom_cs <= A[20:16]==0;
+        case( game_id )
+            HIPPODROME: begin
+                ram_cs  <= A[20:16]==5'h1f;
+                shd_cs  <= A[20:16]==5'h18;   // 180000-18ffff
+                prot_cs <= A[20:16]==5'h1d;
+                ba2mcu_mode <= bac_cs && A[12:11]==2'd0;
+                ba2mcu_dsn  <= { ~A[0], A[0] };
+                ba2mcu_addr <= { ba2mcu_map, A[10:1] };
+                ba2mcu_cs   <= ba2mcu_map | ba2mcu_sft;
+            end
+            default: begin
+                ram_cs <= A[20] & ~A[13]; // 1f0000-1f1fff
+                shd_cs <= A[20] & A[13];  // 1f2000-1f3fff
+                prot_cs     <= 0;
+                ba2mcu_mode <= 0;
+                ba2mcu_dsn  <= 3;
+                ba2mcu_addr <= 0;
+                ba2mcu_cs   <= 0;
+            end
+        endcase
+    end else if(ce) begin // CE will not happen is waitn is asserted
+        rom_cs      <= 0;
+        ram_cs      <= 0;
+        shd_cs      <= 0;
+        prot_cs     <= 0;
+        ba2mcu_mode <= 0;
+        ba2mcu_dsn  <= 3;
+        ba2mcu_addr <= 0;
+        ba2mcu_cs   <= 0;
+    end
 end
 
 always @(posedge clk,posedge rst) begin
@@ -217,7 +236,7 @@ HUC6280 u_huc(
     .RDY        ( 1'b1      ),
     .NMI_N      ( 1'b1      ),
     .IRQ1_N     ( irqn      ),
-    .IRQ2_N     ( 1'b1      ),
+    .IRQ2_N     ( irq2n     ),
 
     .CE         ( ce        ),
     .CEK_N      ( cek_n     ),
