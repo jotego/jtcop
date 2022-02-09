@@ -98,11 +98,14 @@ assign mcu_addr = A[15:0];
 assign main_we = main_cs & ~main_wrn;
 // no bus access allowed while MAIN is accessing
 assign waitn   = ~main_cs & mcu_good & ba_good;
-assign set_irq = main_cs && main_addr==11'h7ff;
+// The "47" IC at location 10C in Hippodrome has an output
+// to control the IRQ1 signal, but we don't know what triggers it
+// For Robocop, the equivalent chip triggers it when accessing 7ff
+assign set_irq = main_cs && main_addr==11'h7ff && game_id==0;
 //assign irqn    = ~set_irq;
 assign ram_we  = ram_cs & ~wrn;
 assign shd_we  = shd_cs & ~wrn;
-assign bac_cs  = A[20:16]==5'h1a && game_id==HIPPODROME;
+assign bac_cs  = A[20:19]==2'b11 && A[18:17]==2'd1 && game_id==HIPPODROME;
 assign ba2mcu_sft = bac_cs && A[12:11]==2'd1;
 assign ba2mcu_map = bac_cs && A[12:11]==2'd2;
 assign irq2n = !(game_id==HIPPODROME && !LVBL);
@@ -122,8 +125,8 @@ always @(posedge clk) begin
         case( game_id )
             HIPPODROME: begin
                 ram_cs  <= A[20:16]==5'h1f;
-                shd_cs  <= A[20:16]==5'h18;   // 180000-18ffff
-                prot_cs <= A[20:16]==5'h1d;
+                shd_cs  <= A[20:19]==2'b11 && A[18:17]==2'd0;   // 180000-18ffff
+                prot_cs <= A[20:19]==2'b11 && A[18:17]==2'd2;
                 ba2mcu_mode <= bac_cs && A[12:11]==2'd0;
                 ba2mcu_dsn  <= { ~A[0], A[0] };
                 ba2mcu_addr <= { ba2mcu_map, A[10:1] };
