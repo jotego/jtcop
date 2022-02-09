@@ -102,10 +102,10 @@ assign ram_we  = ram_cs & ~wrn;
 assign shd_we  = shd_cs & ~wrn;
 
 always @* begin
-    rom_cs = A[20:16]==0 && !rdn;
-    ram_cs = A[20] & ~A[13];    // 1f0000-1f1fff
+    rom_cs = A[20:16]==0;
     case( game_id )
         HIPPODROME: begin
+            ram_cs  = A[20:16]==5'h1f;
             shd_cs  = A[20:16]==5'h18;   // 180000-18ffff
             prot_cs = A[20:16]==5'h1d;
             bac_cs  = A[20:16]==5'h1a;
@@ -117,7 +117,8 @@ always @* begin
             ba2mcu_cs   = ba2mcu_map | ba2mcu_sft;
         end
         default: begin
-            shd_cs = A[20] & A[13]; // 1f2000-1f3fff
+            ram_cs = A[20] & ~A[13]; // 1f0000-1f1fff
+            shd_cs = A[20] & A[13];  // 1f2000-1f3fff
             prot_cs     = 0;
             bac_cs      = 0;
             ba2mcu_mode = 0;
