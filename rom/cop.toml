@@ -67,3 +67,10 @@ blanks = [
     { machine="robocop",  region="gfx2", offset=0x20000, len=0x20000 },
     { machine="robocop",  region="gfx3", offset=0x10000, len=0x10000 },
 ]
+
+patches = [
+    {machine="hippodrm", offset=0x210189, value=" 60 "},
+    {machine="hippodrm", offset=0x2101af, value=" 60 "},
+    {machine="hippodrm", offset=0x2101db, value=" 60 "},
+    {machine="hippodrm", offset=0x21021a, value=" 60 "}
+]
