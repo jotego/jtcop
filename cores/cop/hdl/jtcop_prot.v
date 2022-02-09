@@ -76,6 +76,7 @@ localparam [ 1:0] HIPPODROME  = 2'd1;
 
 wire [20:0] A;
 wire [ 7:0] dout;
+wire [12:0] shd_addr;
 reg  [ 7:0] din, prot_st;
 wire        waitn, wrn, rdn, SX;
 
@@ -91,6 +92,7 @@ wire        shd_we, ram_we, bac_cs;
 reg         mcu_good, ba_good, prot_cs;
 wire        irq2n;
 
+assign shd_addr = game_id==HIPPODROME ? {2'd0,A[10:0]} : A[12:0];
 assign ba2mcu_dout = dout;
 assign ba2mcu_rnw  = wrn;
 assign mcu_cs  = rom_cs;
@@ -101,7 +103,7 @@ assign waitn   = ~main_cs & mcu_good & ba_good;
 // The "47" IC at location 10C in Hippodrome has an output
 // to control the IRQ1 signal, but we don't know what triggers it
 // For Robocop, the equivalent chip triggers it when accessing 7ff
-assign set_irq = main_cs && main_addr==11'h7ff && game_id==0;
+assign set_irq = main_cs && main_addr==11'h7ff;// && game_id==0;
 //assign irqn    = ~set_irq;
 assign ram_we  = ram_cs & ~wrn;
 assign shd_we  = shd_cs & ~wrn;
@@ -158,7 +160,7 @@ always @(posedge clk,posedge rst) begin
     if( rst ) begin
         prot_st <= 0;
     end else begin
-        if( prot_cs && !wrn ) prot_st <= dout;
+        if( prot_cs && !wrn && A[12:0]==5 ) prot_st <= dout;
     end
 end
 
@@ -218,7 +220,7 @@ jtframe_dual_ram #(.aw(13)) u_shared(
     .q0     ( main_din  ),
     // HuC6280
     .data1  ( dout      ),
-    .addr1  ( A[12:0]   ),
+    .addr1  ( shd_addr  ),
     .we1    ( shd_we    ),
     .q1     ( shd_dout  )
 );
