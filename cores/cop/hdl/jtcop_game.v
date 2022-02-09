@@ -558,6 +558,7 @@ jtcop_video u_video(
         .ba2mcu_addr( ba2mcu_addr   ),
         .ba2mcu_data( ba2mcu_data   ),
         .ba2mcu_dsn ( ba2mcu_dsn    ),
+        .ba2mcu_rnw ( ba2mcu_rnw    ),
 
         .mcu_addr   ( mcu_addr  ),
         .mcu_data   ( mcu_data  ),

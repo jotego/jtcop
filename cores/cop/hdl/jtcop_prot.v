@@ -59,6 +59,7 @@ module jtcop_prot(
     output reg        ba2mcu_mode,
     input      [ 7:0] ba2mcu_mode_din,
     output reg        ba2mcu_cs,
+    output            ba2mcu_rnw,
     input             ba2mcu_ok,
     input      [ 7:0] ba2mcu_data,
     output reg [10:0] ba2mcu_addr,
@@ -89,6 +90,7 @@ wire        shd_we, ram_we;
 reg         mcu_good, ba_good, prot_cs, bac_cs;
 
 assign ba2mcu_dout = dout;
+assign ba2mcu_rnw  = wrn;
 assign mcu_cs  = rom_cs;
 assign mcu_addr = A[15:0];
 assign main_we = main_cs & ~main_wrn;
