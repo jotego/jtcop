@@ -123,7 +123,7 @@ assign irq2n = !(game_id==HIPPODROME && !LVBL);
 // There are three clock cycles between SX and CE
 always @(posedge clk) begin
     if(SX) begin
-        rom_cs <= A[20:16]==0;
+        rom_cs <= A[20:19]==0;
         case( game_id )
             HIPPODROME: begin
                 ram_cs  <= A[20:16]==5'h1f;
