@@ -228,7 +228,8 @@ jtcop_bac06 u_ba1(
 
     .pxl        ( ba1_pxl       ),
     .st_addr    ( st_addr[2:0]  ),
-    .st_dout    ( st_dout1      )
+    .st_dout    ( st_dout1      ),
+    .debug_bus  ( debug_bus     )
 );
 `else
     assign b1ram_cs = 0;

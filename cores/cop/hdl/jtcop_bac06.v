@@ -89,6 +89,7 @@ module jtcop_bac06 #(
     input             rom_ok,
 
     output     [ 7:0] pxl,          // pixel output
+    input      [ 7:0] debug_bus,
     // Status
     input      [ 2:0] st_addr,
     output reg [ 7:0] st_dout
@@ -124,7 +125,7 @@ assign tile16_en = ~mode[0][0];
 assign msbrow_en = mode[0][1];
 assign rowscr_en = mode[0][2];
 assign colscr_en = mode[0][3];
-assign geometry  = mode[3][1:0];
+assign geometry  = debug_bus[7] ? debug_bus[1:0] : mode[3][1:0];
 assign veff0     = {1'd0, flip ? 9'd256-vrender : vrender } + vscr[9:0];
 
 `ifdef SIMULATION
