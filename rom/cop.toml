@@ -46,7 +46,7 @@ regions = [
     { machine="robocop", name="gfx3", start=$GFX3_START,width=16, No_offset=true, name_sort=[
        "ep15", "ep17", "ep14", "ep16" ] },
     { machine="hippodrm", name="gfx3", start=$GFX3_START,width=16, No_offset=true, name_sort=[
-       "ep25", "ep22", "ep24", "ep23" ] },
+       "ew25", "ew22", "ew24", "ew23" ] },
     { name="gfx3",     start=$GFX3_START,width=16, No_offset=true, sort_byext=true, sort_alpha=true, sort_reverse=true  },
     { name="gfx4",     start=$BA3_START, width=32, No_offset=true, sort_even=true },
     { name="sub",      start=$MCU_START },
