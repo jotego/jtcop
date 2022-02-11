@@ -92,7 +92,6 @@ wire        shd_we, ram_we, bac_cs;
 reg         mcu_good, ba_good, prot_cs;
 wire        irq2n;
 
-assign shd_addr = game_id==HIPPODROME ? {2'd0,A[10:0]} : A[12:0];
 assign ba2mcu_dout = dout;
 assign ba2mcu_rnw  = wrn;
 assign mcu_cs  = rom_cs;
@@ -201,7 +200,7 @@ jtframe_ff u_ff (
     .sigedge( set_irq   )
 );
 
-jtframe_ram #(.aw(13)) u_ram(   // 2kB Robocop, 8kB for Hippodrome
+jtframe_ram #(.aw(13)) u_ram(
     .clk    ( clk       ),
     .cen    ( 1'b1      ),
     .data   ( dout      ),
@@ -210,17 +209,17 @@ jtframe_ram #(.aw(13)) u_ram(   // 2kB Robocop, 8kB for Hippodrome
     .q      ( ram_dout  )
 );
 
-jtframe_dual_ram #(.aw(13)) u_shared(
+jtframe_dual_ram #(.aw(11)) u_shared(
     .clk0   ( clk_cpu   ),
     .clk1   ( clk       ),
     // Main CPU
     .data0  ( main_dout ),
-    .addr0  ({2'b00,main_addr} ), // upper most 2 bits are floating!
+    .addr0  ( main_addr ),
     .we0    ( main_we   ),
     .q0     ( main_din  ),
     // HuC6280
     .data1  ( dout      ),
-    .addr1  ( shd_addr  ),
+    .addr1  ( A[10:0]   ),
     .we1    ( shd_we    ),
     .q1     ( shd_dout  )
 );
