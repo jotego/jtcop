@@ -121,5 +121,5 @@
         <dip name="Player &amp; Enemy Energy" bits="12,13" ids="High,Very Low,Low,Medium"/>
         <dip name="Enemy Power Decrease on Continue" bits="14" ids="None,2 Dots"/>
     </switches>
-    <buttons names="button 1,button 2,-,-,-,Start,Coin,Core credits" default="Y,X,B,A,R,Start,Select,-" count="2"/>
+    <buttons names="Attack,Jump,-,-,-,Start,Coin,Core credits" default="Y,X,B,A,R,Start,Select,-" count="2"/>
 </misterromdescription>
