@@ -201,11 +201,11 @@ jtframe_ff u_ff (
     .sigedge( set_irq   )
 );
 
-jtframe_ram #(.aw(11)) u_ram(
+jtframe_ram #(.aw(12)) u_ram(   // 2kB Robocop, 4kB for Hippodrome
     .clk    ( clk       ),
     .cen    ( 1'b1      ),
     .data   ( dout      ),
-    .addr   ( A[10:0]   ),
+    .addr   ( A[11:0]   ),
     .we     ( ram_we    ),
     .q      ( ram_dout  )
 );
