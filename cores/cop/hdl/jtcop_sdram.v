@@ -315,7 +315,7 @@ jtframe_ram2_6slots #(
 
     // MCU access to B2
     .SLOT1_DW(16),
-    .SLOT1_AW(10),  // 2 kB
+    .SLOT1_AW(11),  // 2 kB
 
     // Game ROM
     .SLOT2_DW(16),

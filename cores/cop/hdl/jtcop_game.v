@@ -323,7 +323,7 @@ jtcop_video u_video(
     .cpu_addr   ( main_addr[12:1]  ),
 
     // MCU interface
-    .mcu_addr   ( ba2mcu_addr  ),
+    .mcu_addr   ( ba2mcu_addr[9:0]),
     .mcu_dout   ( ba2mcu_dout  ),
     .mcu_din    ( ba2mcu_mode_din ),
     .mcu_rnw    ( ba2mcu_rnw   ),

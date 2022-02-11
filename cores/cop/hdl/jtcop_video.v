@@ -31,7 +31,7 @@ module jtcop_video(
     input              cpu_rnw,
 
     // MCU interface
-    input      [12:0]  mcu_addr,
+    input      [ 9:0]  mcu_addr,
     input      [ 7:0]  mcu_dout,
     output     [ 7:0]  mcu_din,
     input              mcu_rnw,
@@ -250,7 +250,7 @@ wire        ba2_rnw, ba2_mode;
     assign ba2_rnw  = cpu_rnw;
     assign ba2_mode = cmode_cs;
 `else
-    assign ba2_addr = game_id==HIPPODROME ? mcu_addr[11:0] : cpu_addr;
+    assign ba2_addr = game_id==HIPPODROME ? {2'd0,mcu_addr} : cpu_addr;
     assign ba2_din  = game_id==HIPPODROME ? {2{mcu_dout}} : cpu_dout;
     assign ba2_dsn  = game_id==HIPPODROME ? mcu_dsn  : cpu_dsn;
     assign ba2_rnw  = game_id==HIPPODROME ? mcu_rnw  : cpu_rnw;
