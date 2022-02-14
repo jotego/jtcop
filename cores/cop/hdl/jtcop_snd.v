@@ -53,7 +53,6 @@ parameter BANKS=0;
 wire [15:0] cpu_addr;
 wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout, oki_dout;
 reg  [ 7:0] cpu_din, dev_mux;
-reg  [ 7:0] opn_gain;
 reg         nmin, opl_cs, opn_cs, ram_cs, bank_cs,
             nmi_clr, oki_cs, dev_cs;
 wire        irqn, ram_we, cpu_rnw, oki_wrn, rdy;
@@ -63,7 +62,6 @@ wire        opn_irqn, opl_irqn;
 assign irqn     = opn_irqn & opl_irqn;
 assign ram_we   = ram_cs & ~cpu_rnw;
 assign oki_wrn  = ~(oki_cs & ~cpu_rnw);
-assign sample   = cen_opn;
 assign rom_addr = cpu_addr;
 assign rdy      = ~rom_cs | rom_ok;
 
@@ -161,7 +159,7 @@ jtcop_ongen u_ongen(
     .cen_opn    ( cen_opn       ),
     .cen_opl    ( cen_opl       ),
 
-    .cpu_a0     ( cpu_a0        ),
+    .cpu_a0     ( cpu_addr[0]   ),
     .cpu_rnw    ( cpu_rnw       ),
     .cpu_dout   ( cpu_dout      ),
 

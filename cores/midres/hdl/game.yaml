@@ -7,4 +7,7 @@ game:
       - jtmidres_decoder.v
       - jtmidres_colmix.v
       - jtmidres_snd.v
-
+modules:
+  other:
+    - get:
+      - HUC6280/HUC6280.yaml

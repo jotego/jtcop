@@ -63,6 +63,7 @@ wire               oki_sample;
 
 reg  [ 2:0] cen_sh=1;
 reg         cen_oki;
+reg  [ 7:0] opn_gain;
 
 always @(posedge clk) begin
     case( fxlevel )

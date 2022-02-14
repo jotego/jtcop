@@ -55,10 +55,10 @@ reg  [ 7:0] din;
 wire        wrn, rdn, SX;
 
 wire        ce, cek_n, ce7_n, cer_n;
-wire        main_we,;
+wire        main_we;
 
 wire        irqn;
-reg         rom_cs, ram_cs, opl_cs, opn_cs, oki_cs;
+reg         ram_cs, opl_cs, opn_cs, oki_cs, latch_cs;
 wire [ 7:0] ram_dout;
 wire        ram_we;
 reg         rom_good;
@@ -102,6 +102,7 @@ always @(posedge clk) begin
         opn_cs ? opn_dout :
         opl_cs ? opl_dout :
         oki_cs ? oki_dout :
+        latch_cs ? latch  :
         rom_cs ? rom_data : 8'hff;
 end
 
