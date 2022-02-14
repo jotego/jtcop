@@ -2,6 +2,7 @@ game:
   - from: cop
     get:
       - jtcop_prot.v
+      - jtcop_decoder.v
       - common.yaml
 jtframe:
   - get:

@@ -28,7 +28,7 @@ Robocop                         | HuC6280    | 691
 Midnight Resistance             | HuC6280    | 198
 Hippodrome / Fighting Fantasy   | HuC6280    | 138
 Heavy Barrel                    | HuC6280    |  42
-Sly Spy                         | HuC6280    |  13
+Sly Spy                         | HuC6280    |  34
 Bandit                          | i8751      |   1
 Boulder Dash                    | HuC6280    |   1
 Birdie Try                      | i8751      |   0
