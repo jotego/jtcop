@@ -412,6 +412,7 @@ jtcop_video u_video(
 );
 
 `ifndef NOSOUND
+    // NB: this module is different for jtmidres
     jtcop_snd u_sound(
         .rst        ( rst24     ),
         .clk        ( clk24     ),

@@ -146,6 +146,7 @@ always @(*) begin
         IPLn = ~3'd0;
 end
 
+// NB: this module is different for jtmidres
 jtcop_decoder u_decoder(
     .A          ( A         ),
     .ASn        ( ASn       ),

@@ -4,6 +4,7 @@ game:
       - jtcop_prot.v
       - jtcop_decoder.v
       - jtcop_colmix.v
+      - jtcop_snd.v
       - common.yaml
 jtframe:
   - get:

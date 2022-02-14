@@ -50,26 +50,15 @@ module jtcop_snd(
 
 parameter BANKS=0;
 
-localparam [7:0] OPL_GAIN = 8'h10,
-                 PCM_GAIN = 8'h10,
-                 PSG_GAIN = 8'h10;
-
-
 wire [15:0] cpu_addr;
 wire [ 7:0] cpu_dout, opl_dout, opn_dout, ram_dout, oki_dout;
 reg  [ 7:0] cpu_din, dev_mux;
 reg  [ 7:0] opn_gain;
 reg         nmin, opl_cs, opn_cs, ram_cs, bank_cs,
-            nmi_clr, oki_cs, dev_cs, cen_oki;
-wire        irqn, ram_we, cpu_rnw, oki_wrn,
-            oki_sample, rdy;
+            nmi_clr, oki_cs, dev_cs;
+wire        irqn, ram_we, cpu_rnw, oki_wrn, rdy;
 wire        opn_irqn, opl_irqn;
-reg  [ 2:0] cen_sh=1;
 
-wire signed [15:0] opl_snd, opn_snd;
-wire signed [15:0] adpcm_snd;
-wire signed [13:0] oki_pre;
-wire        [ 9:0] psg_snd, psgac_snd;
 
 assign irqn     = opn_irqn & opl_irqn;
 assign ram_we   = ram_cs & ~cpu_rnw;
@@ -77,15 +66,6 @@ assign oki_wrn  = ~(oki_cs & ~cpu_rnw);
 assign sample   = cen_opn;
 assign rom_addr = cpu_addr;
 assign rdy      = ~rom_cs | rom_ok;
-
-always @(posedge clk) begin
-    case( fxlevel )
-        0: opn_gain = 8'h18;
-        1: opn_gain = 8'h20;
-        2: opn_gain = 8'h28;
-        3: opn_gain = 8'h30;
-    endcase
-end
 
 always @(*) begin
     ram_cs  = 0;
@@ -104,12 +84,6 @@ always @(*) begin
             7: oki_cs  = 1;
         endcase
     end
-end
-
-// 1 MHz clock enable
-always @(posedge clk) begin
-    if( cen_opl ) cen_sh <= { cen_sh[1:0], cen_sh[2] };
-    cen_oki <= cen_sh[0] & cen_opl;
 end
 
 always @(posedge clk) begin
@@ -181,99 +155,39 @@ jtframe_ram #(.aw(11)) u_ram(
     .q      ( ram_dout      )
 );
 
-jtopl2 u_opl(
-    .rst    ( rst       ),   
-    .clk    ( clk       ),   
-    .cen    ( cen_opl   ),
-    .din    ( cpu_dout  ),
-    .addr   (cpu_addr[0]),
-    .cs_n   ( ~opl_cs   ),
-    .wr_n   ( cpu_rnw   ),
-    .dout   ( opl_dout  ),
-    .irq_n  ( opl_irqn  ),
-    .snd    ( opl_snd   ),
-    .sample (           )
-);
+jtcop_ongen u_ongen(
+    .rst        ( rst           ),
+    .clk        ( clk           ),
+    .cen_opn    ( cen_opn       ),
+    .cen_opl    ( cen_opl       ),
 
-jt03 u_2203(
-    .rst    ( rst       ),   
-    .clk    ( clk       ),   
-    .cen    ( cen_opn   ),
-    .din    ( cpu_dout  ),
-    .addr   (cpu_addr[0]),
-    .cs_n   ( ~opn_cs   ),
-    .wr_n   ( cpu_rnw   ),
+    .cpu_a0     ( cpu_a0        ),
+    .cpu_rnw    ( cpu_rnw       ),
+    .cpu_dout   ( cpu_dout      ),
 
-    .dout   ( opn_dout  ),
-    .irq_n  ( opn_irqn  ),
-    // I/O pins used by YM2203 embedded YM2149 chip
-    .IOA_in (           ),
-    .IOB_in (           ),
-    // 10 kOhm resistors
-    .psg_A  (           ),
-    .psg_B  (           ),
-    .psg_C  (           ),
-    .fm_snd ( opn_snd    ),
-    .psg_snd( psg_snd   ),
-    .snd    (           ),
-    .snd_sample()
-);
+    .opl_cs     ( opl_cs        ),
+    .opl_irqn   ( opl_irqn      ),
+    .opl_dout   ( opl_dout      ),
 
-assign adpcm_cs = 1;
+    .opn_cs     ( opn_cs        ),
+    .opn_irqn   ( opn_irqn      ),
+    .opn_dout   ( opn_dout      ),
 
-jt6295 #(.INTERPOL(1)) u_adpcm(
-    .rst        ( rst       ),
-    .clk        ( clk       ),
-    .cen        ( cen_oki   ),  // 1MHz
-    .ss         ( 1'b1      ),
-    // CPU interface
-    .wrn        ( oki_wrn   ),  // active low
-    .din        ( cpu_dout  ),
-    .dout       ( oki_dout  ),
-    // ROM interface
-    .rom_addr   ( adpcm_addr),
-    .rom_data   ( adpcm_data),
-    .rom_ok     ( adpcm_ok  ),
-    // Sound output
-    .sound      ( oki_pre   ),
-    .sample     ( oki_sample)   // ~26kHz
-);
+    .oki_wrn    ( oki_wrn       ),
+    .oki_dout   ( oki_dout      ),
 
-jtframe_uprate2_fir u_fir1(
-    .rst        ( rst            ),
-    .clk        ( clk            ),
-    .sample     ( oki_sample     ),
-    .upsample   (                ), // ~52kHz, close to JT51's 55kHz
-    .l_in       ({oki_pre,2'd0}  ),
-    .r_in       (     16'd0      ),
-    .l_out      ( adpcm_snd      ),
-    .r_out      (                )
-);
+    .enable_psg ( enable_psg    ),
+    .enable_fm  ( enable_fm     ),
+    .fxlevel    ( fxlevel       ),
+    // ADPCM ROM
+    .adpcm_addr ( adpcm_addr    ),
+    .adpcm_cs   ( adpcm_cs      ),
+    .adpcm_data ( adpcm_data    ),
+    .adpcm_ok   ( adpcm_ok      ),
 
-jtframe_dcrm #(.SW(10)) u_dcrm(
-    .rst    ( rst       ),
-    .clk    ( clk       ),
-    .sample ( cen_opn   ),
-    .din    ( psg_snd   ),
-    .dout   ( psgac_snd )
-);
-
-jtframe_mixer #(.W3(10),.WOUT(16)) u_mixer(
-    .rst    ( rst       ),
-    .clk    ( clk       ),
-    .cen    ( cen_opn   ),
-    // input signals
-    .ch0    ( opn_snd   ),
-    .ch1    ( opl_snd   ),
-    .ch2    ( adpcm_snd ),
-    .ch3    ( psgac_snd ),
-    // gain for each channel in 4.4 fixed point format
-    .gain0  ( enable_psg ? opn_gain : 8'h0 ),
-    .gain1  ( enable_fm  ? OPL_GAIN : 8'h0 ),
-    .gain2  ( PCM_GAIN  ),
-    .gain3  ( PSG_GAIN  ),
-    .mixed  ( snd       ),
-    .peak   ( peak      )
+    .snd        ( snd           ),
+    .sample     ( sample        ),
+    .peak       ( peak          )
 );
 
 endmodule

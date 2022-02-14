@@ -5,7 +5,7 @@ game:
       - jtcop_game.v
       - jtcop_main.v
       - jtcop_sdram.v
-      - jtcop_snd.v
+      - jtcop_ongen.v
       - jtcop_obj.v
       - jtcop_obj_buffer.v
       - jtcop_obj_draw.v

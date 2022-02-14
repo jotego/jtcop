@@ -6,4 +6,5 @@ game:
     get:
       - jtmidres_decoder.v
       - jtmidres_colmix.v
+      - jtmidres_snd.v
 

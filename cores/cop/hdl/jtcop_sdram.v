@@ -277,7 +277,11 @@ assign snd_eff = BANKS ? { sndflag[1] | snd_addr[15],
                            snd_addr[13:0] } :
                         { 1'b0, snd_addr[14:0] };
 `else
-assign snd_eff = { 1'b0, snd_addr[14:0] };
+    `ifdef DEC1
+        assign snd_eff = snd_addr;
+    `else
+        assign snd_eff = { 1'b0, snd_addr[14:0] };
+    `endif
 `endif
 
 // RAM size

@@ -344,6 +344,7 @@ jtcop_obj u_obj(
     .pxl        ( obj_pxl       )
 );
 
+// NB: this module is different for jtmidres
 jtcop_colmix u_colmix(
     .rst        ( rst           ),
     .clk        ( clk           ),
