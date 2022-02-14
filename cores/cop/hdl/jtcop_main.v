@@ -101,10 +101,10 @@ module jtcop_main(
 );
 
 wire [23:1] A;
-wire        BERRn;
+//wire        BERRn;
 wire [ 2:0] FC;
 reg  [ 2:0] IPLn;
-wire        BRn, BGACKn, BGn;
+wire        /*BRn, BGACKn,*/ BGn;
 wire        ASn, UDSn, LDSn, BUSn, VPAn;
 reg  [15:0] cpu_din;
 wire        disp_cs, sysram_cs, cblk, vint_clr,

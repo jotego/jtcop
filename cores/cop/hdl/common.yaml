@@ -2,7 +2,6 @@ game:
   - from: cop
     get:
       - jtcop_bac06.v
-      - jtcop_colmix.v
       - jtcop_game.v
       - jtcop_main.v
       - jtcop_sdram.v

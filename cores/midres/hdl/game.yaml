@@ -5,4 +5,5 @@ game:
   - from: midres
     get:
       - jtmidres_decoder.v
+      - jtmidres_colmix.v
 

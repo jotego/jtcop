@@ -120,21 +120,21 @@ always @(*) begin
             2: begin
                 disp_cs = 1;
                 case( A[19:17] )
-                    0: bmode_cs = 1;   // 0x24'6000, cfg registers
-                    1: bsft_cs  = 1;   // 0x24'8000, col/row scroll
-                    2: bmap_cs  = 1;   // 0x24'a000, tilemap
-                    4: cmode_cs = 1; // these signals could go
-                    5: csft_cs  = 1; // in a different order
-                    6: cmap_cs  = 1;
+                    0: bmode_cs = 1;
+                    1: bmap_cs  = 1;
+                    2: bsft_cs  = 1;
+                    4: cmode_cs = 1;
+                    5: cmap_cs  = 1;
+                    6: csft_cs  = 1;
                     default:;
                 endcase
             end
             3: begin
                 disp_cs = 1;
                 case( A[19:17] )
-                    0: fmode_cs  = 1;   // 0x24'0000, cfg registers
-                    1: fsft_cs   = 1;   // 0x24'2000, col/row scroll
-                    2: fmap_cs   = 1;   // 0x24'4000, tilemap
+                    0: fmode_cs  = 1;   // cfg registers
+                    1: fmap_cs   = 1;   // tilemap
+                    2: fsft_cs   = 1;   // col/row scroll
                 endcase
             end
         endcase
