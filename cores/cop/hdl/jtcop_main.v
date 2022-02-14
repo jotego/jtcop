@@ -235,28 +235,49 @@ end
 // Cabinet inputs
 reg  [15:0] cab_dout;
 
-function [8:0] sort_joy( input [8:0] joy_in);
-    sort_joy = { joy_in[8:4], joy_in[0], joy_in[1], joy_in[2], joy_in[3] };
-endfunction
+`ifndef DEC1
+    function [8:0] sort_joy( input [8:0] joy_in);
+        sort_joy = { joy_in[8:4], joy_in[0], joy_in[1], joy_in[2], joy_in[3] };
+    endfunction
 
-wire [8:0] sort1 = sort_joy(joystick1),
-           sort2 = sort_joy(joystick2);
+    wire [8:0] sort1 = sort_joy(joystick1),
+               sort2 = sort_joy(joystick2);
+    always @(posedge clk) begin
+        cab_dout <= 16'hffff;
+        if( read_cs[0] )
+            cab_dout <= { sort2[7:0], sort1[7:0] };
+        if( read_cs[1] )
+            cab_dout <= { 8'hff,
+                            ~LVBL,
+                            service,
+                            coin_input,
+                            start_button,
+                            sort2[8],
+                            sort1[8] };
+        if( read_cs[2] )
+            cab_dout <= { dipsw_b, dipsw_a };
+    end
+`else
+    function [6:0] sort_midres( input [8:0] joy_in);
+        sort_midres = { joy_in[6:4], joy_in[0], joy_in[1], joy_in[2], joy_in[3] };
+    endfunction
 
-always @(posedge clk) begin
-    cab_dout <= 16'hffff;
-    if( read_cs[0] )
-        cab_dout <= { sort2[7:0], sort1[7:0] };
-    if( read_cs[1] )
-        cab_dout <= { 8'hff,
-                        ~LVBL,
-                        service,
-                        coin_input,
-                        start_button,
-                        sort2[8],
-                        sort1[8] };
-    if( read_cs[2] )
-        cab_dout <= { dipsw_b, dipsw_a };
-end
+    always @(posedge clk) begin
+        cab_dout <= 16'hffff;
+        if( read_cs[0] )
+            cab_dout <= {
+                start_button[1], sort_midres(joystick2),
+                start_button[0], sort_midres(joystick1)
+            };
+        if( read_cs[1] )
+            cab_dout <= {   ~13'h0,
+                            ~LVBL,
+                            service,
+                            coin_input };
+        if( read_cs[2] )
+            cab_dout <= { dipsw_b, dipsw_a };
+    end
+`endif
 
 // input multiplexer
 reg  [1:0] track_xrst, track_yrst;

@@ -1,0 +1,18 @@
+include ../../cop/hdl/jtcop.def
+
+CORENAME=JTNINJA
+JTFRAME_VERTICAL
+JTFRAME_AUTOFIRE0
+NOHUC
+-NOTRACKBALL
+# Enable DEC1 core variations
+DEC1
+
+JTFRAME_CREDITS
+
+[mister]
+# The second analogue stick
+# can be used in MiSTer to control
+# the player orientation. This
+# feature requires the cheat engine
+JTFRAME_CHEAT

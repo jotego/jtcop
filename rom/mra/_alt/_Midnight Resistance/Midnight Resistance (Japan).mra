@@ -23,7 +23,7 @@
     <about author="jotego" webpage="https://patreon.com/topapate" source="https://github.com/jotego" twitter="@topapate"/>
     <name>Midnight Resistance (Japan)</name>
     <setname>midresj</setname>
-    <rbf>jtcop</rbf>
+    <rbf>jtmidres</rbf>
     <mameversion>0232</mameversion>
     <year>1989</year>
     <manufacturer>Data East Corporation</manufacturer>

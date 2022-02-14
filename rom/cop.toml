@@ -23,6 +23,10 @@ name="jtcop"
 dev = [
     { dev="i8751",   rbf="jtninja" }
 ]
+machines = [
+    { machine="slyspy", rbf="jtmidres" },
+    { machine="midres", rbf="jtmidres" }
+]
 
 [dipsw]
 bitcnt = 16
