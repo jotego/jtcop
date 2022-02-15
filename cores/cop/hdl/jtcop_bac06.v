@@ -202,7 +202,7 @@ generate
             .VB_START   ( 9'hf7     ),
             .VB_END     ( 9'd7      ),
             .VCNT_END   ( 9'd271    ),
-            .VS_START   ( 9'h109    ),
+            .VS_START   ( 9'h106    ),
             .HS_START   ( 9'h130    ),
             .HB_START   ( 9'd255    ),
             .HB_END     ( 9'd383    ),

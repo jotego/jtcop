@@ -68,6 +68,7 @@ assign irqn     = opn_irqn & opl_irqn;
 assign snd_bank = 0;
 assign oki_wrn  = ~(oki_cs & ~wrn);
 assign rom_addr = A[15:0];
+assign ram_we   = ram_cs & ~wrn;
 
 // Unless SX is used, you can create a SDRAM
 // request before knowing whether it is a read or write
@@ -131,8 +132,8 @@ HUC6280 u_huc(
 
     .RDY        ( 1'b1      ),
     .NMI_N      ( 1'b1      ),
-    .IRQ1_N     ( irqn      ),
-    .IRQ2_N     ( 1'b1      ),
+    .IRQ1_N     ( 1'b1      ),
+    .IRQ2_N     ( irqn      ),
 
     .CE         ( ce        ),
     .CEK_N      ( cek_n     ),

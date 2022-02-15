@@ -50,11 +50,12 @@ module jtcop_colmix(
     output             LVBL_dly,
     output             LHBL_dly,
 
-    input      [ 3:0]  gfx_en
+    input      [ 3:0]  gfx_en,
+    input      [ 7:0]  debug_bus
 );
 
 reg  [ 7:0] seladdr;
-reg  [ 3:0] selbus;
+reg  [ 1:0] selbus;
 wire [15:0] pal_bgr;
 wire [ 1:0] we_gr;
 reg  [ 9:0] pal_addr;
@@ -67,9 +68,9 @@ assign green = {2{g4}};
 assign blue  = {2{b4}};
 
 always @* begin
-    selbus = ba2_pxl[3:0]!=0 ? 4'd4 :
-             obj_pxl[3:0]!=0 ? 4'd8 :
-             ba0_pxl[3:0]!=0 ? 4'd1 : 4'd2;
+    selbus = (ba0_pxl[3:0]!=0 && gfx_en[0]) ? 2'd1 :
+             (obj_pxl[3:0]!=0 && gfx_en[3]) ? 2'd0 :
+             (ba1_pxl[3:0]!=0 && gfx_en[1]) ? 2'd2 : 2'd3;
 end
 
 always @(posedge clk) begin
@@ -83,12 +84,15 @@ always @(posedge clk) begin
                ~|{ba2_pxl[3:0] & {4{gfx_en[2]}}} // 0
             };
     if( pxl_cen ) begin
-        pal_addr[9:8] <= selbus;
+        if( !selbus[1] )
+            pal_addr[9:8] <= selbus;
+        else
+            pal_addr[9:8] <= debug_bus[1:0];
         case( selbus )
+            0: pal_addr[7:0] <= obj_pxl; // ok
             1: pal_addr[7:0] <= ba0_pxl;
             2: pal_addr[7:0] <= ba1_pxl;
-            4: pal_addr[7:0] <= ba2_pxl;
-            8: pal_addr[7:0] <= obj_pxl;
+            3: pal_addr[7:0] <= ba2_pxl;
         endcase
     end
 end
