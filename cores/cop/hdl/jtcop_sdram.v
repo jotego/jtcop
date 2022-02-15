@@ -166,8 +166,13 @@ localparam [24:0] BA1_START   = `BA1_START,
                   GFX3_START  = `GFX3_START,
                   BA3_START   = `BA3_START,
                   PROM_START  = `PROM_START,
+            `ifndef DEC1
                   PRIO_START  = PROM_START+25'h200,
                   PRIO_END    = PRIO_START+25'h400;
+            `else
+                  PRIO_START  = PROM_START,
+                  PRIO_END    = PRIO_START+25'h100;
+            `endif
 
 localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   B0_OFFSET   = 22'h10_2000,
@@ -272,10 +277,14 @@ jtframe_dwnld #(
 // Sound
 // adpcm_addr[16] is used as an /OE signal on the board
 // I'm ignoring that connection here as it isn't relevant
-wire [15:0] adpcm_eff;
+wire [17:0] adpcm_eff;
 wire [15:0] snd_eff;
 
-assign adpcm_eff = { adpcm_addr[15] | sndflag[2], adpcm_addr[14:0] };
+`ifndef DEC1
+    assign adpcm_eff = { 2'b0, adpcm_addr[15] | sndflag[2], adpcm_addr[14:0] };
+`else
+    assign adpcm_eff = adpcm_addr;
+`endif
 `ifdef MCU
 assign snd_eff = BANKS ? { sndflag[1] | snd_addr[15],
                            (sndbank | snd_addr[15]) & snd_addr[14],
@@ -413,7 +422,7 @@ jtframe_rom_2slots #(
     .SLOT0_AW(  16),
 
     .SLOT1_DW(   8),
-    .SLOT1_AW(  16),
+    .SLOT1_AW(  18),
 
     .SLOT1_OFFSET( PCM_OFFSET )
 ) u_bank1(

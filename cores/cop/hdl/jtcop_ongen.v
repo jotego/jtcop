@@ -51,9 +51,9 @@ module jtcop_ongen(
     output               peak
 );
 
-localparam [7:0] OPL_GAIN = 8'h10,
-                 PCM_GAIN = 8'h10,
-                 PSG_GAIN = 8'h10;
+parameter [7:0] OPL_GAIN = 8'h10,
+                PCM_GAIN = 8'h10,
+                PSG_GAIN = 8'h10;
 
 wire signed [15:0] opl_snd, opn_snd;
 wire signed [15:0] adpcm_snd;
@@ -77,7 +77,7 @@ end
 // 1 MHz clock enable
 always @(posedge clk) begin
     if( cen_opl ) cen_sh <= cen_sh==0 ? 3'd1 : { cen_sh[1:0], cen_sh[2] };
-    cen_oki <= cen_sh[0] & cen_opl;
+    cen_oki <= cen_sh[0] & cen_opl & adpcm_ok;
 end
 
 jtopl2 u_opl(

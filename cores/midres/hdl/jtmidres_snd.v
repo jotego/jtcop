@@ -178,7 +178,7 @@ assign rdn=1;
 assign ce=1;
 `endif
 
-jtcop_ongen u_ongen(
+jtcop_ongen #(.PCM_GAIN(8'h20)) u_ongen(
     .rst        ( rst           ),
     .clk        ( clk           ),
     .cen_opn    ( cen_opn       ),
