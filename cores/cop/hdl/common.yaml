@@ -35,7 +35,7 @@ jtframe:
     get:
       - jtframe_mixer.v
       - jtframe_dcrm.v
-      - jtframe_uprate2_fir.qip
+      - jtframe_uprate2_fir.yaml
   - from: cpu
     get:
       - jtframe_m68k.yaml
@@ -48,5 +48,5 @@ modules:
     - name: jt6295
   other:
     - get:
-      - jt12/hdl/jt03.qip
-      - jtopl/hdl/jtopl2.qip
+      - jt12/hdl/jt03.yaml
+      - jtopl/hdl/jtopl2.yaml

@@ -79,21 +79,30 @@ assign ram_we   = ram_cs & ~wrn;
 // Another approach is a combinational assign including
 // rdn and wrn to validate the _cs signals
 // There are three clock cycles between SX and CE
-always @(posedge clk) begin
-    if(SX) begin
-        rom_cs   <= !A[20];
-        opl_cs   <= A[20] & ~A[16] &  A[15];
-        opn_cs   <= A[20] &  A[16] &  A[15];
-        oki_cs   <= A[20] &  A[17] & ~A[15];
-        latch_cs <= A[20] &  A[17] & ~A[15];
-        ram_cs   <= A[20] & ~A[13]; // 1f0000-1f1fff
-    end else if(ce) begin // CE will not happen is waitn is asserted
+always @(posedge clk, posedge rst) begin
+    if (rst) begin
         rom_cs   <= 0;
         opl_cs   <= 0;
         opn_cs   <= 0;
         oki_cs   <= 0;
         latch_cs <= 0;
         ram_cs   <= 0;
+    end else begin
+        if(SX) begin
+            rom_cs   <= !A[20];
+            opl_cs   <= A[20] && A[19:16]==0 &&  A[15];
+            opn_cs   <= A[20] && A[19:16]==1 &&  A[15];
+            oki_cs   <= A[20] && A[19:16]==3 && !A[15];
+            latch_cs <= A[20] && A[19:16]==3 &&  A[15];
+            ram_cs   <=&A[20:16]; // 1f0000-1f1fff
+        end else if(ce) begin // CE will not happen is waitn is asserted
+            rom_cs   <= 0;
+            opl_cs   <= 0;
+            opn_cs   <= 0;
+            oki_cs   <= 0;
+            latch_cs <= 0;
+            ram_cs   <= 0;
+        end
     end
 end
 

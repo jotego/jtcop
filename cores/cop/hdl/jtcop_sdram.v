@@ -191,9 +191,14 @@ wire [15:0] prog_raw, ba2mcu_raw;
 
 assign ba2mcu_data = mcu_addr[0] ? ba2mcu_raw[15:8] : ba2mcu_raw[7:0];
 assign mcu_we  = prom_we && pre_prog >= MCU_START  && pre_prog < MCU_END;
-assign prog_data = (game_id==HIPPODROME && prog_addr>=MCU_OFFSET && prog_ba==3 && !prom_we) ?
-    {   prog_raw[8], prog_raw[14:9], prog_raw[15],
-        prog_raw[0], prog_raw[ 6:1], prog_raw[ 7] } : prog_raw;
+`ifndef DEC1
+    assign prog_data =
+        (game_id==HIPPODROME && prog_addr>=MCU_OFFSET && prog_ba==3 && !prom_we) ?
+        {   prog_raw[8], prog_raw[14:9], prog_raw[15],
+            prog_raw[0], prog_raw[ 6:1], prog_raw[ 7] } : prog_raw;
+`else
+    assign prog_data = prog_raw;
+`endif
 // priority PROM is meant to be the second one in the MRA file
 assign prio_we = prom_we && pre_prog >= PRIO_START && pre_prog < PRIO_END;
 assign is_gfx1 = prog_ba==2'd2 && pre_prog < GFX1_LEN;
