@@ -90,6 +90,10 @@ SCREEN:
     load s3,40      ; sound latch
     call PRINT_ST8
 
+    add s0,2        ; sound module status
+    load s3,c0
+    call PRINT_ST8
+
 CLOSE_FRAME:
     output sb,6     ; LED
     return

@@ -195,7 +195,7 @@ wire [ 7:0] dipsw_a, dipsw_b;
 //wire [ 7:0] game_id;
 
 // Status report
-wire [7:0] st_video; //, st_main;
+wire [7:0] st_video, st_snd; //, st_main;
 wire [1:0] game_id;
 
 assign { dipsw_b, dipsw_a } = dipsw[15:0];
@@ -207,6 +207,7 @@ always @(posedge clk) begin
     case( st_addr[7:6] )
         0: st_dout <= st_video;
         1: st_dout <= snd_latch;
+        3: st_dout <= st_snd;
         // 2,3: st_dout <= st_main;
     endcase
 end
@@ -442,7 +443,8 @@ jtcop_video u_video(
 
         .snd        ( snd       ),
         .sample     ( sample    ),
-        .peak       ( game_led  )
+        .peak       ( game_led  ),
+        .status     ( st_snd    )
     );
 `else
     assign snd_cs = 0;
