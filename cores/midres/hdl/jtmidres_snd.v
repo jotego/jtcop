@@ -117,6 +117,19 @@ always @(posedge clk) begin
         rom_cs ? rom_data : 8'hff;
 end
 
+reg snreq_l, nmi_n;
+
+always @(posedge clk) begin
+    if( rst ) begin
+        nmi_n    <= 1;
+        snreq_l <= 0;
+    end else begin
+        snreq_l <= snreq;
+        if( latch_cs ) nmi_n <= 1;
+        else if( snreq & ~snreq_l ) nmi_n <= 0;
+    end
+end
+
 jtframe_ram #(.aw(13)) u_ram(
     .clk    ( clk       ),
     .cen    ( 1'b1      ),
@@ -140,7 +153,7 @@ HUC6280 u_huc(
     .RD_N       ( rdn       ),
 
     .RDY        ( 1'b1      ),
-    .NMI_N      ( 1'b1      ),
+    .NMI_N      ( nmi_n     ),
     .IRQ1_N     ( 1'b1      ),
     .IRQ2_N     ( irqn      ),
 
