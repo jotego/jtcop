@@ -91,7 +91,7 @@ jtopl2 u_opl(
     .dout   ( opl_dout  ),
     .irq_n  ( opl_irqn  ),
     .snd    ( opl_snd   ),
-    .sample (           )
+    .sample ( sample    )
 );
 
 jt03 u_2203(

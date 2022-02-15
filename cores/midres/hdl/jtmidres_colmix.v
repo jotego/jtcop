@@ -54,7 +54,7 @@ module jtcop_colmix(
 );
 
 reg  [ 7:0] seladdr;
-reg  [ 1:0] selbus;
+reg  [ 3:0] selbus;
 wire [15:0] pal_bgr;
 wire [ 1:0] we_gr;
 reg  [ 9:0] pal_addr;
@@ -67,9 +67,9 @@ assign green = {2{g4}};
 assign blue  = {2{b4}};
 
 always @* begin
-    selbus = ba2_pxl[3:0]!=0 ? 4 :
-             obj_pxl[3:0]!=0 ? 8 :
-             ba1_pxl[3:0]!=0 ? 2 : 1;
+    selbus = ba2_pxl[3:0]!=0 ? 4'd4 :
+             obj_pxl[3:0]!=0 ? 4'd8 :
+             ba0_pxl[3:0]!=0 ? 4'd1 : 4'd2;
 end
 
 always @(posedge clk) begin

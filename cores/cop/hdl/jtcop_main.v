@@ -44,7 +44,7 @@ module jtcop_main(
     input              sec2,        // this is the bit 2!
 
     // sound
-    output            snreq,
+    output             snreq,
     output reg [7:0]   snd_latch,
 
     // Palette
@@ -271,7 +271,7 @@ reg  [15:0] cab_dout;
                 start_button[0], sort_midres(joystick1)
             };
         if( read_cs[1] )
-            cab_dout <= {   ~13'h0,
+            cab_dout <= {   ~12'h0,
                             ~LVBL,
                             service,
                             coin_input };

@@ -50,9 +50,9 @@ module jtcop_snd(
 
 
 wire [20:0] A;
-wire [ 7:0] dout;
+wire [ 7:0] dout, opn_dout, opl_dout, oki_dout;
 reg  [ 7:0] din;
-wire        wrn, rdn, SX;
+wire        wrn, rdn, SX, oki_wrn;
 
 wire        ce, cek_n, ce7_n, cer_n;
 wire        main_we;
@@ -66,6 +66,8 @@ wire        opn_irqn, opl_irqn;
 
 assign irqn     = opn_irqn & opl_irqn;
 assign snd_bank = 0;
+assign oki_wrn  = ~(oki_cs & ~wrn);
+assign rom_addr = A[15:0];
 
 // Unless SX is used, you can create a SDRAM
 // request before knowing whether it is a read or write
@@ -91,7 +93,6 @@ always @(posedge clk) begin
         oki_cs   <= 0;
         latch_cs <= 0;
         ram_cs   <= 0;
-
     end
 end
 

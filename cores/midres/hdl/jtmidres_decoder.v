@@ -101,10 +101,10 @@ always @(*) begin
                 case( A[19:17] )
                     0: sysram_cs = 1;
                     1: obj_cs    = 1;
-                    2: pal_cs[0] = 1; // 0x31'0000 called PSEL in the schematics
-                    3: prisel_cs = 1;
-                    4:
-                        if( !A[4] ) begin // 0x30'C000
+                    2: pal_cs[0] = 1; // 0x14'0000
+                    3: prisel_cs = 1; // 0x16'0000
+                    4: // 0x18'0000
+                        if( !A[4] ) begin
                             case( A[3:1] )
                                 0: read_cs[0] = 1; // cabinet IO
                                 1: read_cs[2] = 1; // DIP sw
@@ -115,7 +115,8 @@ always @(*) begin
                                 default:;
                             endcase
                         end
-                    5: snreq = 1;
+                    5: snreq = 1;   // 0x1A'0000
+                    default:;
                 endcase
             2: begin
                 disp_cs = 1;
@@ -135,6 +136,7 @@ always @(*) begin
                     0: fmode_cs  = 1;   // cfg registers
                     1: fmap_cs   = 1;   // tilemap
                     2: fsft_cs   = 1;   // col/row scroll
+                    default:;
                 endcase
             end
         endcase

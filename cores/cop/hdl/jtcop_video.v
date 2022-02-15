@@ -62,7 +62,7 @@ module jtcop_video(
     input      [1:0]   prom_din,
     input              prio_we,
 
-    // Background 0
+    // Scroll 0 - Foreground
     output             b0ram_cs,
     output      [12:0] b0ram_addr,
     input       [15:0] b0ram_data,
@@ -73,7 +73,7 @@ module jtcop_video(
     input       [31:0] b0rom_data,
     input              b0rom_ok,
 
-    // Background 1
+    // Scroll 1 - Background
     output             b1ram_cs,
     output      [10:0] b1ram_addr,
     input       [15:0] b1ram_data,
@@ -84,7 +84,7 @@ module jtcop_video(
     input       [31:0] b1rom_data,
     input              b1rom_ok,
 
-    // Background 2
+    // Scroll 2 - Characters
     output             b2ram_cs,
     output      [10:0] b2ram_addr,
     input       [15:0] b2ram_data,
