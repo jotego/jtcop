@@ -91,19 +91,18 @@ always @(posedge clk, posedge rst) begin
         latch_cs <= 0;
         ram_cs   <= 0;
     end else begin
+        latch_cs <= A[20] && A[19:16]==3 &&  A[15];
         if(SX) begin
             rom_cs   <= A[20:16]==0;
             opl_cs   <= A[20] && A[19:16]==0 &&  A[15];
             opn_cs   <= A[20] && A[19:16]==1 &&  A[15];
             oki_cs   <= A[20] && A[19:16]==3 && !A[15];
-            latch_cs <= A[20] && A[19:16]==3 &&  A[15];
             ram_cs   <=&A[20:16]; // 1f0000-1f1fff
         end else if(ce) begin // CE will not happen is waitn is asserted
             rom_cs   <= 0;
             opl_cs   <= 0;
             opn_cs   <= 0;
             oki_cs   <= 0;
-            latch_cs <= 0;
             ram_cs   <= 0;
         end
     end
@@ -120,14 +119,21 @@ always @(posedge clk) begin
         rom_cs ? rom_data : 8'hff;
 end
 
+reg [3:0] unlock;
+reg irqn_l;
+
 always @(posedge clk) begin
     if( rst ) begin
-        nmi_n    <= 1;
+        nmi_n   <= 1;
         snreq_l <= 0;
     end else begin
         snreq_l <= snreq;
-        if( latch_cs ) nmi_n <= 1;
-        else if( snreq & ~snreq_l ) nmi_n <= 0;
+        irqn_l  <= irqn;
+        if( irqn_l && !irqn && unlock>0 )  unlock<=unlock-4'd1;
+        if( latch_cs || unlock==0) begin
+            nmi_n  <= 1;
+            unlock <= ~0;
+        end else if( snreq & ~snreq_l ) nmi_n <= 0;
     end
 end
 
@@ -179,7 +185,7 @@ assign rdn=1;
 assign ce=1;
 `endif
 
-jtcop_ongen #(.PCM_GAIN(8'h20)) u_ongen(
+jtcop_ongen #(.PCM_GAIN(8'h30)) u_ongen(
     .rst        ( rst           ),
     .clk        ( clk           ),
     .cen_opn    ( cen_opn       ),
