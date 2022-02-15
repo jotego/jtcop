@@ -76,7 +76,7 @@ end
 
 // 1 MHz clock enable
 always @(posedge clk) begin
-    if( cen_opl ) cen_sh <= { cen_sh[1:0], cen_sh[2] };
+    if( cen_opl ) cen_sh <= cen_sh==0 ? 3'd1 : { cen_sh[1:0], cen_sh[2] };
     cen_oki <= cen_sh[0] & cen_opl;
 end
 

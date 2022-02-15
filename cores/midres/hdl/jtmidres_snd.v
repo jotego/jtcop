@@ -89,7 +89,7 @@ always @(posedge clk, posedge rst) begin
         ram_cs   <= 0;
     end else begin
         if(SX) begin
-            rom_cs   <= !A[20];
+            rom_cs   <= A[20:16]==0;
             opl_cs   <= A[20] && A[19:16]==0 &&  A[15];
             opn_cs   <= A[20] && A[19:16]==1 &&  A[15];
             oki_cs   <= A[20] && A[19:16]==3 && !A[15];

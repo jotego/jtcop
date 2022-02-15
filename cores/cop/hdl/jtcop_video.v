@@ -379,8 +379,10 @@ jtcop_colmix u_colmix(
     .LVBL_dly   ( LVBL_dly      ),
     .LHBL_dly   ( LHBL_dly      ),
 
-    .gfx_en     ( gfx_en        ),
-    .debug_bus  ( debug_bus     )
+    .gfx_en     ( gfx_en        )
+`ifdef DEC1
+    ,.debug_bus  ( debug_bus     )
+`endif
 );
 
 endmodule
