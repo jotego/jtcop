@@ -36,7 +36,7 @@ module jtcop_colmix(
 
     // priority PROM
     input      [9:0]   prog_addr,
-    input      [1:0]   prom_din,
+    input      [3:0]   prom_din,
     input              prom_we,
 
     input      [7:0]   ba0_pxl,
@@ -155,7 +155,7 @@ jtframe_prom #(
 ) u_selbus(
     .clk    ( clk           ),
     .cen    ( 1'b1          ),
-    .data   ( prom_din      ),
+    .data   ( prom_din[1:0] ),
     .rd_addr( seladdr       ),
     .wr_addr( prog_addr     ),
     .we     ( prom_we       ),

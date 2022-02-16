@@ -70,7 +70,7 @@ assign snd_bank = 0;
 assign oki_wrn  = ~(oki_cs & ~wrn);
 assign rom_addr = A[15:0];
 assign ram_we   = ram_cs & ~wrn;
-assign status   = { nmi_n, opn_irqn, opl_irqn, opn_dout[7], oki_dout[3:0]};
+assign status   = { 1'b0, opn_irqn, opl_irqn, opn_dout[7], oki_dout[3:0]};
 
 // Unless SX is used, you can create a SDRAM
 // request before knowing whether it is a read or write

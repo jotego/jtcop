@@ -59,7 +59,7 @@ module jtcop_video(
 
     // priority PROM
     input      [9:0]   prog_addr,
-    input      [1:0]   prom_din,
+    input      [3:0]   prom_din,
     input              prio_we,
 
     // Scroll 0 - Foreground

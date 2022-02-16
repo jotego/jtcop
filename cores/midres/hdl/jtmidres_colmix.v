@@ -36,7 +36,7 @@ module jtcop_colmix(
 
     // priority PROM
     input      [9:0]   prog_addr,
-    input      [1:0]   prom_din,
+    input      [3:0]   prom_din,
     input              prom_we,
 
     input      [7:0]   ba0_pxl,
@@ -61,6 +61,7 @@ wire [15:0] pal_bgr;
 wire [ 1:0] we_gr;
 reg  [ 9:0] pal_addr;
 wire [ 3:0] r4,g4,b4;
+wire        ba0_blank, obj_blank, ba1_blank, ba2_blank;
 
 assign we_gr = ~dsn & {2{pal_cs[0]}};
 // conversion to 8-bit colour like the other games
@@ -68,22 +69,33 @@ assign red   = {2{r4}};
 assign green = {2{g4}};
 assign blue  = {2{b4}};
 
+assign ba0_blank = ~|ba0_pxl[3:0] | ~gfx_en[0];
+assign obj_blank = ~|obj_pxl[3:0] | ~gfx_en[3];
+assign ba1_blank = ~|ba1_pxl[2:0] | ~gfx_en[1];
+assign ba2_blank = ~|ba2_pxl[3:0] | ~gfx_en[4];
+
 always @* begin
-    selbus = (ba0_pxl[3:0]!=0 && gfx_en[0]) ? 2'd1 :
-             (obj_pxl[3:0]!=0 && gfx_en[3]) ? 2'd0 :
-             (ba1_pxl[3:0]!=0 && gfx_en[1]) ? 2'd2 : 2'd3;
+//    selbus = (ba0_pxl[3:0]!=0 && gfx_en[0]) ? 2'd1 :
+//             (obj_pxl[3:0]!=0 && gfx_en[3]) ? 2'd0 :
+//             (ba1_pxl[3:0]!=0 && gfx_en[1]) ? 2'd2 : 2'd3;
+    case( seldec )
+        8: selbus = 3;
+        4: selbus = 1;
+        2: selbus = 2;
+        1: selbus = 0;
+        default: selbus = 0;
+    endcase
 end
 
 always @(posedge clk) begin
-    seladdr <= { prisel,                                    // 9:7
-               ~|ba0_pxl[3:0] | ~gfx_en[0],                 // 6
-               obj_pxl[7],                                  // 5
-               ~|obj_pxl[3:0] | ~gfx_en[3],                 // 4
-               ba1_pxl[7],                                  // 3
-               ba1_pxl[3],                                  // 2
-               ~|ba1_pxl[2:0] | ~gfx_en[1],                 // 1
-               ~|{ba2_pxl[3:0] & {4{gfx_en[2]}}} // 0
-            };
+    seladdr <= {
+            prisel[2:1],
+            ba1_pxl[3],
+            ba1_pxl[7],
+            ba0_blank,
+            ba1_blank,
+            obj_blank,
+            ba2_blank };
     if( pxl_cen ) begin
         if( !selbus[1] )
             pal_addr[9:8] <= selbus;
@@ -139,12 +151,12 @@ jtframe_dual_ram16 #(
 
 jtframe_prom #(
     .aw     ( 8             ),
-    .dw     ( 2             ),
+    .dw     ( 4             ),
     .simfile("../../../../rom/midres/7114.prm")
 ) u_selbus(
     .clk    ( clk           ),
     .cen    ( 1'b1          ),
-    .data   ( prom_din      ),
+    .data   ( ~prom_din     ),
     .rd_addr( seladdr       ),
     .wr_addr( prog_addr     ),
     .we     ( prom_we       ),

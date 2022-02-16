@@ -356,7 +356,7 @@ jtcop_video u_video(
     .pal_dout   ( pal_dout  ),
     .prio_we    ( prio_we   ),
     .prog_addr  (prog_addr[9:0]),
-    .prom_din   (prog_data[1:0]),
+    .prom_din   (prog_data[3:0]),
 
     .flip        ( flip       ),
 
