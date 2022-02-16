@@ -64,7 +64,6 @@ wire [ 7:0] ram_dout;
 wire        ram_we;
 reg         rom_good;
 wire        opn_irqn, opl_irqn;
-reg         snreq_l, nmi_n;
 
 assign irqn     = opn_irqn & opl_irqn;
 assign snd_bank = 0;
@@ -119,24 +118,6 @@ always @(posedge clk) begin
         rom_cs ? rom_data : 8'hff;
 end
 
-reg [3:0] unlock;
-reg irqn_l;
-
-always @(posedge clk) begin
-    if( rst ) begin
-        nmi_n   <= 1;
-        snreq_l <= 0;
-    end else begin
-        snreq_l <= snreq;
-        irqn_l  <= irqn;
-        if( irqn_l && !irqn && unlock>0 )  unlock<=unlock-4'd1;
-        if( latch_cs || unlock==0) begin
-            nmi_n  <= 1;
-            unlock <= ~0;
-        end else if( snreq & ~snreq_l ) nmi_n <= 0;
-    end
-end
-
 jtframe_ram #(.aw(13)) u_ram(
     .clk    ( clk       ),
     .cen    ( 1'b1      ),
@@ -160,7 +141,7 @@ HUC6280 u_huc(
     .RD_N       ( rdn       ),
 
     .RDY        ( 1'b1      ),
-    .NMI_N      ( nmi_n     ),
+    .NMI_N      ( ~snreq    ),
     .IRQ1_N     ( 1'b1      ),
     .IRQ2_N     ( irqn      ),
 

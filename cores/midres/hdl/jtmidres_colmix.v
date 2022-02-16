@@ -56,6 +56,7 @@ module jtcop_colmix(
 
 reg  [ 7:0] seladdr;
 reg  [ 1:0] selbus;
+wire [ 3:0] seldec;
 wire [15:0] pal_bgr;
 wire [ 1:0] we_gr;
 reg  [ 9:0] pal_addr;
@@ -135,7 +136,7 @@ jtframe_dual_ram16 #(
 `ifdef GRAY
     assign pal_bgr = {4{pal_addr[3:0]}};
 `endif
-/*
+
 jtframe_prom #(
     .aw     ( 8             ),
     .dw     ( 2             ),
@@ -147,7 +148,7 @@ jtframe_prom #(
     .rd_addr( seladdr       ),
     .wr_addr( prog_addr     ),
     .we     ( prom_we       ),
-    .q      ( selbus        )
+    .q      ( seldec        )
 );
-*/
+
 endmodule

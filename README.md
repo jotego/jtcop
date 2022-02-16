@@ -60,11 +60,11 @@ in [beta.s](cheat/beta.s)
 Column scroll: 0x80 bytes -> 0x40 values
 Row scroll: 0x400 bytes -> 0x200 values
 
-BAC06 chip |   Region    | Total Size  |  MSFT
------------|-------------|-------------|---------
- 3A, main  |   B0/       |   16kB      |  Yes
- 7A, main  |   B1/       |    4kB      |  Yes
- 6E, second|   B2/       |    4kB      |  No
+BAC06 chip |   Region    | Total Size  |  MSFT   | MAME gfx
+-----------|-------------|-------------|---------|----------
+ 3A, main  |   B0/       |   16kB      |  Yes    |  gfx1
+ 7A, main  |   B1/       |    4kB      |  Yes    |  gfx2
+ 6E, second|   B2/       |    4kB      |  No     |  gfx3
 
 # FPGA Requirements
 
