@@ -7,6 +7,9 @@ game:
       - jtmidres_decoder.v
       - jtmidres_colmix.v
       - jtmidres_snd.v
+jtframe:
+  - get:
+    - jtframe_sort.v
 modules:
   other:
     - get:

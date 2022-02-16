@@ -70,42 +70,61 @@ assign green = {2{g4}};
 assign blue  = {2{b4}};
 
 assign ba0_blank = ~|ba0_pxl[3:0] | ~gfx_en[0];
-assign obj_blank = ~|obj_pxl[3:0] | ~gfx_en[3];
 assign ba1_blank = ~|ba1_pxl[2:0] | ~gfx_en[1];
 assign ba2_blank = ~|ba2_pxl[3:0] | ~gfx_en[2];
+assign obj_blank = ~|obj_pxl[3:0] | ~gfx_en[3];
 
 always @* begin
-//    selbus = (ba0_pxl[3:0]!=0 && gfx_en[0]) ? 2'd1 :
-//             (obj_pxl[3:0]!=0 && gfx_en[3]) ? 2'd0 :
-//             (ba1_pxl[3:0]!=0 && gfx_en[1]) ? 2'd2 : 2'd3;
-    case( seldec )
-        8: selbus = 3;
-        4: selbus = 1;
-        2: selbus = 2;
-        1: selbus = 0;
-        default: selbus = 0;
-    endcase
+    selbus = !ba0_blank ? 2'd1 :
+             !obj_blank ? 2'd0 :
+             !ba1_blank ? 2'd2 : 2'd3;
+//    case( seldec )
+//        2: selbus = 1; // ba0 - B
+//        1: selbus = 2; // ba1 - 7
+//        4: selbus = 3; // ba2 - E
+//        8: selbus = 0; // obj - D
+//        default: selbus = 0;
+//    endcase
 end
+
+wire [3:0] sorted0, sorted1, sorted2;
+
+jtframe_sort u_sort0(
+    .debug_bus  ( debug_bus ),
+    .busin      ( ba0_pxl[3:0] ),
+    .busout     ( sorted0   )
+);
+
+jtframe_sort u_sort1(
+    .debug_bus  ( debug_bus ),
+    .busin      ( ba1_pxl[3:0] ),
+    .busout     ( sorted1   )
+);
+
+jtframe_sort u_sort2(
+    .debug_bus  ( debug_bus ),
+    .busin      ( ba2_pxl[3:0] ),
+    .busout     ( sorted2   )
+);
 
 always @(posedge clk) begin
     seladdr <= {
             prisel[2:1],
-            ba1_pxl[3],
             ba1_pxl[7],
+            ba1_pxl[3],
+            //sorted,
             ba0_blank,
             ba1_blank,
+            ba2_blank,
             obj_blank,
-            ba2_blank };
+            };
     if( pxl_cen ) begin
-        if( !selbus[1] )
-            pal_addr[9:8] <= selbus;
-        else
-            pal_addr[9:8] <= debug_bus[1:0];
+        pal_addr[9:8] <= selbus;
         case( selbus )
             0: pal_addr[7:0] <= obj_pxl; // ok
             1: pal_addr[7:0] <= ba0_pxl;
             2: pal_addr[7:0] <= ba1_pxl;
-            3: pal_addr[7:0] <= ba2_pxl;
+            3: pal_addr[7:0] <= ba2_pxl; // {ba2_pxl[7:4],sorted2};
         endcase
     end
 end

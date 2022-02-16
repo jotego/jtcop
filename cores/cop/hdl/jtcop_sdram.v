@@ -188,6 +188,11 @@ localparam [21:0] RAM_OFFSET  = 22'h10_0000,
                   GFX3_LEN    = 22'h2_0000;
 
 localparam [ 1:0] HIPPODROME  = 2'd1;
+`ifndef DEC1
+    localparam    DEC1=0;
+`else
+    localparam    DEC1=1;
+`endif
 
 wire        prom_we, is_gfx1, is_gfx2, is_gfx3;
 wire [21:0] pre_prog, gfx2_offset, gfx3_offset;
@@ -218,7 +223,7 @@ assign gfx3_offset = pre_prog - GFX1_LEN - GFX2_LEN;
 always @* begin
     prog_addr = pre_prog;
     if( is_gfx1 ) begin
-        prog_addr = { pre_prog[21:16], pre_prog[14:0], ~pre_prog[15] };
+        prog_addr = { pre_prog[21:16], pre_prog[14:0], (~DEC1[0])^pre_prog[15] };
     end
     if( is_gfx2 ) begin
         prog_addr = { GFX2_OFFSET[21:18], gfx2_offset[16:0], gfx2_offset[17] };

@@ -48,8 +48,8 @@
         <part name="fl17" crc="9029965d"/>
         <!-- gfx1 - starts at 0xB0000 -->
         <interleave output="16">
-            <part name="fl05" crc="d75aba06" map="01"/>
-            <part name="fl04" crc="8f5bbb79" map="10"/>
+            <part name="fl04" crc="8f5bbb79" map="01"/>
+            <part name="fl05" crc="d75aba06" map="10"/>
         </interleave>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
