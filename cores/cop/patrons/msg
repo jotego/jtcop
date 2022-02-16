@@ -1,16 +1,23 @@
  \B Robocop\W core by \RJotego\W
   http://patreon.com/topapate
 
-     Beta 4 -- 11-January-22
+     Beta 5 -- 16-January-22
 Supervised by the \RJTAlpha team\W
 
-    - Support for HipperDrome
-      / Fighting Fantasy
+     Midnight Resistance
+
+- GFX layer priority is not
+  fully implemented
+  Please report scenes where
+  the layer order is wrong
 
         \BHardware\W
 
   Thanks to Gabriel DiGennaro
   for donating a Robocop PCB
+
+  Thanks to Atrac17 for a
+  Sly Spy PCB
 
       \BDirectors\W
 

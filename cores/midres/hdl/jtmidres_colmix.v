@@ -87,13 +87,13 @@ always @* begin
 //    endcase
 end
 
-wire [3:0] sorted0, sorted1, sorted2;
-
-jtframe_sort u_sort1(
-    .debug_bus  ( debug_bus ),
-    .busin      ( ba1_pxl[3:0] ),
-    .busout     ( sorted1   )
-);
+//wire [3:0] sorted;
+//
+//jtframe_sort u_sort1(
+//    .debug_bus  ( debug_bus ),
+//    .busin      ( ba1_pxl[3:0] ),
+//    .busout     ( sorted   )
+//);
 
 always @(posedge clk) begin
     seladdr <= {
@@ -111,7 +111,7 @@ always @(posedge clk) begin
         case( selbus )
             0: pal_addr[7:0] <= obj_pxl; // ok
             1: pal_addr[7:0] <= ba0_pxl;
-            2: pal_addr[7:0] <= ba1_pxl; //{ba1_pxl[7:4],sorted1};
+            2: pal_addr[7:0] <= ba1_pxl;
             3: pal_addr[7:0] <= ba2_pxl;
         endcase
     end
