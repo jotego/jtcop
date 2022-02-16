@@ -15,7 +15,8 @@ Names = [
     { machine="hbarrel", names="Shot,Bomb,Turn left,Turn right"},
     { machine="robocop", names="Shot,Jump"},
     { machine="hippodrm", names="Attack,Jump"},
-    { machine="baddudes", names="Attack,Jump"}
+    { machine="baddudes", names="Attack,Jump"},
+    { machine="midres", names="Shot,Jump,Turn left,Turn right"},
 ]
 
 [rbf]

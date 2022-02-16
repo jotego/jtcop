@@ -37,6 +37,8 @@ module jtcop_game(
     input   [ 8:0]  joystick2,
     input   [15:0]  joyana_l1,
     input   [15:0]  joyana_l2,
+    input   [15:0]  joyana_r1,
+    input   [15:0]  joyana_r2,
 
     // SDRAM interface
     input           downloading,
@@ -278,8 +280,8 @@ jtcop_main u_main(
     // cabinet I/O
     .joystick1   ( joystick1  ),
     .joystick2   ( joystick2  ),
-    .joyana1     ( joyana_l1  ),
-    .joyana2     ( joyana_l2  ),
+    .joyana1     ( joyana_r1  ),
+    .joyana2     ( joyana_r2  ),
     .start_button(start_button),
     .coin_input  ( coin_input ),
     .service     ( service    ),

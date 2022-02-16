@@ -263,6 +263,23 @@ reg  [15:0] cab_dout;
         sort_midres = { joy_in[6:4], joy_in[0], joy_in[1], joy_in[2], joy_in[3] };
     endfunction
 
+    function [11:0] torot( input [11:0] hotone );
+        case( hotone )
+            12'h1<< 0: torot = 12'hffe;
+            12'h1<< 1: torot = 12'hffd;
+            12'h1<< 2: torot = 12'hffb;
+            12'h1<< 3: torot = 12'hff7;
+            12'h1<< 4: torot = 12'hfef;
+            12'h1<< 5: torot = 12'hfdf;
+            12'h1<< 6: torot = 12'hfbf;
+            12'h1<< 7: torot = 12'hf7f;
+            12'h1<< 8: torot = 12'heff;
+            12'h1<< 9: torot = 12'hdff;
+            12'h1<<10: torot = 12'hbff;
+            12'h1<<11: torot = 12'h7ff;
+        endcase
+    endfunction
+
     always @(posedge clk) begin
         cab_dout <= 16'hffff;
         if( read_cs[0] )
@@ -277,6 +294,11 @@ reg  [15:0] cab_dout;
                             coin_input };
         if( read_cs[2] )
             cab_dout <= { dipsw_b, dipsw_a };
+        if( read_cs==7 ) begin
+            cab_dout[15:12] <= 4'hf;
+            cab_dout[11: 0] <= A[1] ? torot(rotary2) : torot(rotary1);
+        end
+        //joyana1 : joyana2;
     end
 `endif
 

@@ -70,7 +70,7 @@ assign green = {2{g4}};
 assign blue  = {2{b4}};
 
 assign ba0_blank = ~|ba0_pxl[3:0] | ~gfx_en[0];
-assign ba1_blank = ~|ba1_pxl[2:0] | ~gfx_en[1];
+assign ba1_blank = ~|ba1_pxl[3:0] | ~gfx_en[1]; // only 2:0 should be used
 assign ba2_blank = ~|ba2_pxl[3:0] | ~gfx_en[2];
 assign obj_blank = ~|obj_pxl[3:0] | ~gfx_en[3];
 

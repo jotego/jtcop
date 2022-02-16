@@ -108,13 +108,15 @@ always @(*) begin
                             case( A[3:1] )
                                 0: read_cs[0] = 1; // cabinet IO
                                 1: read_cs[2] = 1; // DIP sw
-                                2: nexrm1     = 1; // rotary 1P
+                                2,3: read_cs  = 7; // rotary controls
                                 4: read_cs[1] = 1; // system I/O
                                 5: vint_clr   = 1; // sure ?
                                 6: obj_copy   = 1; // sure? what about mixpsel_cs ?
                                 default:;
                             endcase
                         end
+                        // There are 0's written to 18'000A and
+                        // 1's written to 18'000C. Is it related to the rotary controls?
                     5: snreq = 1;   // 0x1A'0000
                     default:;
                 endcase
