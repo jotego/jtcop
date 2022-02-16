@@ -45,7 +45,8 @@ module jtcop_snd(
 
     output signed [15:0] snd,
     output               sample,
-    output               peak
+    output               peak,
+    output        [ 7:0] status
 );
 
 parameter BANKS=0;
@@ -64,6 +65,7 @@ assign ram_we   = ram_cs & ~cpu_rnw;
 assign oki_wrn  = ~(oki_cs & ~cpu_rnw);
 assign rom_addr = cpu_addr;
 assign rdy      = ~rom_cs | rom_ok;
+assign status   = { 1'b0, opn_irqn, opl_irqn, opn_dout[7], oki_dout[3:0]};
 
 always @(*) begin
     ram_cs  = 0;
