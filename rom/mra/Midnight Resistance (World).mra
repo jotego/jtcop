@@ -48,16 +48,16 @@
         <part name="fl17" crc="9029965d"/>
         <!-- gfx1 - starts at 0xB0000 -->
         <interleave output="16">
-            <part name="fk_04.rom" crc="325ba20c" map="01"/>
-            <part name="fk_05.rom" crc="3cdb7453" map="10"/>
+            <part name="fk_05.rom" crc="3cdb7453" map="01"/>
+            <part name="fk_04.rom" crc="325ba20c" map="10"/>
         </interleave>
         <!-- gfx2 - starts at 0xD0000 -->
         <interleave output="16">
             <part name="fl09" crc="907d5910" map="01"/>
-            <part name="fl08" crc="a936c03c" map="10"/>
+            <part name="fl07" crc="2068c45c" map="10"/>
         </interleave>
         <interleave output="16">
-            <part name="fl07" crc="2068c45c" map="01"/>
+            <part name="fl08" crc="a936c03c" map="01"/>
             <part name="fl06" crc="b7241ab9" map="10"/>
         </interleave>
         <!-- gfx3 - starts at 0x150000 -->

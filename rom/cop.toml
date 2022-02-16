@@ -40,10 +40,12 @@ regions = [
     { name="oki",      start=$PCM_START },
 
     # GFX1
-    { machine="midres", name="gfx1",     start=$BA2_START, width=16, No_offset=true, reverse=true },
+    # { machine="midres", name="gfx1",     start=$BA2_START, width=16, No_offset=true, reverse=true },
     { name="gfx1",     start=$BA2_START, width=16, No_offset=true },
 
     # GFX2
+    { machine="midres", name="gfx2",     start=$GFX2_START,width=16, No_offset=true,  name_sort=[
+    "fl09", "fl07", "fl08", "fl06"] },
     { machine="robocop", name="gfx2",     start=$GFX2_START,width=16, No_offset=true,  name_sort=[
     "ep20", "ep18", "ep21", "ep19"] },
     { machine="hippodrm", name="gfx2",     start=$GFX2_START,width=16, No_offset=true,  name_sort=[
