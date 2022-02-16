@@ -72,7 +72,7 @@ assign blue  = {2{b4}};
 assign ba0_blank = ~|ba0_pxl[3:0] | ~gfx_en[0];
 assign obj_blank = ~|obj_pxl[3:0] | ~gfx_en[3];
 assign ba1_blank = ~|ba1_pxl[2:0] | ~gfx_en[1];
-assign ba2_blank = ~|ba2_pxl[3:0] | ~gfx_en[4];
+assign ba2_blank = ~|ba2_pxl[3:0] | ~gfx_en[2];
 
 always @* begin
 //    selbus = (ba0_pxl[3:0]!=0 && gfx_en[0]) ? 2'd1 :
