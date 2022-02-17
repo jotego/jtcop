@@ -104,7 +104,7 @@ always @(posedge clk) begin
             ba0_blank,
             ba1_blank,
             ba2_blank,
-            obj_blank,
+            obj_blank
             };
     if( pxl_cen ) begin
         pal_addr[9:8] <= selbus;
@@ -131,9 +131,9 @@ jtframe_blank #(.DLY(2),.DW(12)) u_blank(
 
 // Red - Green palette RAM
 jtframe_dual_ram16 #(
-    .aw        (  10         ),
-    .simfile_lo("pal0_lo.bin"),
-    .simfile_hi("pal0_hi.bin")
+    .aw        (  10        ),
+    .simfile_lo("pal_lo.bin"),
+    .simfile_hi("pal_hi.bin")
 ) u_ram_gr(
     // CPU writes
     .clk0   ( clk_cpu   ),
@@ -165,7 +165,7 @@ jtframe_prom #(
     .cen    ( 1'b1          ),
     .data   ( ~prom_din     ),
     .rd_addr( seladdr       ),
-    .wr_addr( prog_addr     ),
+    .wr_addr( prog_addr[7:0]),
     .we     ( prom_we       ),
     .q      ( seldec        )
 );
