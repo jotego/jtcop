@@ -151,6 +151,8 @@ jtcop_decoder u_decoder(
     .A          ( A         ),
     .ASn        ( ASn       ),
     .RnW        ( RnW       ),
+    .LVBL       ( LVBL      ),
+    .LVBL_l     ( LVBL_l    ),
     .sec2       ( sec2      ),
     .service    ( service   ),
     .coin_input ( coin_input),

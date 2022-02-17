@@ -20,6 +20,8 @@ module jtcop_decoder(
     input       [23:1] A,
     input              ASn,
     input              RnW,
+    input              LVBL,
+    input              LVBL_l,
     input              sec2,
     input              service,
     input       [ 1:0] coin_input,

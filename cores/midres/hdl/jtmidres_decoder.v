@@ -20,6 +20,8 @@ module jtcop_decoder(
     input       [23:1] A,
     input              ASn,
     input              RnW,
+    input              LVBL,
+    input              LVBL_l,
     input              sec2,
     input              service,
     input       [ 1:0] coin_input,
@@ -48,7 +50,7 @@ module jtcop_decoder(
     output reg         cmap_cs,
     // Object
     output reg         obj_cs,       // called MIX in the schematics
-    output reg         obj_copy,     // called *DM in the schematics
+    output             obj_copy,     // called *DM in the schematics
     // Palette
     output reg [ 1:0]  pal_cs,
     // HuC6820 protection
@@ -58,6 +60,10 @@ module jtcop_decoder(
     // MCU/SUB CPU
     output reg [5:0]   sec          // bit 2 is unused
 );
+
+// Triggering it once per frame, not sure if the
+// CPU has it mapped to an address, like Robocop
+assign mixpsel_cs = !LVBL && LVBL_l;
 
 always @(*) begin
     rom_cs     = 0;
@@ -77,7 +83,7 @@ always @(*) begin
     cmap_cs    = 0;
     nexrm1     = 0;
     prisel_cs  = 0;
-    obj_copy   = 0;
+    //obj_copy   = 0;
     snreq      = 0;
     vint_clr   = 0;
     mixpsel_cs = 0;
@@ -111,7 +117,7 @@ always @(*) begin
                                 2,3: read_cs  = 7; // rotary controls
                                 4: read_cs[1] = 1; // system I/O
                                 5: vint_clr   = 1; // sure ?
-                                6: obj_copy   = 1; // sure? what about mixpsel_cs ?
+                                //6: obj_copy   = 1; // sure? what about mixpsel_cs ?
                                 default:;
                             endcase
                         end

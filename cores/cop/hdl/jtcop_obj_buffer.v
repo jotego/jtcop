@@ -16,6 +16,24 @@
     Version: 1.0
     Date: 4-10-2021 */
 
+
+// The DMA circuit doesn't stop the CPU. The CPU is free to access the
+// memory at any time. Once the data is in place, the CPU enables the DMA
+// writting (reading is always done while the CPU isn't acting). Writting
+// is automatically turned off at the end of the blanking period
+
+// The mixpsel signal is used to copy the sprite RAM to the frame buffer
+// in a different way. If mixpsel is high, the sprite RAM contains the
+// destination address to where the data is to be sent, giving more control
+// to the CPU. This rather obscure mode doesn't seem to be used by the
+// software and is not fully implemented here
+
+// The way the sprite RAM is scanned uses the vertical counter in the
+// original too. The specific signals used for the scan are only relevant
+// if mixpsel is implemented, because the address latch has to be exercised
+// in that case. Otherwise, the scan can be done in any order as it won't
+// affect the result
+
 module jtcop_obj_buffer(
     input              rst,
     input              clk,
@@ -54,7 +72,7 @@ reg  [ 7:0] buf_latch;
 reg         dma_on, dma_charged, v14l;
 
 assign buf_scan = { v14, hdump[7:4], ~hdump[3:2] };
-assign dmapdb   = mixpsel ? buf_latch : buf_scan[9:2];
+assign dmapdb   = /*mixpsel ? buf_latch :*/ buf_scan[9:2];
 assign copy_addr= { dmapdb, ~hdump[3:2] };
 
 always @(posedge clk, posedge rst) begin
