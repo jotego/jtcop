@@ -310,6 +310,9 @@ jtcop_main u_main(
     assign LDSWn     = 1;
     assign main_rnw  = 1;
     assign main_dout = 0;
+    reg LVBL_l;
+    always @(posedge clk) LVBL_l<= LVBL;
+    assign obj_copy = !LVBL && LVBL_l;
 `endif
 
 jtcop_video u_video(

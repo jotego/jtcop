@@ -70,10 +70,12 @@ wire [ 9:0] copy_addr;
 reg  [ 3:0] v14;
 reg  [ 7:0] buf_latch;
 reg         dma_on, dma_charged, v14l;
+wire        dma_we;
 
 assign buf_scan = { v14, hdump[7:4], ~hdump[3:2] };
 assign dmapdb   = /*mixpsel ? buf_latch :*/ buf_scan[9:2];
 assign copy_addr= { dmapdb, ~hdump[3:2] };
+assign dma_we   = dma_on && hdump[1:0]==1;
 
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
@@ -85,8 +87,8 @@ always @(posedge clk, posedge rst) begin
     end else begin
         v14l  <= v14[3];
         dma_charged <= dma_on ? 1'b0 : (obj_copy ? 1'b1 : dma_charged);
-        dma_on <= vload ? 1'b0 : (!LVBL && v14==8 && !v14l ? dma_charged : dma_on);
-        v14    <= vload ? 4'd8 : (hinit & pxl_cen ? (v14+1'd1) : v14);
+        dma_on <= (vload && v14==8) ? 1'b0 : (!LVBL && v14==8 && !v14l ? dma_charged : dma_on);
+        v14    <= hinit & pxl_cen ? (v14+1'd1) : v14;
         if( pxl_cen ) buf_latch <= buf_dout[7:0];
     end
 end
@@ -110,15 +112,15 @@ jtframe_dual_ram16 #(.aw(10),
     .q1     ( buf_dout  )
 );
 
-jtframe_dual_ram16 #(.aw(10),
+jtframe_dual_ram16 #(.aw(10)/*,
     .simfile_lo("obj_lo.bin"),
-    .simfile_hi("obj_hi.bin")
+    .simfile_hi("obj_hi.bin")*/
 ) u_copy(
     // Port 0: DMA
     .clk0   ( clk       ),
     .data0  ( buf_dout  ),
     .addr0  ( copy_addr ),
-    .we0    ({2{dma_on}}),
+    .we0    ({2{dma_we}}),
     .q0     (           ),
     // Port 1
     .clk1   ( clk       ),

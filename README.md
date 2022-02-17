@@ -102,6 +102,10 @@ is no frame buffer memory either.
 The MXC-06 chip must have had internal memory
 for line buffers
 
+# Misc
+
+There is a video recording of the Midnight Resistance PCB game play [here](https://www.youtube.com/watch?v=k0V2VGGQ8Cg)
+
 # Development Support
 
 This core was possible thanks to the patrons listed
