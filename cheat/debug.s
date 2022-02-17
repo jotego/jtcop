@@ -94,6 +94,17 @@ SCREEN:
     load s3,c0
     call PRINT_ST8
 
+    add s0,4
+    load s3,81      ; Frequency
+    call PRINT_ST16
+    ; the 'kHz' string:
+    load s1,4b
+    call PRINT_RAW
+    load s1,28
+    call PRINT_RAW
+    load s1,5a
+    call PRINT_RAW
+
 CLOSE_FRAME:
     output sb,6     ; LED
     return
@@ -131,7 +142,6 @@ PRINT_BADATA:
     load  s3,3      ; Mode register 3
     add   s3,s7
     CALL  PRINT_ST8
-
     return
 
 
@@ -167,6 +177,15 @@ PRINT_ST8:
 
 
     ; s0 screen col address
+    ; s1 byte to write
+    ; s0 updated to point to the next column
+PRINT_RAW:
+    output s0,VRAM_COL
+    output s1,VRAM_DATA
+    add s0,1    ; leave the cursor at the next column
+    return
+
+    ; s0 screen col address
     ; s1 number to write
     ; modifies s2
     ; s0 updated to point to the next column
@@ -197,7 +216,7 @@ WRITE_HEX4:
 .over10:
     add s2,23'd
 .write:
-    output s2,a
+    output s2,VRAM_DATA
     return
 
     ; clear screen

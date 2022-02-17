@@ -97,7 +97,11 @@ module jtcop_main(
     input              dip_pause,
     input              dip_test,
     input    [7:0]     dipsw_a,
-    input    [7:0]     dipsw_b
+    input    [7:0]     dipsw_b,
+
+    // Debug
+    input    [7:0]     st_addr,
+    output   [7:0]     st_dout
 );
 
 wire [23:1] A;
@@ -119,6 +123,7 @@ wire        pre_ram_cs;
 wire        cpu_cen, cpu_cenb;
 wire [ 2:0] read_cs;
 wire [ 7:0] track_dout;
+wire [15:0] fave;
 
 `ifdef SIMULATION
 wire [23:0] A_full = {A,1'b0};
@@ -134,6 +139,8 @@ assign pre_ram_cs = sysram_cs | fsft_cs | fmap_cs |
                                 bsft_cs | bmap_cs |
                                 cmap_cs | csft_cs;
 assign ram_cs   = ~BUSn & pre_ram_cs;
+
+assign st_dout = st_addr[0] ? fave[15:8] : fave[7:0]; // 10,000kHz = 2710 in hex
 
 always @(*) begin
     if( vint )
@@ -465,7 +472,7 @@ jtframe_68kdtack #(.W(8)) u_dtack(
     .den        ( 8'd24     ),  // denominator
     .DTACKn     ( DTACKn    ),
     // Frequency report
-    .fave       (           ),
+    .fave       ( fave      ),
     .fworst     (           ),
     .frst       (           )
 );
