@@ -63,7 +63,7 @@ module jtcop_decoder(
 
 // Triggering it once per frame, not sure if the
 // CPU has it mapped to an address, like Robocop
-assign mixpsel_cs = !LVBL && LVBL_l;
+assign obj_copy = !LVBL && LVBL_l;
 
 always @(*) begin
     rom_cs     = 0;
