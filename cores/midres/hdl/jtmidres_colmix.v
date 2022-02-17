@@ -54,14 +54,13 @@ module jtcop_colmix(
     input      [ 7:0]  debug_bus
 );
 
-reg  [ 7:0] seladdr;
 reg  [ 1:0] selbus;
-wire [ 3:0] seldec;
 wire [15:0] pal_bgr;
 wire [ 1:0] we_gr;
 reg  [ 9:0] pal_addr;
 wire [ 3:0] r4,g4,b4;
 wire        ba0_blank, obj_blank, ba1_blank, ba2_blank;
+wire        obj_loprio;
 
 assign we_gr = ~dsn & {2{pal_cs[0]}};
 // conversion to 8-bit colour like the other games
@@ -70,42 +69,25 @@ assign green = {2{g4}};
 assign blue  = {2{b4}};
 
 assign ba0_blank = ~|ba0_pxl[3:0] | ~gfx_en[0];
-assign ba1_blank = ~|ba1_pxl[3:0] | ~gfx_en[1]; // only 2:0 should be used
+assign ba1_blank = ~|ba1_pxl[3:0] | ~gfx_en[1]; // should only 2:0 be used?
 assign ba2_blank = ~|ba2_pxl[3:0] | ~gfx_en[2];
 assign obj_blank = ~|obj_pxl[3:0] | ~gfx_en[3];
+assign obj_loprio= prisel[1] & ((debug_bus[0] ? obj_pxl[3] : ba2_pxl[3])^ (debug_bus[1]^prisel[2]));
+
+localparam [1:0] BA0=01,BA1=2,BA2=3,OBJ=0;
 
 always @* begin
-    selbus = !ba0_blank ? 2'd1 :
-             !obj_blank ? 2'd0 :
-             !ba1_blank ? 2'd2 : 2'd3;
-//    case( seldec )
-//        2: selbus = 1; // ba0 - B
-//        1: selbus = 2; // ba1 - 7
-//        4: selbus = 3; // ba2 - E
-//        8: selbus = 0; // obj - D
-//        default: selbus = 0;
-//    endcase
+    if( prisel[0] )
+        selbus = ba2_blank ? BA1 : BA2;
+    else
+        selbus = ba1_blank ? BA2 : BA1;
+    if( !obj_blank /*&& !obj_loprio*/)
+        selbus = OBJ;
+    if( !ba0_blank )
+        selbus = BA0;
 end
 
-//wire [3:0] sorted;
-//
-//jtframe_sort u_sort1(
-//    .debug_bus  ( debug_bus ),
-//    .busin      ( ba1_pxl[3:0] ),
-//    .busout     ( sorted   )
-//);
-
 always @(posedge clk) begin
-    seladdr <= {
-            prisel[2:1],
-            ba1_pxl[7],
-            ba1_pxl[3],
-            //sorted,
-            ba0_blank,
-            ba1_blank,
-            ba2_blank,
-            obj_blank
-            };
     if( pxl_cen ) begin
         pal_addr[9:8] <= selbus;
         case( selbus )
@@ -156,18 +138,18 @@ jtframe_dual_ram16 #(
     assign pal_bgr = {4{pal_addr[3:0]}};
 `endif
 
-jtframe_prom #(
-    .aw     ( 8             ),
-    .dw     ( 4             ),
-    .simfile("../../../../rom/midres/7114.prm")
-) u_selbus(
-    .clk    ( clk           ),
-    .cen    ( 1'b1          ),
-    .data   ( ~prom_din     ),
-    .rd_addr( seladdr       ),
-    .wr_addr( prog_addr[7:0]),
-    .we     ( prom_we       ),
-    .q      ( seldec        )
-);
+// jtframe_prom #(
+//     .aw     ( 8             ),
+//     .dw     ( 4             ),
+//     .simfile("../../../../rom/midres/7114.prm")
+// ) u_selbus(
+//     .clk    ( clk           ),
+//     .cen    ( 1'b1          ),
+//     .data   ( ~prom_din     ),
+//     .rd_addr( seladdr       ),
+//     .wr_addr( prog_addr[7:0]),
+//     .we     ( prom_we       ),
+//     .q      ( seldec        )
+// );
 
 endmodule
