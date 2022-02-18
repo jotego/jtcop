@@ -274,7 +274,7 @@ reg  [15:0] cab_dout;
 
     function [11:0] torot( input [11:0] hotone );
         case( hotone )
-            12'h1<< 0: torot = 12'hffe;
+            default: torot = 12'hffe;
             12'h1<< 1: torot = 12'hffd;
             12'h1<< 2: torot = 12'hffb;
             12'h1<< 3: torot = 12'hff7;
