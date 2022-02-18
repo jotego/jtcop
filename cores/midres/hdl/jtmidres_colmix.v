@@ -16,6 +16,10 @@
     Version: 1.0
     Date: 24-9-2021 */
 
+// The layer priority is solved as in MAME
+// I hope to get access to a Midnight Resistance board
+// at some point and derive the original circuit
+
 module jtcop_colmix(
     input              rst,
     input              clk,
