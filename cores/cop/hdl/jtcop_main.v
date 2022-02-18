@@ -477,6 +477,7 @@ jtframe_68kdtack #(.W(8)) u_dtack(
     .frst       (           )
 );
 
+`ifndef NOMAIN
 jtframe_m68k u_cpu(
     .clk        ( clk         ),
     .rst        ( rst         ),
@@ -506,6 +507,18 @@ jtframe_m68k u_cpu(
     .DTACKn     ( DTACKn      ),
     .IPLn       ( IPLn        ) // VBLANK
 );
+`else
+jtframe_simwr_68k u_simwr(
+    .rst    ( rst       ),
+    .clk    ( clk       ),
+    .DTACKn ( DTACKn    ),
+    .A      ( A         ),
+    .dout   ( cpu_dout  ),
+    .dsn    ({UDSn,LDSn}),
+    .wrn    ( RnW       ),
+    .ASn    ( ASn       )
+);
+`endif
 
 
 endmodule
