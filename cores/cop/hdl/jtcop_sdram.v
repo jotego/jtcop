@@ -367,11 +367,11 @@ jtframe_ram2_6slots #(
     .offset5    ( B2_OFFSET ),
 
     .slot0_addr ( ram_maddr ),
-    .slot1_addr ( ba2mcu_addr  ),
+    .slot1_addr (ba2mcu_addr),
     .slot2_addr ( main_addr ),
     .slot3_addr ( b0ram_addr),
     .slot4_addr ( b1ram_addr),
-    .slot5_addr ( b2ram_addr /*| 11'b010_0000_0000*/ ),
+    .slot5_addr ( b2ram_addr),
 
     //  output data
     .slot0_dout ( ram_data  ),

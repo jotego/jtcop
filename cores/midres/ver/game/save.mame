@@ -4,7 +4,7 @@ save ba1_scr.bin,240000,800
 save ba2_map.bin,2a0000,800
 save ba2_scr.bin,2c0000,800
 
-save ba0_map.bin,320000,800
+save ba0_map.bin,320000,2000
 save ba0_scr.bin,340000,800
 
 save pal.bin,140000,800

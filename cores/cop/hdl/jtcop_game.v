@@ -225,7 +225,6 @@ jtframe_cen24 u_cen(
     .cen3b(), .cen3qb(), .cen1p5b()
 );
 
-`ifndef NOMAIN
 jtcop_main u_main(
     .rst        ( rst       ),
     .clk        ( clk       ),
@@ -303,17 +302,6 @@ jtcop_main u_main(
     .st_addr     ( st_addr    ),
     .st_dout     ( st_main    )
 );
-`else
-    assign main_cs   = 0;
-    assign ram_cs    = 0;
-    assign UDSWn     = 1;
-    assign LDSWn     = 1;
-    assign main_rnw  = 1;
-    assign main_dout = 0;
-    reg LVBL_l;
-    always @(posedge clk) LVBL_l<= LVBL;
-    assign obj_copy = !LVBL && LVBL_l;
-`endif
 
 jtcop_video u_video(
     .rst        ( rst       ),

@@ -129,10 +129,10 @@ always @(*) begin
             2: begin
                 disp_cs = 1;
                 case( A[19:17] )
-                    0: bmode_cs = 1;
+                    0: bmode_cs = 1; // BA1
                     1: bmap_cs  = 1;
                     2: bsft_cs  = 1;
-                    4: cmode_cs = 1;
+                    4: cmode_cs = 1; // BA2
                     5: cmap_cs  = 1;
                     6: csft_cs  = 1;
                     default:;
@@ -140,7 +140,7 @@ always @(*) begin
             end
             3: begin
                 disp_cs = 1;
-                case( A[19:17] )
+                case( A[19:17] ) // BA0
                     0: fmode_cs  = 1;   // cfg registers
                     1: fmap_cs   = 1;   // tilemap
                     2: fsft_cs   = 1;   // col/row scroll

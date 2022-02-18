@@ -41,6 +41,13 @@ if [ -n "$SCENE" ]; then
     cat $SCENE/pal.bin | drop1    > pal_lo.bin
     cat $SCENE/obj.bin | drop1 -l > obj_hi.bin
     cat $SCENE/obj.bin | drop1    > obj_lo.bin
+    cp $SCENE/simwr.csv .
+    jtpatch -dst sdram_bank0.bin -src $SCENE/ba0_scr.bin -offset16 0x102000 -swab || exit $?
+    jtpatch -dst sdram_bank0.bin -src $SCENE/ba0_map.bin -offset16 0x103000 -swab || exit $?
+    jtpatch -dst sdram_bank0.bin -src $SCENE/ba1_scr.bin -offset16 0x104000 -swab || exit $?
+    jtpatch -dst sdram_bank0.bin -src $SCENE/ba1_map.bin -offset16 0x104400 -swab || exit $?
+    jtpatch -dst sdram_bank0.bin -src $SCENE/ba2_scr.bin -offset16 0x106000 -swab || exit $?
+    jtpatch -dst sdram_bank0.bin -src $SCENE/ba2_map.bin -offset16 0x106400 -swab || exit $?
     OTHER="$OTHER -d NOSOUND -d NOMAIN -d GRAY -w -video 2"
 else
     # export YM2203=1

@@ -508,17 +508,18 @@ jtframe_m68k u_cpu(
     .IPLn       ( IPLn        ) // VBLANK
 );
 `else
-jtframe_simwr_68k u_simwr(
-    .rst    ( rst       ),
-    .clk    ( clk       ),
-    .DTACKn ( DTACKn    ),
-    .A      ( A         ),
-    .dout   ( cpu_dout  ),
-    .dsn    ({UDSn,LDSn}),
-    .wrn    ( RnW       ),
-    .ASn    ( ASn       )
-);
-`endif
+    jtframe_simwr_68k u_simwr(
+        .rst    ( rst       ),
+        .clk    ( clk       ),
+        .DTACKn ( DTACKn    ),
+        .A      ( A         ),
+        .dout   ( cpu_dout  ),
+        .dsn    ({UDSn,LDSn}),
+        .wrn    ( RnW       ),
+        .ASn    ( ASn       )
+    );
 
+    // assign obj_copy = !LVBL && LVBL_l;
+`endif
 
 endmodule

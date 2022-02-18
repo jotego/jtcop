@@ -61,6 +61,7 @@ reg  [ 9:0] pal_addr;
 wire [ 3:0] r4,g4,b4;
 wire        ba0_blank, obj_blank, ba1_blank, ba2_blank;
 wire        obj_loprio;
+reg  [ 7:0] scr_col;
 
 assign we_gr = ~dsn & {2{pal_cs[0]}};
 // conversion to 8-bit colour like the other games
@@ -72,16 +73,19 @@ assign ba0_blank = ~|ba0_pxl[3:0] | ~gfx_en[0];
 assign ba1_blank = ~|ba1_pxl[3:0] | ~gfx_en[1]; // should only 2:0 be used?
 assign ba2_blank = ~|ba2_pxl[3:0] | ~gfx_en[2];
 assign obj_blank = ~|obj_pxl[3:0] | ~gfx_en[3];
-assign obj_loprio= prisel[1] & ((debug_bus[0] ? obj_pxl[3] : ba2_pxl[3])^ (debug_bus[1]^prisel[2]));
+assign obj_loprio= prisel[1] & (obj_pxl[7]^prisel[2]);
 
 localparam [1:0] BA0=01,BA1=2,BA2=3,OBJ=0;
 
 always @* begin
-    if( prisel[0] )
+    if( prisel[0] ) begin
         selbus = ba2_blank ? BA1 : BA2;
-    else
+        scr_col = ba2_pxl;
+    end else begin
         selbus = ba1_blank ? BA2 : BA1;
-    if( !obj_blank /*&& !obj_loprio*/)
+        scr_col = ba1_pxl;
+    end
+    if( !(obj_blank || (obj_loprio && scr_col[3:0]!=0) ) )
         selbus = OBJ;
     if( !ba0_blank )
         selbus = BA0;
