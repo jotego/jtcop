@@ -5,9 +5,7 @@ game:
   - from: slyspy
     get:
       - jtslyspy_decoder.v
-  - from: midres
-    get:
-      - jtmidres_snd.v
+      - jtslyspy_snd.v
 jtframe:
   - get:
     - jtframe_sort.v

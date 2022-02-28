@@ -804,25 +804,25 @@ void dec0_state::slyspy_sound_protection_map(address_map &map)
 	map(0x020000, 0x020001).mirror(0x180000).r(FUNC(dec0_state::slyspy_sound_state_r)); /* Protection counter */
 	map(0x050000, 0x050001).mirror(0x180000).r(FUNC(dec0_state::slyspy_sound_state_reset_r));
 	// state 0
-	map(0x010000, 0x010001).w("ym2", FUNC(ym3812_device::write));
 	map(0x030000, 0x030001).w("ym1", FUNC(ym2203_device::write));
+	map(0x010000, 0x010001).w("ym2", FUNC(ym3812_device::write));
 	map(0x060000, 0x060001).rw("oki", FUNC(okim6295_device::read), FUNC(okim6295_device::write));
 	map(0x070000, 0x070001).r(m_soundlatch, FUNC(generic_latch_8_device::read));
 	// state 1
-	map(0x090000, 0x090001).rw("oki", FUNC(okim6295_device::read), FUNC(okim6295_device::write));
-	map(0x0c0000, 0x0c0001).r(m_soundlatch, FUNC(generic_latch_8_device::read));
 	map(0x0e0000, 0x0e0001).w("ym1", FUNC(ym2203_device::write));
 	map(0x0f0000, 0x0f0001).w("ym2", FUNC(ym3812_device::write));
+	map(0x090000, 0x090001).rw("oki", FUNC(okim6295_device::read), FUNC(okim6295_device::write));
+	map(0x0c0000, 0x0c0001).r(m_soundlatch, FUNC(generic_latch_8_device::read));
 	// state 2
-	map(0x110000, 0x110001).r(m_soundlatch, FUNC(generic_latch_8_device::read));
-	map(0x130000, 0x130001).rw("oki", FUNC(okim6295_device::read), FUNC(okim6295_device::write));
 	map(0x140000, 0x140001).w("ym1", FUNC(ym2203_device::write));
 	map(0x170000, 0x170001).w("ym2", FUNC(ym3812_device::write));
+	map(0x130000, 0x130001).rw("oki", FUNC(okim6295_device::read), FUNC(okim6295_device::write));
+	map(0x110000, 0x110001).r(m_soundlatch, FUNC(generic_latch_8_device::read));
 	// state 3
-	map(0x190000, 0x190001).w("ym2", FUNC(ym3812_device::write));
 	map(0x1c0000, 0x1c0001).w("ym1", FUNC(ym2203_device::write));
-	map(0x1e0000, 0x1e0001).r(m_soundlatch, FUNC(generic_latch_8_device::read));
+	map(0x190000, 0x190001).w("ym2", FUNC(ym3812_device::write));
 	map(0x1f0000, 0x1f0001).rw("oki", FUNC(okim6295_device::read), FUNC(okim6295_device::write));
+	map(0x1e0000, 0x1e0001).r(m_soundlatch, FUNC(generic_latch_8_device::read));
 }
 
 
