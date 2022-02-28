@@ -17,6 +17,8 @@
     Date: 28-2-2022 */
 
 module jtcop_decoder(
+    input              rst,
+    input              clk,
     input       [23:1] A,
     input              ASn,
     input              RnW,
@@ -29,8 +31,8 @@ module jtcop_decoder(
     output reg         eep_cs,
     output reg         prisel_cs,
     output reg         mixpsel_cs,
-    output reg         nexin_cs,       // this pin C15 of connector 2. It's unconnected in all games
-    output reg         nexout_cs,      // Connector 2, pin A16: unused
+    output reg         nexin_cs,       // used as the counter control signals
+    output reg         nexout_cs,      // used as the counter control signals
     output reg         nexrm1,         // used on Heavy Barrel PCB for the track balls
     output reg         disp_cs,
     output reg         sysram_cs,
@@ -62,6 +64,20 @@ module jtcop_decoder(
 );
 
 reg  [1:0] mapsel;
+reg  nexinl, nexoutl;
+
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        mapsel <= 0;
+        nexinl <= 0;
+        nexoutl<= 0;
+    end else begin
+        nexinl <= nexin_cs;
+        nexoutl<= nexout_cs;
+        if( nexin_cs & ~nexinl ) mapsel <= mapsel+2'd1;
+        if( nexout_cs & ~nexout_cs ) mapsel <= 0;
+    end
+end
 
 // Triggering it once per frame, not sure if the
 // CPU has it mapped to an address, like Robocop
@@ -103,30 +119,37 @@ always @(*) begin
     huc_cs     = 0;
 
     if( !ASn ) begin
+        nexin_cs  = A[19:12]==4;  // cnt up
+        nexout_cs = A[19:12]==10; // cnt clr
         case( A[21:20] )
             0:
                 if( RnW ) begin // Read
-                    rom_cs = A[19:16]<6 && RnW;
+                    rom_cs   = A[19:16]<6 && RnW;
                 end else begin // Write
-                    case( A[17:15] )
-                end
-            2: begin
-                disp_cs = 1;
-                case( A[19:17] )
-                    0: bmode_cs = 1; // BA1
-                    1: bmap_cs  = 1;
-                    2: bsft_cs  = 1;
-                    default:;
-                endcase
-            end
-            3: begin
-                case( A[17:15] )
-                    0: case( A[8:7] )
-                        0: cmode_cs = 1; // BA2
-                        1: csft_cs  = 1;
-                        2: cmap_cs  = 1;
+                    case( A[16:12] )
+                        4'h0: bmode_cs = 1; // BA1
+                        4'h2: bsft_cs  = 1;
+                        4'h6: bmap_cs  = mapsel==0;
+                        4'h8: fmode_cs = 1; // BA0
+                        4'hc: fsft_cs  = 1;
+                        4'he: fmap_cs  = mapsel==0;
                         default:;
                     endcase
+                end
+            1:  case( A[17:12])
+                    5'h18: fmap_cs = mapsel==1;
+                    5'h1c: bmap_cs = mapsel==1;
+                endcase
+            2:  case( A[17:12])
+                    5'h22,5'h2e: fmap_cs = mapsel==2;
+                    5'h20:       bmap_cs = mapsel==2;
+                endcase
+            3: begin
+                case( A[17:12])
+                    5'h30:       fmap_cs = mapsel==3;
+                    5'h38,5'h39: bmap_cs = mapsel==3;
+                endcase
+                case( A[17:15] )
                     1: sysram_cs = 1;   // 0x30'4000
                     2: obj_cs    = 1;   // 0x30'8000
                     4: pal_cs[0] = 1;   // 0x31'0000
@@ -152,15 +175,15 @@ always @(*) begin
                         // 1's written to 18'000C. Is it related to the rotary controls?
                     default:;
                 endcase
-                disp_cs = 1;
-                case( A[19:17] ) // BA0
-                    0: fmode_cs  = 1;   // cfg registers
-                    1: fmap_cs   = 1;   // tilemap
-                    2: fsft_cs   = 1;   // col/row scroll
+                case( A[19:17] ) // BA2
+                    0: cmode_cs  = 1;   // cfg registers
+                    1: cmap_cs   = 1;   // tilemap
+                    2: csft_cs   = 1;   // col/row scroll
                     default:;
                 endcase
             end
         endcase
+        disp_cs = |{fmap_cs, bmap_cs, cmap_cs, fsft_cs, bsft_cs, csft_cs };
     end
 end
 

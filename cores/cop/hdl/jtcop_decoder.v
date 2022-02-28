@@ -17,6 +17,8 @@
     Date: 24-9-2021 */
 
 module jtcop_decoder(
+    input              rst,
+    input              clk,
     input       [23:1] A,
     input              ASn,
     input              RnW,

@@ -155,6 +155,8 @@ end
 
 // NB: this module is different for jtmidres
 jtcop_decoder u_decoder(
+    .rst        ( rst       ),
+    .clk        ( clk       ),
     .A          ( A         ),
     .ASn        ( ASn       ),
     .RnW        ( RnW       ),

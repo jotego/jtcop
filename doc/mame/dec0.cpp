@@ -682,9 +682,9 @@ void dec0_state::slyspy_protection_map(address_map &map)
 	map(0x18000, 0x19fff).w(m_tilegen[0], FUNC(deco_bac06_device::pf_data_w));
 	map(0x1c000, 0x1dfff).w(m_tilegen[1], FUNC(deco_bac06_device::pf_data_w));
 	// State 2 (Called by Trap A)
-	map(0x20000, 0x21fff).w(m_tilegen[1], FUNC(deco_bac06_device::pf_data_w));
 	map(0x22000, 0x23fff).w(m_tilegen[0], FUNC(deco_bac06_device::pf_data_w));
 	map(0x2e000, 0x2ffff).w(m_tilegen[0], FUNC(deco_bac06_device::pf_data_w));
+	map(0x20000, 0x21fff).w(m_tilegen[1], FUNC(deco_bac06_device::pf_data_w));
 	// State 3 (Called by Trap B)
 	map(0x30000, 0x31fff).w(m_tilegen[0], FUNC(deco_bac06_device::pf_data_w));
 	map(0x38000, 0x39fff).w(m_tilegen[1], FUNC(deco_bac06_device::pf_data_w));
