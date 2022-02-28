@@ -54,3 +54,5 @@ macros.f
 jtsim.f
 jtsim_vhdl.f
 video.info
+.DS_Store
+*.cfg

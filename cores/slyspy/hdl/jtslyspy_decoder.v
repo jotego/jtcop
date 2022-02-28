@@ -14,7 +14,7 @@
 
     Author: Jose Tejada Gomez. Twitter: @topapate
     Version: 1.0
-    Date: 1-2-2022 */
+    Date: 28-2-2022 */
 
 module jtcop_decoder(
     input       [23:1] A,
@@ -61,6 +61,8 @@ module jtcop_decoder(
     output reg [5:0]   sec          // bit 2 is unused
 );
 
+reg  [1:0] mapsel;
+
 // Triggering it once per frame, not sure if the
 // CPU has it mapped to an address, like Robocop
 assign obj_copy = !LVBL && LVBL_l;
@@ -102,20 +104,45 @@ always @(*) begin
 
     if( !ASn ) begin
         case( A[21:20] )
-            0: rom_cs = A[19:16]<8 && RnW;
-            1:
+            0:
+                if( RnW ) begin // Read
+                    rom_cs = A[19:16]<6 && RnW;
+                end else begin // Write
+                    case( A[17:15] )
+                end
+            2: begin
+                disp_cs = 1;
                 case( A[19:17] )
-                    0: sysram_cs = 1;
-                    1: obj_cs    = 1;
-                    2: pal_cs[0] = 1; // 0x14'0000
-                    3: prisel_cs = 1; // 0x16'0000
+                    0: bmode_cs = 1; // BA1
+                    1: bmap_cs  = 1;
+                    2: bsft_cs  = 1;
+                    default:;
+                endcase
+            end
+            3: begin
+                case( A[17:15] )
+                    0: case( A[8:7] )
+                        0: cmode_cs = 1; // BA2
+                        1: csft_cs  = 1;
+                        2: cmap_cs  = 1;
+                        default:;
+                    endcase
+                    1: sysram_cs = 1;   // 0x30'4000
+                    2: obj_cs    = 1;   // 0x30'8000
+                    4: pal_cs[0] = 1;   // 0x31'0000
+                    5: case( A[3:1] )   // 0x31'4000
+                        3'h0: snreq = 1;
+                        3'h1: prisel_cs = 1; // 0x31'4002
+                        3'h8: read_cs[2] = 1; // DIP sw
+                        3'h9: read_cs[0] = 1; // cabinet IO
+                        3'hA: read_cs[1] = 1; // system I/O
+                        default:;
+                    endcase
+                    6: nexrm0_cs = 1; // protection
+
                     4: // 0x18'0000
                         if( !A[4] ) begin
                             case( A[3:1] )
-                                0: read_cs[0] = 1; // cabinet IO
-                                1: read_cs[2] = 1; // DIP sw
-                                2,3: read_cs  = 7; // rotary controls
-                                4: read_cs[1] = 1; // system I/O
                                 5: vint_clr   = 1; // sure ?
                                 //6: obj_copy   = 1; // sure? what about mixpsel_cs ?
                                 default:;
@@ -123,22 +150,8 @@ always @(*) begin
                         end
                         // There are 0's written to 18'000A and
                         // 1's written to 18'000C. Is it related to the rotary controls?
-                    5: snreq = 1;   // 0x1A'0000
                     default:;
                 endcase
-            2: begin
-                disp_cs = 1;
-                case( A[19:17] )
-                    0: bmode_cs = 1; // BA1
-                    1: bmap_cs  = 1;
-                    2: bsft_cs  = 1;
-                    4: cmode_cs = 1; // BA2
-                    5: cmap_cs  = 1;
-                    6: csft_cs  = 1;
-                    default:;
-                endcase
-            end
-            3: begin
                 disp_cs = 1;
                 case( A[19:17] ) // BA0
                     0: fmode_cs  = 1;   // cfg registers
