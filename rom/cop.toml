@@ -25,7 +25,9 @@ dev = [
     { dev="i8751",   rbf="jtninja" }
 ]
 machines = [
-    { machine="slyspy", rbf="jtmidres" },
+    { machine="slyspy", rbf="jtslyspy" },
+    { machine="secretag", rbf="jtslyspy" },
+    { machine="bouldash", rbf="jtslyspy" },
     { machine="midres", rbf="jtmidres" }
 ]
 
@@ -87,7 +89,7 @@ blanks = [
     { machine="robocop",  region="gfx2", offset=0x20000, len=0x20000 },
     { machine="robocop",  region="gfx3", offset=0x10000, len=0x10000 },
     { machine="hippodrm", region="gfx2", offset=0x10000, len=0x30000 },
-    { machine="hippodrm",  region="gfx3", offset=0x10000, len=0x10000 },
+    { machine="hippodrm", region="gfx3", offset=0x10000, len=0x10000 },
 ]
 
 patches = [
