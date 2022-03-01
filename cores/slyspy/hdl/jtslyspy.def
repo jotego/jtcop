@@ -1,0 +1,11 @@
+include ../../cop/hdl/jtcop.def
+
+CORENAME=JTSLYSPY
+NOHUC
+NOTRACKBALL
+# Enable DEC1 core variations
+DEC1
+SLYSPY
+
+JTFRAME_CREDITS
+
