@@ -66,6 +66,9 @@ wire        ram_we;
 reg         rom_good;
 wire        opn_irqn, opl_irqn;
 
+reg         st_cnt, st_cntl,
+            st_clr, st_clrl;
+
 assign irqn     = opn_irqn & opl_irqn;
 assign snd_bank = 0;
 assign oki_wrn  = ~(oki_cs & ~wrn);
@@ -145,7 +148,7 @@ always @(posedge clk, posedge rst) begin
     end else begin
         st_cntl <= st_cnt;
         st_clrl <= st_clr;
-        if( st_cnt && !st_cntl ) cnt<=cnt+1;
+        if( st_cnt && !st_cntl ) cnt<=cnt+2'd1;
         if( st_clr && !st_clrl ) cnt<=0;
     end
 end

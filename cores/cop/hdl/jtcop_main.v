@@ -59,7 +59,6 @@ module jtcop_main(
     output             bmode_cs,
     output             bsft_cs,
     output             bmap_cs,
-    output             nexrm0_cs,
     output             cmode_cs,
     output             csft_cs,
     output             cmap_cs,
@@ -116,7 +115,8 @@ wire        disp_cs, sysram_cs, cblk, vint_clr,
             prisel_cs, mixpsel_cs,
             nexin_cs,       // this pin C15 of connector 2. It's unconnected in all games
             nexout_cs,      // Connector 2, pin A16: unused
-            nexrm1;         // used on Heavy Barrel PCB for the track balls
+            nexrm1,         // used on Heavy Barrel PCB for the track balls
+            nexrm0_cs;      // a signal on Robocop sch. unused. Reused for SlySpy for the protection IC
 reg         secirq, vint,
             ok_dly;
 wire        pre_ram_cs;

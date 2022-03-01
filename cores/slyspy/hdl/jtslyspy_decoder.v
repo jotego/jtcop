@@ -75,7 +75,7 @@ always @(posedge clk, posedge rst) begin
         nexinl <= nexin_cs;
         nexoutl<= nexout_cs;
         if( nexin_cs & ~nexinl ) mapsel <= mapsel+2'd1;
-        if( nexout_cs & ~nexout_cs ) mapsel <= 0;
+        if( nexout_cs & ~nexoutl ) mapsel <= 0;
     end
 end
 
@@ -119,66 +119,54 @@ always @(*) begin
     huc_cs     = 0;
 
     if( !ASn ) begin
-        nexin_cs  = A[19:12]==4;  // cnt up
-        nexout_cs = A[19:12]==10; // cnt clr
         case( A[21:20] )
-            0:
-                if( RnW ) begin // Read
-                    rom_cs   = A[19:16]<6 && RnW;
-                end else begin // Write
-                    case( A[16:12] )
-                        4'h0: bmode_cs = 1; // BA1
-                        4'h2: bsft_cs  = 1;
-                        4'h6: bmap_cs  = mapsel==0;
-                        4'h8: fmode_cs = 1; // BA0
-                        4'hc: fsft_cs  = 1;
-                        4'he: fmap_cs  = mapsel==0;
-                        default:;
-                    endcase
-                end
+            0:  rom_cs = A[19:16]<6 && RnW;
             1:  case( A[17:12])
                     5'h18: fmap_cs = mapsel==1;
                     5'h1c: bmap_cs = mapsel==1;
-                endcase
-            2:  case( A[17:12])
-                    5'h22,5'h2e: fmap_cs = mapsel==2;
-                    5'h20:       bmap_cs = mapsel==2;
-                endcase
-            3: begin
-                case( A[17:12])
-                    5'h30:       fmap_cs = mapsel==3;
-                    5'h38,5'h39: bmap_cs = mapsel==3;
-                endcase
-                case( A[17:15] )
-                    1: sysram_cs = 1;   // 0x30'4000
-                    2: obj_cs    = 1;   // 0x30'8000
-                    4: pal_cs[0] = 1;   // 0x31'0000
-                    5: case( A[3:1] )   // 0x31'4000
-                        3'h0: snreq = 1;
-                        3'h1: prisel_cs = 1; // 0x31'4002
-                        3'h8: read_cs[2] = 1; // DIP sw
-                        3'h9: read_cs[0] = 1; // cabinet IO
-                        3'hA: read_cs[1] = 1; // system I/O
-                        default:;
-                    endcase
-                    6: nexrm0_cs = 1; // protection
-
-                    4: // 0x18'0000
-                        if( !A[4] ) begin
-                            case( A[3:1] )
-                                5: vint_clr   = 1; // sure ?
-                                //6: obj_copy   = 1; // sure? what about mixpsel_cs ?
-                                default:;
-                            endcase
-                        end
-                        // There are 0's written to 18'000A and
-                        // 1's written to 18'000C. Is it related to the rotary controls?
                     default:;
                 endcase
-                case( A[19:17] ) // BA2
-                    0: cmode_cs  = 1;   // cfg registers
-                    1: cmap_cs   = 1;   // tilemap
-                    2: csft_cs   = 1;   // col/row scroll
+            2:  if( A[19:18]==2'b01 ) begin // 24'0000
+                    case( {A[17:13],1'b0} )
+                        6'h04: nexin_cs  = A[19:12]==4 && RnW;  // cnt up
+                        6'h0a: nexout_cs = A[19:12]==10 && !RnW; // cnt clr
+                        // BA0
+                        6'h08: fmode_cs = 1;
+                        6'h0c: fsft_cs  = 1;
+                        6'h0e: fmap_cs  = mapsel==0;
+                        6'h22,
+                        6'h2e: fmap_cs  = mapsel==2;
+                        6'h30: fmap_cs  = mapsel==3;
+                        // BA1:
+                        6'h00: bmode_cs = 1; // BA1
+                        6'h02: bsft_cs  = 1;
+                        6'h06: bmap_cs  = mapsel==0;
+                        6'h20: bmap_cs  = mapsel==2;
+                        6'h38: bmap_cs  = mapsel==3;
+                        default:;
+                    endcase
+            end
+            3: begin
+                case( {A[19:14],2'd0} )
+                    // BA2
+                    8'h00: case(A[12:11])
+                        0: cmode_cs  = 1;   // cfg registers
+                        1: cmap_cs   = 1;   // tilemap
+                        2: csft_cs   = 1;   // col/row scroll
+                        default:;
+                    endcase
+                    8'h04: sysram_cs = 1;   // 0x30'4000
+                    8'h08: obj_cs    = 1;   // 0x30'8000
+                    8'h10: pal_cs[0] = 1;   // 0x31'0000
+                    8'h14: case( A[3:1] )   // 0x31'4000
+                        3'h0: snreq = 1;
+                        3'h1: prisel_cs = 1; // 0x31'4002
+                        3'h4: read_cs[2] = 1; // DIP sw
+                        3'h5: read_cs[0] = 1; // cabinet IO
+                        3'h6: read_cs[1] = 1; // system I/O
+                        default:;
+                    endcase
+                    8'h1c: sysram_cs = RnW; // fake it with RAM for now // nexrm0_cs = 1; // protection
                     default:;
                 endcase
             end

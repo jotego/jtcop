@@ -141,8 +141,6 @@ wire [15:0] mcu_addr;
 wire [ 7:0] mcu_data;
 wire        mcu_cs, mcu_ok;
 
-wire        nexrm0_cs;
-
 // ROM banks
 wire     [ 2:1] sndflag, b1flg, mixflg;
 wire     [ 2:0] crback;
@@ -239,7 +237,6 @@ jtcop_main u_main(
     .mcu_din    ( mcu_din   ),
     .sec        ( mcu_sel   ),
     .sec2       ( mcu_sel2  ),
-    .nexrm0_cs  ( nexrm0_cs ),
     // HuC6820
     .huc_cs     ( huc_cs    ),
     .huc_dout   ( huc_dout  ),
