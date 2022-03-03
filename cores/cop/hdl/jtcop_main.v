@@ -124,6 +124,7 @@ wire        cpu_cen, cpu_cenb;
 wire [ 2:0] read_cs;
 wire [ 7:0] track_dout;
 wire [15:0] fave;
+reg         LVBL_l, sec2_l;
 
 `ifdef SIMULATION
 wire [23:0] A_full = {A,1'b0};
@@ -201,9 +202,6 @@ jtcop_decoder u_decoder(
     .sec        ( sec       )       // bit 2 is unused
 );
 
-// global registers
-reg LVBL_l, sec2_l;
-
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
         vint    <= 0;
@@ -246,6 +244,7 @@ end
 
 // Cabinet inputs
 reg  [15:0] cab_dout;
+reg  [11:0] rotary1, rotary2;
 
 `ifndef DEC1
     function [8:0] sort_joy( input [8:0] joy_in);
@@ -318,7 +317,6 @@ reg  [1:0] track_xrst, track_yrst;
 wire [1:0] track_cf;
 reg  [3:0] track_cs;
 wire [7:0] track0_dout, track1_dout;
-reg  [11:0] rotary1, rotary2;
 reg  [ 2:0] frame_cnt;
 
 always @(posedge clk, posedge rst) begin

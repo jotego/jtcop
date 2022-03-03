@@ -55,8 +55,8 @@ module mist_dump(
             $shm_probe(frame_cnt);
             $shm_probe(UUT.u_game,"A");
             `ifndef NOMAIN
-            //$shm_probe(UUT.u_game.u_main,"A");
-            //$shm_probe(UUT.u_game.u_main.u_decoder,"A");
+            $shm_probe(UUT.u_game.u_main,"A");
+            $shm_probe(UUT.u_game.u_main.u_decoder,"A");
             `endif
             //$shm_probe(UUT.u_game.u_sdram,"A");
             // $shm_probe(UUT.u_game.u_sdram.u_dwnld,"A");

@@ -118,6 +118,9 @@ always @(*) begin
     disp_cs    = 0;
     huc_cs     = 0;
 
+    // clear it automatically for now
+    vint_clr   = LVBL && !LVBL_l;
+
     if( !ASn ) begin
         case( A[21:20] )
             0:  rom_cs = A[19:16]<6 && RnW;
@@ -128,8 +131,8 @@ always @(*) begin
                 endcase
             2:  if( A[19:18]==2'b01 ) begin // 24'0000
                     case( {A[17:13],1'b0} )
-                        6'h04: nexin_cs  = A[19:12]==4 && RnW;  // cnt up
-                        6'h0a: nexout_cs = A[19:12]==10 && !RnW; // cnt clr
+                        6'h04: nexin_cs  = RnW;  // cnt up
+                        6'h0a: nexout_cs =!RnW; // cnt clr
                         // BA0
                         6'h08: fmode_cs = 1;
                         6'h0c: fsft_cs  = 1;
@@ -166,7 +169,8 @@ always @(*) begin
                         3'h6: read_cs[1] = 1; // system I/O
                         default:;
                     endcase
-                    8'h1c: sysram_cs = RnW; // fake it with RAM for now // nexrm0_cs = 1; // protection
+                    8'h1c: nexrm0_cs = 1; // protection
+                    //sysram_cs = RnW; // fake it with RAM for now //
                     default:;
                 endcase
             end
