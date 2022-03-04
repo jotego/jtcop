@@ -66,6 +66,9 @@ wire [ 3:0] r4,g4,b4;
 wire        ba0_blank, obj_blank, ba1_blank, ba2_blank;
 wire        obj_loprio;
 wire [ 7:0] seladdr;
+wire [ 1:0] fakebus;
+
+localparam [1:0] BA0=01,BA1=2,BA2=3,OBJ=0;
 
 assign we_gr = ~dsn & {2{pal_cs[0]}};
 // conversion to 8-bit colour like the other games
@@ -78,15 +81,20 @@ assign ba1_blank = ~|ba1_pxl[2:0] | ~gfx_en[1];
 assign ba2_blank = ~|ba2_pxl[3:0] | ~gfx_en[2];
 assign obj_blank = ~|obj_pxl[3:0] | ~gfx_en[3];
 assign seladdr = {1'b0, ba1_pxl[3], prisel[0], ba1_pxl[7], ba0_blank, ba1_blank, obj_blank, ba2_blank };
+assign fakebus = !ba2_blank ? BA2 :
+                 !obj_blank ? OBJ :
+                 !ba1_blank ? BA1 : BA0;
+
+
 
 always @(posedge clk) begin
     if( pxl_cen ) begin
-        pal_addr[9:8] <= selbus;
-        case( selbus )
-            1: pal_addr[7:0] <= obj_pxl; // ok
-            3: pal_addr[7:0] <= ba0_pxl;
-            2: pal_addr[7:0] <= ba1_pxl;
-            0: pal_addr[7:0] <= ba2_pxl;
+        pal_addr[9:8] <= fakebus;
+        case( fakebus )
+            BA2: pal_addr[7:0] <= ba2_pxl;
+            OBJ: pal_addr[7:0] <= obj_pxl; // ok
+            BA0: pal_addr[7:0] <= ba0_pxl;
+            BA1: pal_addr[7:0] <= ba1_pxl;
         endcase
     end
 end
