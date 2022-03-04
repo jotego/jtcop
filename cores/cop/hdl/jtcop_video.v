@@ -38,9 +38,9 @@ module jtcop_video(
     input              mcu_mode,
     input      [ 1:0]  mcu_dsn,
 
-    input              fmode_cs,
-    input              bmode_cs,
-    input              cmode_cs,
+    input              fmode_cs, // BA0
+    input              bmode_cs, // BA1
+    input              cmode_cs, // BA2
 
     output     [15:0]  ba0_dout,
     output     [15:0]  ba1_dout,

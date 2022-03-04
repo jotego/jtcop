@@ -123,29 +123,33 @@ always @(*) begin
 
     if( !ASn ) begin
         case( A[21:20] )
-            0:  rom_cs = A[19:16]<6 && RnW;
-            1:  case( A[17:12])
-                    5'h18: fmap_cs = mapsel==1;
-                    5'h1c: bmap_cs = mapsel==1;
-                    default:;
-                endcase
+            0:  rom_cs = A[19:16]<8 && RnW; // although not all sockets are populated
             2:  if( A[19:18]==2'b01 ) begin // 24'0000
-                    case( {A[17:13],1'b0} )
-                        6'h04: nexin_cs  = RnW;  // cnt up
-                        6'h0a: nexout_cs =!RnW; // cnt clr
-                        // BA0
-                        6'h08: fmode_cs = 1;
-                        6'h0c: fsft_cs  = 1;
-                        6'h0e: fmap_cs  = mapsel==0;
-                        6'h22,
-                        6'h2e: fmap_cs  = mapsel==2;
-                        6'h30: fmap_cs  = mapsel==3;
-                        // BA1:
-                        6'h00: bmode_cs = 1; // BA1
-                        6'h02: bsft_cs  = 1;
-                        6'h06: bmap_cs  = mapsel==0;
-                        6'h20: bmap_cs  = mapsel==2;
-                        6'h38: bmap_cs  = mapsel==3;
+                    case( {A[15:13],1'b0} )
+                        // map address control:
+                        4'h4: nexin_cs  = RnW; // cnt up
+                        4'ha: nexout_cs =!RnW; // cnt clr
+                        // BA0 and BA1 chips
+                        4'h0: begin
+                            bmode_cs = mapsel==0;
+                            bmap_cs  = mapsel==2;
+                            fmap_cs  = mapsel==3;
+                        end
+                        4'h2: begin
+                            bsft_cs  = mapsel==0;
+                            fmap_cs  = mapsel==2;
+                        end
+                        4'h6: bmap_cs  = mapsel==0;
+                        4'h8: begin
+                            fmode_cs = mapsel==0;
+                            fmap_cs  = mapsel==1;
+                            bmap_cs  = mapsel==3;
+                        end
+                        4'hc: begin
+                            fsft_cs  = mapsel==0;
+                            bmap_cs  = mapsel==1;
+                        end
+                        4'he: fmap_cs = mapsel==0 || mapsel==2;
                         default:;
                     endcase
             end
@@ -154,8 +158,8 @@ always @(*) begin
                     // BA2
                     8'h00: case(A[12:11])
                         0: cmode_cs  = 1;   // cfg registers
-                        1: cmap_cs   = 1;   // tilemap
-                        2: csft_cs   = 1;   // col/row scroll
+                        1: csft_cs   = 1;   // tilemap
+                        2: cmap_cs   = 1;   // col/row scroll
                         default:;
                     endcase
                     8'h04: sysram_cs = 1;   // 0x30'4000

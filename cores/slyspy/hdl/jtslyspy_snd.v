@@ -97,36 +97,38 @@ always @(posedge clk, posedge rst) begin
         st_clr   <= 0;
     end else begin
         if(SX) begin
-            rom_cs   <= A[20:16]==0;
-            st_cnt   <= A[20:16]==2;
-            st_clr   <= A[20:16]==2;
-            ram_cs   <= A[20:16]==5'h1f; // the board uses cer_n directly
-            case( cnt )
-                0: begin
-                    opn_cs   <= A[20:16] == 5'h03;
-                    opl_cs   <= A[20:16] == 5'h01;
-                    oki_cs   <= A[20:16] == 5'h06;
-                    latch_cs <= A[20:16] == 5'h07;
-                end
-                1: begin
-                    opn_cs   <= A[20:16] == 5'h0e;
-                    opl_cs   <= A[20:16] == 5'h0f;
-                    oki_cs   <= A[20:16] == 5'h09;
-                    latch_cs <= A[20:16] == 5'h0c;
-                end
-                2: begin
-                    opn_cs   <= A[20:16] == 5'h14;
-                    opl_cs   <= A[20:16] == 5'h17;
-                    oki_cs   <= A[20:16] == 5'h13;
-                    latch_cs <= A[20:16] == 5'h11;
-                end
-                3: begin
-                    opn_cs   <= A[20:16] == 5'h1c;
-                    opl_cs   <= A[20:16] == 5'h19;
-                    oki_cs   <= A[20:16] == 5'h1f;
-                    latch_cs <= A[20:16] == 5'h1e;
-                end
-            endcase
+            rom_cs <= A[20:19]==0;
+            ram_cs <= A[20:19]==3; // the board uses cer_n directly
+            if( A[20:19]==1 ) begin
+                st_cnt <= A[18:16]==2;
+                st_clr <= A[18:16]==5;
+                case( cnt )
+                    0: begin
+                        opn_cs   <= A[18:16] == 3;
+                        opl_cs   <= A[18:16] == 1;
+                        oki_cs   <= A[18:16] == 6;
+                        latch_cs <= A[18:16] == 7;
+                    end
+                    1: begin
+                        opn_cs   <= A[18:16] == 6;
+                        opl_cs   <= A[18:16] == 7;
+                        oki_cs   <= A[18:16] == 1;
+                        latch_cs <= A[18:16] == 4;
+                    end
+                    2: begin
+                        opn_cs   <= A[18:16] == 4;
+                        opl_cs   <= A[18:16] == 7;
+                        oki_cs   <= A[18:16] == 3;
+                        latch_cs <= A[18:16] == 1;
+                    end
+                    3: begin
+                        opn_cs   <= A[18:16] == 4;
+                        opl_cs   <= A[18:16] == 1;
+                        oki_cs   <= A[18:16] == 7;
+                        latch_cs <= A[18:16] == 6;
+                    end
+                endcase
+            end
         end else if(ce) begin // CE will not happen if waitn is asserted
             rom_cs   <= 0;
             st_cnt   <= 0;
