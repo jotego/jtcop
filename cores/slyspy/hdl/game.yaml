@@ -6,9 +6,7 @@ game:
     get:
       - jtslyspy_decoder.v
       - jtslyspy_snd.v
-  - from: midres
-    get:
-      - jtmidres_colmix.v
+      - jtslyspy_colmix.v
 jtframe:
   - get:
     - jtframe_sort.v

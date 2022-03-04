@@ -235,7 +235,13 @@ always @(posedge clk, posedge rst) begin
             secirq  <= 1;
 
         // Colour mixer
-        if( prisel_cs ) prisel <= cpu_dout[2:0];
+        if( prisel_cs ) begin
+        `ifndef SLYSPY
+            prisel <= cpu_dout[2:0];
+        `else
+            prisel <= {2'd0,cpu_dout[7]}; // SlySpy uses a single bit
+        `endif
+        end
 
         // Object DMA
         if( mixpsel_cs ) mixpsel <= cpu_dout[0];
