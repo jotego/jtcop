@@ -1,11 +1,7 @@
-include ../../cop/hdl/jtcop.def
+include ../../midres/hdl/jtmidres.def
 
 CORENAME=JTSLYSPY
-NOHUC
 NOTRACKBALL
 # Enable DEC1 core variations
-DEC1
 SLYSPY
-
-JTFRAME_CREDITS
 

@@ -240,8 +240,12 @@ always @(posedge clk) begin
     if( ioctl_wr ) begin
         if( ioctl_addr < 8 )
             rom_test <= rom_test + ioctl_dout;
+        `ifndef DEC1
         if( ioctl_addr==8 )
             game_id <= (rom_test==8'hc || rom_test==8'hf4) ? HIPPODROME : 2'd0; // Detects Fighting Fantasy
+        `else
+            game_id <= 0;
+        `endif
     end
 end
 

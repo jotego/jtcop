@@ -10,7 +10,8 @@ game:
 jtframe:
   - get:
     - jtframe_sort.v
-# modules:
-#   other:
-#     - get:
-#       - HUC6280/HUC6280.yaml
+modules:
+  other:
+    - unless: NOSOUND
+      get:
+        - HUC6280/HUC6280.yaml

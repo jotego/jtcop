@@ -178,6 +178,7 @@ always @(*) begin
                     default:;
                 endcase
             end
+            default:;
         endcase
         disp_cs = |{fmap_cs, bmap_cs, cmap_cs, fsft_cs, bsft_cs, csft_cs };
     end

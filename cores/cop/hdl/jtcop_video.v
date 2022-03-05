@@ -249,6 +249,7 @@ wire        ba2_rnw, ba2_mode;
     assign ba2_dsn  = cpu_dsn;
     assign ba2_rnw  = cpu_rnw;
     assign ba2_mode = cmode_cs;
+    assign mcu_din  = 0;
 `else
     assign ba2_addr = game_id==HIPPODROME ? {2'd0,mcu_addr} : cpu_addr;
     assign ba2_din  = game_id==HIPPODROME ? {2{mcu_dout}} : cpu_dout;
