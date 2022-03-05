@@ -68,7 +68,10 @@ wire        obj_loprio;
 wire [ 7:0] seladdr;
 wire [ 1:0] fakebus;
 
-localparam [1:0] BA0=0,BA1=2,BA2=3,OBJ=1;
+//localparam [1:0] BA0=0,BA1=2,BA2=3,OBJ=1;
+//localparam [1:0] BA0=2,BA1=1,BA2=3,OBJ=1;
+//localparam [1:0] BA0=1,BA1=2,BA2=3,OBJ=0;
+  localparam [1:0] BA0=0,BA1=1,BA2=3,OBJ=2;
 
 assign we_gr = ~dsn & {2{pal_cs[0]}};
 // conversion to 8-bit colour like the other games
