@@ -68,10 +68,14 @@ wire        obj_loprio;
 wire [ 7:0] seladdr;
 wire [ 1:0] fakebus;
 
+reg [7:0] fcnt=0;
+
+always @(negedge LVBL) fcnt<=fcnt+1;
+
 //localparam [1:0] BA0=0,BA1=2,BA2=3,OBJ=1;
 //localparam [1:0] BA0=2,BA1=1,BA2=3,OBJ=1;
 //localparam [1:0] BA0=1,BA1=2,BA2=3,OBJ=0;
-  localparam [1:0] BA0=0,BA1=1,BA2=3,OBJ=2;
+wire [1:0] BA0=0,BA1=2,BA2=3,OBJ=1;
 
 assign we_gr = ~dsn & {2{pal_cs[0]}};
 // conversion to 8-bit colour like the other games
@@ -89,14 +93,12 @@ assign fakebus = !ba0_blank ? BA0 :
                  !obj_blank ? OBJ :
                  !ba2_blank ? BA2 : BA1;
 
-
-
 always @(posedge clk) begin
     if( pxl_cen ) begin
         pal_addr[9:8] <= fakebus;
         case( fakebus )
             BA0: pal_addr[7:0] <= ba0_pxl;
-            OBJ: pal_addr[7:0] <= obj_pxl; // ok
+            OBJ: pal_addr[7:0] <= {obj_pxl[7:4], obj_pxl[0],obj_pxl[2], obj_pxl[1], obj_pxl[3]}; // ok
             BA1: pal_addr[7:0] <= ba1_pxl;
             BA2: pal_addr[7:0] <= ba2_pxl;
         endcase
