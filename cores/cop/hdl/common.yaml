@@ -39,10 +39,6 @@ jtframe:
   - from: cpu
     get:
       - jtframe_m68k.yaml
-      - t65/T65_Pack.vhd
-      - t65/T65.vhd
-      - t65/T65_ALU.vhd
-      - t65/T65_MCode.vhd
   - from: ver
     get:
       - jtframe_simwr_68k.v

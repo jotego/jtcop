@@ -9,6 +9,12 @@ game:
 jtframe:
   - get:
       - jtframe_ff.v
+  - from: cpu
+    get:
+      - t65/T65_Pack.vhd
+      - t65/T65.vhd
+      - t65/T65_ALU.vhd
+      - t65/T65_MCode.vhd
 modules:
   other:
     - get:
