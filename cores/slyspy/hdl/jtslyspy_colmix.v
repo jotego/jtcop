@@ -95,8 +95,8 @@ assign fakebus = !ba0_blank ? BA0 :
 
 always @(posedge clk) begin
     if( pxl_cen ) begin
-        pal_addr[9:8] <= fakebus;
-        case( fakebus )
+        pal_addr[9:8] <= selbus;
+        case( selbus )
             BA0: pal_addr[7:0] <= ba0_pxl;
             OBJ: pal_addr[7:0] <= {obj_pxl[7:4], obj_pxl[0],obj_pxl[2], obj_pxl[1], obj_pxl[3]}; // ok
             BA1: pal_addr[7:0] <= ba1_pxl;
