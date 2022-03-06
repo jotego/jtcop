@@ -86,13 +86,9 @@ end
 assign obj_copy = !LVBL && LVBL_l;
 
 always @(*) begin
-    rom_cs     = 0;
     eep_cs     = 0;
     // third BAC06 chip
     nexrm0_cs  = 0;
-    cmode_cs   = 0;
-    csft_cs    = 0;
-    cmap_cs    = 0;
     nexrm1     = 0;
     prisel_cs  = 0;
     //obj_copy   = 0;
@@ -103,7 +99,6 @@ always @(*) begin
     read_cs    = 0;
     pal_cs     = 0;
     sysram_cs  = 0;
-    obj_cs     = 0;
     sec[5:3]   = { service, coin_input };
     sec[2]     = sec2;
     sec[1:0]   = 0;
@@ -114,40 +109,32 @@ always @(*) begin
     vint_clr   = LVBL && !LVBL_l;
 
     if( !ASn ) begin
-        case( A[21:20] )
-            0:  rom_cs = A[19:16]<8 && RnW; // although not all sockets are populated
-            3: begin
-                case( A[19:14] )
-                    // BA2
-                    8'h00>>2: case(A[12:11])
-                        0: cmode_cs  = 1;   // cfg registers
-                        1: csft_cs   = 1;   // tilemap
-                        2: cmap_cs   = 1;   // col/row scroll
-                        default:;
-                    endcase
-                    8'h04>>2: sysram_cs = 1;   // 0x30'4000
-                    8'h08>>2: obj_cs    = 1;   // 0x30'8000
-                    8'h10>>2: pal_cs[0] = 1;   // 0x31'0000
-                    8'h14>>2: case( A[3:1] )   // 0x31'4000
-                        3'h0: snreq = 1;
-                        3'h1: prisel_cs = 1; // 0x31'4002
-                        3'h4: read_cs[2] = 1; // DIP sw
-                        3'h5: read_cs[0] = 1; // cabinet IO
-                        3'h6: read_cs[1] = 1; // system I/O
-                        default:;
-                    endcase
-                    8'h1c>>2: nexrm0_cs = 1; // protection
-                    //sysram_cs = RnW; // fake it with RAM for now //
+        if( A[21:20]==3 )
+            case( A[19:14] )
+                8'h04>>2: sysram_cs = 1;   // 0x30'4000
+                8'h10>>2: pal_cs[0] = 1;   // 0x31'0000
+                8'h14>>2: case( A[3:1] )   // 0x31'4000
+                    3'h0: snreq = 1;
+                    3'h1: prisel_cs = 1; // 0x31'4002
+                    3'h4: read_cs[2] = 1; // DIP sw
+                    3'h5: read_cs[0] = 1; // cabinet IO
+                    3'h6: read_cs[1] = 1; // system I/O
                     default:;
                 endcase
-            end
-            default:;
-        endcase
+                8'h1c>>2: nexrm0_cs = 1; // protection
+                //sysram_cs = RnW; // fake it with RAM for now //
+                default:;
+            endcase
         disp_cs = |{fmap_cs, bmap_cs, cmap_cs, fsft_cs, bsft_cs, csft_cs };
     end
 end
 
 always @* begin
+    rom_cs    = !ASn && A[21:20]==2'b00 && A[19:16]<8 && RnW; // although not all sockets are populated
+    cmode_cs  = !ASn && A[21:20]==2'b11 && A[16:14]==0 && A[12:11]==0; // 30'0000
+    csft_cs   = !ASn && A[21:20]==2'b11 && A[16:14]==0 && A[12:11]==1; // 30'0800
+    cmap_cs   = !ASn && A[21:20]==2'b11 && A[16:14]==0 && A[12:11]==2; // 30'1000
+    obj_cs    = !ASn && A[21:20]==2'b11 && A[16:14]==2;                // 30'8000
     // 24'0000
     nexin_cs  = !ASn && A[21:18]==4'b1001 && A[15:13]==2 &&  RnW; // cnt up
     nexout_cs = !ASn && A[21:18]==4'b1001 && A[15:13]==5 && !RnW; // cnt clr
