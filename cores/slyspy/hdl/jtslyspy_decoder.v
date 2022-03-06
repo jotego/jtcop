@@ -34,7 +34,7 @@ module jtcop_decoder(
     output reg         nexin_cs,       // used as the counter control signals
     output reg         nexout_cs,      // used as the counter control signals
     output reg         nexrm1,         // used on Heavy Barrel PCB for the track balls
-    output reg         disp_cs,
+    output             disp_cs,
     output reg         sysram_cs,
     output reg         vint_clr,
     output reg         cblk,
@@ -65,6 +65,8 @@ module jtcop_decoder(
 
 reg  [1:0] mapsel, premap;
 reg  nexinl, nexoutl;
+
+assign disp_cs = |{fmap_cs, bmap_cs, cmap_cs, fsft_cs, bsft_cs, csft_cs };
 
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
@@ -102,30 +104,27 @@ always @(*) begin
     sec[5:3]   = { service, coin_input };
     sec[2]     = sec2;
     sec[1:0]   = 0;
-    disp_cs    = 0;
     huc_cs     = 0;
 
     // clear it automatically for now
     vint_clr   = LVBL && !LVBL_l;
 
-    if( !ASn ) begin
-        if( A[21:20]==3 )
-            case( A[19:14] )
-                8'h04>>2: sysram_cs = 1;   // 0x30'4000
-                8'h10>>2: pal_cs[0] = 1;   // 0x31'0000
-                8'h14>>2: case( A[3:1] )   // 0x31'4000
-                    3'h0: snreq = 1;
-                    3'h1: prisel_cs = 1; // 0x31'4002
-                    3'h4: read_cs[2] = 1; // DIP sw
-                    3'h5: read_cs[0] = 1; // cabinet IO
-                    3'h6: read_cs[1] = 1; // system I/O
-                    default:;
-                endcase
-                8'h1c>>2: nexrm0_cs = 1; // protection
-                //sysram_cs = RnW; // fake it with RAM for now //
+    if( !ASn && A[21:20]==3 )
+        case( A[19:14] )
+            8'h04>>2: sysram_cs = 1;   // 0x30'4000
+            8'h10>>2: pal_cs[0] = 1;   // 0x31'0000
+            8'h14>>2: case( A[3:1] )   // 0x31'4000
+                3'h0: snreq = 1;
+                3'h1: prisel_cs = 1; // 0x31'4002
+                3'h4: read_cs[2] = 1; // DIP sw
+                3'h5: read_cs[0] = 1; // cabinet IO
+                3'h6: read_cs[1] = 1; // system I/O
                 default:;
             endcase
-        disp_cs = |{fmap_cs, bmap_cs, cmap_cs, fsft_cs, bsft_cs, csft_cs };
+            8'h1c>>2: nexrm0_cs = 1; // protection
+            //sysram_cs = RnW; // fake it with RAM for now //
+            default:;
+        endcase
     end
 end
 
