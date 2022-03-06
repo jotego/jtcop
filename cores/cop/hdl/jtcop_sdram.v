@@ -226,7 +226,11 @@ always @* begin
         prog_addr = { pre_prog[21:16], pre_prog[14:0], (~DEC1[0])^pre_prog[15] };
     end
     if( is_gfx2 ) begin
+    `ifndef SLYSPY
         prog_addr = { GFX2_OFFSET[21:18], gfx2_offset[16:0], gfx2_offset[17] };
+    `else
+        prog_addr = { GFX2_OFFSET[21:18], gfx2_offset[17:16], gfx2_offset[14:0], gfx2_offset[15] };
+    `endif
     end
     if( is_gfx3 ) begin
         prog_addr = { GFX3_OFFSET[21:17], gfx3_offset[15:0],(~DEC1[0])^gfx3_offset[16] };
