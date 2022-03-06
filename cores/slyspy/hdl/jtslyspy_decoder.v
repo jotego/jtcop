@@ -134,18 +134,18 @@ always @* begin
     cmap_cs   = !ASn && A[21:20]==2'b11 && A[16:14]==0 && A[12:11]==2; // 30'1000
     obj_cs    = !ASn && A[21:20]==2'b11 && A[16:14]==2;                // 30'8000
     // 24'0000
-    nexin_cs  = !ASn && A[21:18]==4'b1001 && A[15:13]==2 &&  RnW; // cnt up
-    nexout_cs = !ASn && A[21:18]==4'b1001 && A[15:13]==5 && !RnW; // cnt clr
-    bmode_cs  = !ASn && A[21:18]==4'b1001 && A[15:13]==0 && mapsel==0;
-    bsft_cs   = !ASn && A[21:18]==4'b1001 && A[15:13]==1 && mapsel==0;
-    bmap_cs   = !ASn && A[21:18]==4'b1001 &&
+    nexin_cs  = !ASn && A[21:16]==6'h24 && A[15:13]==2 &&  RnW; // cnt up
+    nexout_cs = !ASn && A[21:16]==6'h24 && A[15:13]==5 && !RnW; // cnt clr
+    bmode_cs  = !ASn && A[21:16]==6'h24 && A[15:13]==0 && mapsel==0;
+    bsft_cs   = !ASn && A[21:16]==6'h24 && A[15:13]==1 && mapsel==0;
+    bmap_cs   = !ASn && A[21:16]==6'h24 &&
         (   (A[15:13]==0 && mapsel==2) ||
             (A[15:13]==3 && mapsel==0) ||
             (A[15:13]==4 && mapsel==3) ||
             (A[15:13]==6 && mapsel==1) );
-    fmode_cs  = !ASn && A[21:18]==4'b1001 && A[15:13]==4 && mapsel==0;
-    fsft_cs   = !ASn && A[21:18]==4'b1001 && A[15:13]==6 && mapsel==0;
-    fmap_cs   = !ASn && A[21:18]==4'b1001 &&
+    fmode_cs  = !ASn && A[21:16]==6'h24 && A[15:13]==4 && mapsel==0;
+    fsft_cs   = !ASn && A[21:16]==6'h24 && A[15:13]==6 && mapsel==0;
+    fmap_cs   = !ASn && A[21:16]==6'h24 &&
         (   (A[15:13]==0 && mapsel==3) ||
             (A[15:13]==1 && mapsel==2) ||
             (A[15:13]==4 && mapsel==1) ||
