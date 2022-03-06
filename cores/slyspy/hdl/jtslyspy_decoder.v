@@ -40,16 +40,16 @@ module jtcop_decoder(
     output reg         cblk,
     output reg  [ 2:0] read_cs,
     // BAC06 chips
-    output reg         fmode_cs,
-    output reg         fsft_cs,
-    output reg         fmap_cs,
-    output reg         bmode_cs,
-    output reg         bsft_cs,
-    output reg         bmap_cs,
-    output reg         nexrm0_cs,
-    output reg         cmode_cs,
-    output reg         csft_cs,
-    output reg         cmap_cs,
+    output reg         fmode_cs /* synthesis keep */,
+    output reg         fsft_cs /* synthesis keep */,
+    output reg         fmap_cs /* synthesis keep */,
+    output reg         bmode_cs /* synthesis keep */,
+    output reg         bsft_cs /* synthesis keep */,
+    output reg         bmap_cs /* synthesis keep */,
+    output reg         nexrm0_cs /* synthesis keep */,
+    output reg         cmode_cs /* synthesis keep */,
+    output reg         csft_cs /* synthesis keep */,
+    output reg         cmap_cs /* synthesis keep */,
     // Object
     output reg         obj_cs,       // called MIX in the schematics
     output             obj_copy,     // called *DM in the schematics

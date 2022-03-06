@@ -290,7 +290,7 @@ jtcop_bac06 u_ba2(
     // VRAM
     .ram_cs     ( b2ram_cs      ),
     .ram_addr   ( b2ram_addr    ),
-    .ram_data   ( b2ram_data===16'hxxxx ? 16'h0 :  b2ram_data   ),
+    .ram_data   (  b2ram_data   ),
     .ram_ok     ( b2ram_ok      ),
 
     // ROMs
