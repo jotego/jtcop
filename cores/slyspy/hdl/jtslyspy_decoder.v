@@ -125,7 +125,6 @@ always @(*) begin
             //sysram_cs = RnW; // fake it with RAM for now //
             default:;
         endcase
-    end
 end
 
 always @* begin
