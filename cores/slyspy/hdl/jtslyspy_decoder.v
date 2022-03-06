@@ -63,19 +63,21 @@ module jtcop_decoder(
     output reg [5:0]   sec          // bit 2 is unused
 );
 
-reg  [1:0] mapsel;
+reg  [1:0] mapsel, premap;
 reg  nexinl, nexoutl;
 
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
+        premap <= 0;
         mapsel <= 0;
         nexinl <= 0;
         nexoutl<= 0;
     end else begin
         nexinl <= nexin_cs;
         nexoutl<= nexout_cs;
-        if( nexin_cs & ~nexinl ) mapsel <= mapsel+2'd1;
-        if( nexout_cs & ~nexoutl ) mapsel <= 0;
+        if( nexin_cs & ~nexinl ) premap <= premap+2'd1;
+        if( nexout_cs & ~nexoutl ) premap <= 0;
+        if( ASn ) mapsel <= premap;
     end
 end
 
@@ -86,14 +88,6 @@ assign obj_copy = !LVBL && LVBL_l;
 always @(*) begin
     rom_cs     = 0;
     eep_cs     = 0;
-    // fist BAC06 chip
-    fmode_cs   = 0;
-    fsft_cs    = 0;
-    fmap_cs    = 0;
-    // second BAC06 chip
-    bmode_cs   = 0;
-    bsft_cs    = 0;
-    bmap_cs    = 0;
     // third BAC06 chip
     nexrm0_cs  = 0;
     cmode_cs   = 0;
@@ -106,9 +100,7 @@ always @(*) begin
     vint_clr   = 0;
     mixpsel_cs = 0;
     cblk       = 0;
-    nexout_cs  = 0;
     read_cs    = 0;
-    nexin_cs   = 0;
     pal_cs     = 0;
     sysram_cs  = 0;
     obj_cs     = 0;
@@ -124,48 +116,19 @@ always @(*) begin
     if( !ASn ) begin
         case( A[21:20] )
             0:  rom_cs = A[19:16]<8 && RnW; // although not all sockets are populated
-            2:  if( A[19:18]==2'b01 ) begin // 24'0000
-                    case( {A[15:13],1'b0} )
-                        // map address control:
-                        4'h4: nexin_cs  = RnW; // cnt up
-                        4'ha: nexout_cs =!RnW; // cnt clr
-                        // BA0 and BA1 chips
-                        4'h0: begin
-                            bmode_cs = mapsel==0;
-                            bmap_cs  = mapsel==2;
-                            fmap_cs  = mapsel==3;
-                        end
-                        4'h2: begin
-                            bsft_cs  = mapsel==0;
-                            fmap_cs  = mapsel==2;
-                        end
-                        4'h6: bmap_cs  = mapsel==0;
-                        4'h8: begin
-                            fmode_cs = mapsel==0;
-                            fmap_cs  = mapsel==1;
-                            bmap_cs  = mapsel==3;
-                        end
-                        4'hc: begin
-                            fsft_cs  = mapsel==0;
-                            bmap_cs  = mapsel==1;
-                        end
-                        4'he: fmap_cs = mapsel==0 || mapsel==2;
-                        default:;
-                    endcase
-            end
             3: begin
-                case( {A[19:14],2'd0} )
+                case( A[19:14] )
                     // BA2
-                    8'h00: case(A[12:11])
+                    8'h00>>2: case(A[12:11])
                         0: cmode_cs  = 1;   // cfg registers
                         1: csft_cs   = 1;   // tilemap
                         2: cmap_cs   = 1;   // col/row scroll
                         default:;
                     endcase
-                    8'h04: sysram_cs = 1;   // 0x30'4000
-                    8'h08: obj_cs    = 1;   // 0x30'8000
-                    8'h10: pal_cs[0] = 1;   // 0x31'0000
-                    8'h14: case( A[3:1] )   // 0x31'4000
+                    8'h04>>2: sysram_cs = 1;   // 0x30'4000
+                    8'h08>>2: obj_cs    = 1;   // 0x30'8000
+                    8'h10>>2: pal_cs[0] = 1;   // 0x31'0000
+                    8'h14>>2: case( A[3:1] )   // 0x31'4000
                         3'h0: snreq = 1;
                         3'h1: prisel_cs = 1; // 0x31'4002
                         3'h4: read_cs[2] = 1; // DIP sw
@@ -173,7 +136,7 @@ always @(*) begin
                         3'h6: read_cs[1] = 1; // system I/O
                         default:;
                     endcase
-                    8'h1c: nexrm0_cs = 1; // protection
+                    8'h1c>>2: nexrm0_cs = 1; // protection
                     //sysram_cs = RnW; // fake it with RAM for now //
                     default:;
                 endcase
@@ -182,6 +145,26 @@ always @(*) begin
         endcase
         disp_cs = |{fmap_cs, bmap_cs, cmap_cs, fsft_cs, bsft_cs, csft_cs };
     end
+end
+
+always @* begin
+    // 24'0000
+    nexin_cs  = !ASn && A[21:18]==4'b1001 && A[15:13]==2 &&  RnW; // cnt up
+    nexout_cs = !ASn && A[21:18]==4'b1001 && A[15:13]==5 && !RnW; // cnt clr
+    bmode_cs  = !ASn && A[21:18]==4'b1001 && A[15:13]==0 && mapsel==0;
+    bsft_cs   = !ASn && A[21:18]==4'b1001 && A[15:13]==1 && mapsel==0;
+    bmap_cs   = !ASn && A[21:18]==4'b1001 &&
+        (   (A[15:13]==0 && mapsel==2) ||
+            (A[15:13]==3 && mapsel==0) ||
+            (A[15:13]==4 && mapsel==3) ||
+            (A[15:13]==6 && mapsel==1) );
+    fmode_cs  = !ASn && A[21:18]==4'b1001 && A[15:13]==4 && mapsel==0;
+    fsft_cs   = !ASn && A[21:18]==4'b1001 && A[15:13]==6 && mapsel==0;
+    fmap_cs   = !ASn && A[21:18]==4'b1001 &&
+        (   (A[15:13]==0 && mapsel==3) ||
+            (A[15:13]==1 && mapsel==2) ||
+            (A[15:13]==4 && mapsel==1) ||
+            (A[15:13]==7 && !mapsel[0]) );
 end
 
 endmodule

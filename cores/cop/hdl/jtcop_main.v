@@ -113,8 +113,6 @@ reg  [15:0] cpu_din;
 wire        disp_cs, sysram_cs, cblk, vint_clr,
             eep_cs,
             prisel_cs, mixpsel_cs,
-            nexin_cs,       // this pin C15 of connector 2. It's unconnected in all games
-            nexout_cs,      // Connector 2, pin A16: unused
             nexrm1,         // used on Heavy Barrel PCB for the track balls
             nexrm0_cs;      // a signal on Robocop sch. unused. Reused for SlySpy for the protection IC
 reg         secirq, vint,
@@ -170,8 +168,8 @@ jtcop_decoder u_decoder(
     .eep_cs     ( eep_cs    ),
     .prisel_cs  ( prisel_cs ),
     .mixpsel_cs ( mixpsel_cs),
-    .nexin_cs   ( nexin_cs  ),      // this pin C15 of connector 2. It's unconnected in all games
-    .nexout_cs  ( nexout_cs ),      // Connector 2, pin A16: unused
+    .nexin_cs   (           ),      // this pin C15 of connector 2. It's unconnected in all games
+    .nexout_cs  (           ),      // Connector 2, pin A16: unused
     .nexrm1     ( nexrm1    ),      // used on Heavy Barrel PCB for the track balls
     .disp_cs    ( disp_cs   ),
     .sysram_cs  ( sysram_cs ),

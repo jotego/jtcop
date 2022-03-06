@@ -72,9 +72,6 @@ reg [7:0] fcnt=0;
 
 always @(negedge LVBL) fcnt<=fcnt+1;
 
-//localparam [1:0] BA0=0,BA1=2,BA2=3,OBJ=1;
-//localparam [1:0] BA0=2,BA1=1,BA2=3,OBJ=1;
-//localparam [1:0] BA0=1,BA1=2,BA2=3,OBJ=0;
 wire [1:0] BA0=0,BA1=2,BA2=3,OBJ=1;
 
 assign we_gr = ~dsn & {2{pal_cs[0]}};
