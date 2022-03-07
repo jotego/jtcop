@@ -122,7 +122,6 @@ always @(*) begin
                 default:;
             endcase
             8'h1c>>2: nexrm0_cs = 1; // protection
-            //sysram_cs = RnW; // fake it with RAM for now //
             default:;
         endcase
 end

@@ -343,6 +343,20 @@ always @(posedge clk, posedge rst) begin
     end
 end
 
+`ifdef SLYSPY
+reg [7:0] prot_dout;
+
+always @(posedge clk) begin
+    prot_dout <= 0;
+    if( A[23:4]==0 ) case( A[3:1] )
+            0,2: prot_dout <= 0;
+            1: prot_dout <= 8'h13;
+            3: prot_dout <= 8'h2;
+            6: prot_dout <= ram_data; // random value
+        endcase
+end
+`endif
+
 always @(posedge clk) begin
     cpu_din <=  ram_cs    ? ram_data :
                 rom_cs    ? rom_data :
@@ -358,6 +372,9 @@ always @(posedge clk) begin
                 track_cs[1] ? {8'hff, track1_dout } :
                 track_cs[2] ? {track_cf[0], track_cf[1], 2'b11, ~rotary2 } :
                 track_cs[3] ? { 4'hf, ~rotary1 } :
+        `ifdef SLYSPY
+                nexrm0_cs ? prot_dout :
+        `endif
                 16'hffff;
 end
 
