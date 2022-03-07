@@ -318,7 +318,8 @@ assign snd_eff = BANKS ? { sndflag[1] | snd_addr[15],
 //  4kB   B2
 // 40kB   Total -> AW=15, DW=16
 
-reg  [14:0] ram_maddr; // merged address
+// merged address
+reg  [14:0] ram_maddr /* synthesis keep */;
 
 always @* begin
     ram_maddr = {2'b0, main_addr[13:1]};
