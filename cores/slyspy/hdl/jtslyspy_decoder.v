@@ -65,6 +65,7 @@ module jtcop_decoder(
 
 reg  [1:0] mapsel, premap;
 reg  nexinl, nexoutl;
+reg  [6:0] timeout;
 
 assign disp_cs = |{fmap_cs, bmap_cs, cmap_cs, fsft_cs, bsft_cs, csft_cs };
 
@@ -83,6 +84,16 @@ always @(posedge clk, posedge rst) begin
     end
 end
 
+// clear the IRQ automatically for now
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        timeout <= 0;
+    end else begin
+        timeout <= (!LVBL && LVBL_l) ? 7'h7f : timeout>0 ? timeout-7'd1 : 0;
+        vint_clr <= timeout==1;
+    end
+end
+
 // Triggering it once per frame, not sure if the
 // CPU has it mapped to an address, like Robocop
 assign obj_copy = !LVBL && LVBL_l;
@@ -95,7 +106,6 @@ always @(*) begin
     prisel_cs  = 0;
     //obj_copy   = 0;
     snreq      = 0;
-    vint_clr   = 0;
     mixpsel_cs = 0;
     cblk       = 0;
     read_cs    = 0;
@@ -105,9 +115,6 @@ always @(*) begin
     sec[2]     = sec2;
     sec[1:0]   = 0;
     huc_cs     = 0;
-
-    // clear it automatically for now
-    vint_clr   = LVBL && !LVBL_l;
 
     if( !ASn && A[21:20]==3 )
         case( A[19:14] )
