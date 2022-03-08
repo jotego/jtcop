@@ -175,7 +175,6 @@ reg  [15:0] mcu_dout;
 wire [15:0] mcu_din;
 wire [ 5:0] mcu_sel;
 wire        mcu_sel2;   // this funny name is to keep the schematics' naming
-wire        nexirq;
 wire        shd_cs;
 
 // HuC Protection
@@ -231,7 +230,7 @@ jtcop_main u_main(
     .LVBL       ( LVBL      ),
     .LHBL       ( LHBL      ),
     // ext interrupts
-    .nexirq     ( nexirq    ),
+    .nexirq     ( 1'b1      ), // unused in real hardware
     // MCU
     .mcu_dout   ( mcu_dout  ),
     .mcu_din    ( mcu_din   ),
@@ -451,7 +450,6 @@ jtcop_video u_video(
     assign mcu_p3i = { mcu_sel[5:3], mcu_p3o[4:0] };
     assign { sndflag, b1flg, b0flg, mixflg } = mcu_p1o[6:0];
     assign crback = mcu_p3o[2:0];
-    assign nexirq = 1;
     assign mcu_sel2 = mcu_p2o[2];
     assign mcu_rdhi = ~mcu_p2o[4];
     assign mcu_rdlo = ~mcu_p2o[5];
