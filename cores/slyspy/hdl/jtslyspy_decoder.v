@@ -118,9 +118,9 @@ always @(*) begin
 
     if( !ASn && A[21:20]==3 )
         case( A[19:14] )
-            8'h04>>2: sysram_cs = 1;   // 0x30'4000
-            8'h10>>2: pal_cs[0] = 1;   // 0x31'0000
-            8'h14>>2: case( A[3:1] )   // 0x31'4000
+            6'h01: sysram_cs = 1;  // 0x30'4000
+            6'h4: pal_cs[0] = 1;   // 0x31'0000
+            6'h5: case( A[3:1] )   // 0x31'4000
                 3'h0: snreq = 1;
                 3'h1: prisel_cs = 1; // 0x31'4002
                 3'h4: read_cs[2] = 1; // DIP sw
@@ -128,7 +128,7 @@ always @(*) begin
                 3'h6: read_cs[1] = 1; // system I/O
                 default:;
             endcase
-            8'h1c>>2: nexrm0_cs = 1; // protection
+            6'h7: nexrm0_cs = 1; // protection
             default:;
         endcase
 end
