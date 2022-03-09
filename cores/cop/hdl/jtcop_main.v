@@ -348,8 +348,7 @@ reg [15:0] prot_dout;
 
 always @(posedge clk) begin
     prot_dout <= 0;
-    if( A[23:4]==0 ) case( A[3:1] )
-            0,2: prot_dout <= 0;
+    if( nexrm0_cs ) case( A[3:1] )
             1: prot_dout <= 'h13;
             3: prot_dout <= 'h2;
             6: prot_dout <= ram_data; // random value
