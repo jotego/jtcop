@@ -344,14 +344,16 @@ always @(posedge clk, posedge rst) begin
 end
 
 `ifdef SLYSPY
-reg [15:0] prot_dout;
+reg [7:0] prot_dout;
+reg [7:0] prot_cpy;
 
 always @(posedge clk) begin
+    if( sysram_cs && A[12:1]=='h1014 && !RnW ) prot_cpy <= cpu_dout[7:0];
     prot_dout <= 0;
     if( nexrm0_cs ) case( A[3:1] )
             1: prot_dout <= 'h13;
             3: prot_dout <= 'h2;
-            6: prot_dout <= ram_data; // random value
+            6: prot_dout <= prot_cpy; // random value
         endcase
 end
 `endif
@@ -372,7 +374,7 @@ always @(posedge clk) begin
                 track_cs[2] ? {track_cf[0], track_cf[1], 2'b11, ~rotary2 } :
                 track_cs[3] ? { 4'hf, ~rotary1 } :
         `ifdef SLYSPY
-                nexrm0_cs ? prot_dout :
+                nexrm0_cs ? {8'h0, prot_dout} :
         `endif
                 16'hffff;
 end
