@@ -91,6 +91,7 @@ module jtcop_game(
     // Debug
     input   [3:0]   gfx_en,
     input   [7:0]   debug_bus,
+    output  [7:0]   debug_view,
     // status dump
     input      [7:0] st_addr,
     output reg [7:0] st_dout
@@ -200,6 +201,7 @@ wire [1:0] game_id;
 assign { dipsw_b, dipsw_a } = dipsw[15:0];
 assign dsn = { UDSWn, LDSWn };
 assign dip_flip = ~flip;
+assign debug_view = 0;
 
 always @(posedge clk) begin
     st_dout <= 0;
