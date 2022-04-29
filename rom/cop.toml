@@ -2,8 +2,7 @@
 mraauthor=["jotego"]
 
 [features]
-beta = true
-debug = true
+# debug = true
 
 [parse]
 sourcefile="dec0.cpp"
