@@ -26,8 +26,8 @@ module jtcop_game(
     output   [7:0]  red,
     output   [7:0]  green,
     output   [7:0]  blue,
-    output          LHBL_dly,
-    output          LVBL_dly,
+    output          LHBL,
+    output          LVBL,
     output          HS,
     output          VS,
     // cabinet I/O
@@ -96,9 +96,6 @@ module jtcop_game(
     input      [7:0] st_addr,
     output reg [7:0] st_dout
 );
-
-// video signals
-wire        LVBL, LHBL;
 
 // SDRAM interface
 wire        main_cs, vram_cs, ram_cs;
@@ -390,10 +387,8 @@ jtcop_video u_video(
     // Video signal
     .HS         ( HS        ),
     .VS         ( VS        ),
-    .LVBL       ( LVBL      ),
-    .LHBL       ( LHBL      ),
-    .LHBL_dly   ( LHBL_dly  ),
-    .LVBL_dly   ( LVBL_dly  ),
+    .LHBL_dly   ( LHBL      ),
+    .LVBL_dly   ( LVBL      ),
     .red        ( red       ),
     .green      ( green     ),
     .blue       ( blue      ),

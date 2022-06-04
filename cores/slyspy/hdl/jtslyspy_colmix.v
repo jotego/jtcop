@@ -105,10 +105,10 @@ end
 jtframe_blank #(.DLY(2),.DW(12)) u_blank(
     .clk        ( clk       ),
     .pxl_cen    ( pxl_cen   ),
-    .LHBL       ( LHBL      ),
-    .LVBL       ( LVBL      ),
-    .LHBL_dly   ( LHBL_dly  ),
-    .LVBL_dly   ( LVBL_dly  ),
+    .preLHBL    ( LHBL      ),
+    .preLVBL    ( LVBL      ),
+    .LHBL       ( LHBL_dly  ),
+    .LVBL       ( LVBL_dly  ),
     .preLBL     (           ),
     .rgb_in     ( pal_bgr[11:0]   ),
     .rgb_out    ( { b4, g4, r4 } )
