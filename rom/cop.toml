@@ -34,7 +34,12 @@ machines = [
 bitcnt = 16
 base = 17
 delete = [ "Unused", "Unknown" ]
-
+rename = [
+    { name="Enemy Power Decrease on Continue", to="Player strenght"},
+    { name="Control Panel Type", to="Panel" },
+    { name="Player & Enemy Energy", to="Energy scale"},
+    { name="L/R control related (keep off)", to="Unknown" }
+]
 [ROM]
 regions = [
     { name="maincpu",  width=16, reverse=true },

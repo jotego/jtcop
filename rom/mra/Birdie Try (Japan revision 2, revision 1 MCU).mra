@@ -120,7 +120,7 @@
         <dip name="Difficulty (Course)" bits="10,11" ids="Hardest,Hard,Easy,Normal"/>
         <dip name="Allow Continue" bits="12" ids="Off,On"/>
         <dip name="Timer" bits="13" ids="Fast,Normal"/>
-        <dip name="Control Panel Type" bits="14,15" ids="Type C - Upright,Unused,Type B - Cocktail 2,Type A - Cocktail"/>
+        <dip name="Panel" bits="14,15" ids="Type C - Upright,Unused,Type B - Cocktail 2,Type A - Cocktail"/>
     </switches>
     <buttons names="button 1,button 2,-,-,-,Start,Coin,Core credits" default="Y,X,B,A,R,Start,Select,-" count="2"/>
 </misterromdescription>

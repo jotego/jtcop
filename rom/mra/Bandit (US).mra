@@ -105,7 +105,7 @@
     <switches base="17" default="ff77">
         <!-- DSW -->
         <dip name="Analog controls?" bits="0" ids="On,Off"/>
-        <dip name="L/R control related (keep off)" bits="1" ids="On,Off"/>
+        <dip name="Unknown" bits="1" ids="On,Off"/>
         <dip name="DSUNK_2" bits="2" ids="On,Off"/>
         <dip name="Road select (debug)" bits="3" ids="Off,On"/>
         <dip name="Flip Screen" bits="4" ids="On,Off"/>
